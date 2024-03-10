@@ -1,0 +1,21 @@
+{
+  "name": "forsenkkona",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --no-warnings ./index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.3",
+    "openai": "^4.28.4",
+    "path": "^0.12.7",
+    "tmi.js": "^1.8.5",
+    "url": "^0.11.3"
+  }
+}

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+  <title>ForsenKKona</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css"
+    rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+  <img src="banner.png" alt="banner" />
+  <h1 class="display-4" style="margin-top: 20px;">Commands ⚙️</h1>
+  <button type="button" class="btn btn-success" onclick="command('singlefact')">Single Fact</button>
+  <button type="button" class="btn btn-warning" onclick="command('singletrivia')">Single trivia</button>
+  <input type="checkbox" data-toggle="toggle" data-onstyle="primary" data-offstyle="outline-primary"
+    data-on="Multifact on" data-off="Multifact off" data-width="150px" data-height="38px" id="togMultifact">
+  <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger"
+    data-on="Chaintrivia on" data-off="Chaintrivia off" data-width="150px" data-height="38px" id="togChaintrivia">
+  <input type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="eShrug on"
+    data-off="eShrug off" data-width="150px" data-height="38px" id="togEshrug">
+  <input type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="XD on"
+    data-off="XD off" data-width="150px" data-height="38px" id="togXd">
+  <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger" data-on="Spam on"
+    data-off="Spam off" data-width="150px" data-height="38px" id="togSpam">
+  <input type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="outline-success"
+    data-on="Stoptrivia on" data-off="Stoptrivia off" data-width="150px" data-height="38px" id="togStoptrivia">
+  <input type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="Echo on"
+    data-off="Echo off" data-width="150px" data-height="38px" id="togEcho">
+  <button type="button" class="btn btn-danger" onclick="command('disable all')">Stop everything</button>
+  <button type="button" class="btn btn-primary"
+    onclick="command('say 0 pls carpet bomb all weebs Donald Trump forsenRNG')">Fuck weebs</button>
+  <button type="button" class="btn btn-primary"
+    onclick="command('say 0 pls waterboard all elis subs Donald Trump forsenRNG')">Fuck elis</button>
+  <button type="button" class="btn btn-primary"
+    onclick="command('say 0 pls nuke all furries Donald Trump forsenRNG')">Fuck furries</button>
+
+  <h1 class="display-4" style="margin-top: 40px;">Send a message 💬</h1>
+
+  <form id="messageForm" style="display: flex; align-items: center;">
+    <label class="form-label" for="message" style="margin-right: 10px;">Message:</label>
+    <input class="form-control" type="text" id="message" name="message" style="flex: 4; margin-right: 10px;" required>
+    <label class="form-label" for="identity" style="margin-right: 10px;">Identity:</label>
+    <select class="form-select" name="identity" id="identity" style="flex: 1; margin-right: 10px;">
+    </select>
+    <button type="submit" class="btn btn-primary" style="flex: 0;">Send</button>
+  </form>
+
+  <h1 class="display-4" style="margin-top: 40px;">Farm points 🚜</h1>
+  <form id="farmForm" style="display: flex; align-items: center;">
+    <label class="form-label" for="identity">Identity:</label>
+    <select class="form-select" name="identityFarm" id="identityFarm">
+    </select>
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+
+  <h1 class="display-4" style="margin-top: 40px;">Ask AI something 🤖</h1>
+  <form id="aiForm" style="display: flex; align-items: center;">
+    <label class="form-label" for="message">Prompt:</label>
+    <input class="form-control" type="text" id="prompt" name="prompt" size="185" required>
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+
+  <h1 class="display-4" style="margin-top: 40px;">Set spam content 🗑️</h1>
+  <form id="spamForm" style="display: flex; align-items: center;">
+    <label class="form-label" for="message">Spam content:</label>
+    <input class="form-control" type="text" id="spam" name="spam" size="185" required>
+    <select class="form-select" name="spamSelect" id="spamSelect">
+      <option selected>Choose...</option>
+      <option value="weebs">pls carpet bomb all weebs Donald Trump forsenRNG</option>
+      <option value="elis">pls waterboard all elis subs Donald Trump forsenRNG</option>
+      <option value="furries">pls nuke all furries Donald Trump forsenRNG</option>
+      <option value="piano">forsenKKona PianoTime forsenKKona PianoTime forsenKKona PianoTime forsenKKona PianoTime
+        forsenKKona PianoTime forsenKKona PianoTime forsenKKona PianoTime forsenKKona PianoTime forsenKKona PianoTime
+        forsenKKona PianoTime forsenKKona PianoTime forsenKKona PianoTime forsenKKona PianoTime</option>
+      <option value="usa">🦅 🇺🇸 USA &gt; ALL 🇺🇸 🦅 LAND OF THE FREE 🦅 🇺🇸 HOME OF THE BRAVE 🇺🇸 🦅</option>
+      <option value="donald2024">DonaldPls 2024</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const settings = await getSettings();
+      $('#togMultifact').bootstrapToggle(settings.isMultifactActive ? 'on' : 'off', true);
+      $('#togSpam').bootstrapToggle(settings.isSpamActive ? 'on' : 'off', true);
+      $('#togChaintrivia').bootstrapToggle(settings.isChainTriviaActive ? 'on' : 'off', true);
+      $('#togEshrug').bootstrapToggle(settings.isEshrugActive ? 'on' : 'off', true);
+      $('#togXd').bootstrapToggle(settings.isXdActive ? 'on' : 'off', true);
+      $('#togStopTrivia').bootstrapToggle(settings.isStopTriviaActive ? 'on' : 'off', true);
+      $('#togEcho').bootstrapToggle(settings.isEchoActive ? 'on' : 'off', true);
+      $('#togSpam').bootstrapToggle(settings.isSpamActive ? 'on' : 'off', true);
+      $('#spam').val(settings.spamContent);
+      $('#identity').append($('<option>', { value: '0', text: settings.username1 }).prop('selected', true));
+      $('#identity').append($('<option>', { value: '1', text: settings.username2 }));
+      $('#identity').append($('<option>', { value: '2', text: settings.username3 }));
+      $('#identityFarm').append($('<option>', { value: '0', text: settings.username1 }).prop('selected', true));
+      $('#identityFarm').append($('<option>', { value: '1', text: settings.username2 }));
+      $('#identityFarm').append($('<option>', { value: '2', text: settings.username3 }));
+    });
+
+    $(function () {
+      $('#togSpam').change(function () {
+        if ($(this).prop('checked')) {
+          command("enable spam");
+          setTimeout(function () { $('#togSpam').bootstrapToggle('off'); }, 300000);
+        }
+        else
+          command("disable spam");
+      })
+    });
+
+    $(function () {
+      $('#spamSelect').change(function () {
+        var value = $('#spamSelect').val();
+        var selectedOptionText = $('#spamSelect option[value]:selected').text();
+        if ($('#spamSelect option[value]:selected').text() != '') {
+          $('#spam').val(selectedOptionText);
+          command("setspamcontent " + selectedOptionText);
+          $(this).prop("selectedIndex", 0);
+        }
+      })
+    });
+
+    $(function () {
+      $('#togMultifact').change(function () {
+        if ($(this).prop('checked'))
+          command("enable multifact");
+        else
+          command("disable multifact");
+      })
+    });
+
+    $(function () {
+      $('#togChaintrivia').change(function () {
+        if ($(this).prop('checked'))
+          command("enable chaintrivia");
+        else
+          command("disable chaintrivia");
+      })
+    });
+
+    $(function () {
+      $('#togEshrug').change(function () {
+        if ($(this).prop('checked'))
+          command("enable eshrug");
+        else
+          command("disable eshrug");
+      })
+    });
+
+    $(function () {
+      $('#togXd').change(function () {
+        if ($(this).prop('checked'))
+          command("enable xd");
+        else
+          command("disable xd");
+      })
+    });
+
+    $(function () {
+      $('#togStoptrivia').change(function () {
+        if ($(this).prop('checked'))
+          command("enable stoptrivia");
+        else
+          command("disable stoptrivia");
+      })
+    });
+
+    $(function () {
+      $('#togEcho').change(function () {
+        if ($(this).prop('checked'))
+          command("enable echo");
+        else
+          command("disable echo");
+      })
+    });
+
+    document.getElementById('aiForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      command("aiprompt " + document.getElementById('prompt').value);
+      // Clear the text area after sending the message
+      document.getElementById('prompt').value = '';
+    });
+
+    document.getElementById('messageForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      command("say " + document.getElementById('identity').value + " " + document.getElementById('message').value);
+      // Clear the text area after sending the message
+      document.getElementById('message').value = '';
+    });
+
+    document.getElementById('farmForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      command("farm " + document.getElementById('identityFarm').value);
+    });
+
+    document.getElementById('spamForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      command("setspamcontent " + document.getElementById('spam').value);
+    });
+
+    async function getSettings() {
+      return await command("getsettings");
+    }
+
+    async function command(message) {
+      const response = await fetch('/command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      });
+      const jsonData = await response.json();
+      return jsonData;
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+</body>
+
+</html>
