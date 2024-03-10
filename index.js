@@ -35,13 +35,10 @@ const timeSConstant = 1000;
 const timeSVariable = 2000;
 const timeMConstant = 3000;
 const timeMVariable = 10000;
-const timeMIncrement = 2000;
-const timeLConstant = 20000;
-const timeLVariable = 30000;
-const timeXLConstant = 60000;
-const timeXLVariable = 300000;
-const timeXXLConstant = 300000;
-const timeXXLVariable = 900000;
+const timeLConstant = 60000;
+const timeLVariable = 300000;
+const timeXLConstant = 300000;
+const timeXLVariable = 900000;
 
 
 // Settings
@@ -276,14 +273,14 @@ async function getAIResponse(prompt) {
 function eShrug() {
   if (isEshrugActive) {
     say('forsen', "$fill eShrug", 1)
-    setTimeout(eShrug, randTime(timeXLVariable) + timeXLConstant);
+    setTimeout(eShrug, randTime(timeLVariable) + timeLConstant);
   }
 }
 
 function xd() {
   if (isXdActive) {
     say('forsen', "$$xd", 1)
-    setTimeout(xd, randTime(timeXLVariable) + timeXLConstant);
+    setTimeout(xd, randTime(timeLVariable) + timeLConstant);
   }
 }
 
@@ -309,7 +306,7 @@ async function multiFact() {
   if (!isMultifactActive)
     return;
   singleFact();
-  setTimeout(multiFact, randTime(timeXXLVariable) + timeXXLConstant);
+  setTimeout(multiFact, randTime(timeXLVariable) + timeXLConstant);
 }
 
 // Says a single random fact about forsen (can lie)
