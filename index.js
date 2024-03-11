@@ -5,7 +5,12 @@ import bodyParser from 'body-parser'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
-const envVariables = ['USERNAME1', 'USERNAME2', 'USERNAME3', 'PASSWORD1', 'PASSWORD2', 'PASSWORD3', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL']
+// Debug
+const isDebugActivated = process.env.DEBUG_ENABLED === 'true'
+console.log('Debug ? ' + isDebugActivated)
+
+// Environment variables
+const envVariables = ['USERNAME1', 'USERNAME2', 'USERNAME3', 'PASSWORD1', 'PASSWORD2', 'PASSWORD3', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'AI_PROMPTS', 'MAX_AI_RETRIES', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM']
 
 // Get the directory of the current module
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -15,11 +20,11 @@ const openaiOptions = {
   apiKey: process.env.OPENAI_APIKEY,
   baseURL: process.env.OPENAI_BASEURL
 }
-
 const openaiModel = process.env.OPENAI_MODEL
-
 const openai = new OpenAI(openaiOptions)
+const maxAiRetries = process.env.MAX_AI_RETRIES
 
+// TMI setup
 const identities = [
   { username: process.env.USERNAME1, password: process.env.PASSWORD1, client: '' },
   { username: process.env.USERNAME2, password: process.env.PASSWORD2, client: '' },
@@ -27,9 +32,13 @@ const identities = [
 ]
 
 // Trivia topics
-const topics = ['fish', 'illuminatis', 'uganda', 'paperclips', 'fountain pens', 'soy', 'america', 'gachi', 'forsen', 'founding fathers', 'music theory', 'astrophysics', 'classical music', 'rocket engineering', 'Nietzsche', 'paper planes', 'american gastronomy', 'curling', 'dwarfism', 'genetic diseases', 'body fluids', 'meatless diets']
-// Max safe message size
-const maxMessageSize = 185
+const topics = JSON.parse(process.env.TRIVIA_TOPICS)
+const prompts = JSON.parse(process.env.AI_PROMPTS)
+
+// Message settings
+const maxMessageSize = process.env.MAX_MESSAGE_SIZE
+const factPrefix = process.env.FACT_PREFIX
+
 // Timings
 const timeSConstant = 1000
 const timeSVariable = 2000
@@ -49,9 +58,9 @@ let isStopTriviaActive = false
 let isXdActive = false
 let isEchoActive = false
 let isPyramidActive = false
-let spamContent = 'DonaldPls 2024'
+let spamContent = process.env.DEFAULT_SPAM
 let pyramidEmote = 'forsenKKona'
-let pyramidWidth = 4
+let pyramidWidth = 3
 
 // Work variables
 let isAvoidDupe = false
@@ -62,9 +71,14 @@ let currentPyramidPhase = true
 // Says a message to a channel
 function say (channel, message, identity = 0) {
   if (isAvoidDupe) { message = message + ' ' + duplicateSuffix }
+  const msg = message.substring(0, maxMessageSize)
 
-  identities[identity].client.say(channel, message.substring(0, maxMessageSize))
-  console.log('Said as ' + identities[identity].username + ': ' + message.substring(0, maxMessageSize))
+  if (isDebugActivated) {
+    console.log('DEBUG: Would have said: ' + msg)
+  } else {
+    identities[identity].client.say(channel, msg)
+    console.log('Said as ' + identities[identity].username + ': ' + msg)
+  }
   isAvoidDupe = !isAvoidDupe
 }
 
@@ -262,6 +276,7 @@ function doTrivia () {
 
 // Gat a response from the AI using the given prompt
 async function getAIResponse (prompt) {
+  console.log('[AI] Got prompt : ' + prompt)
   const chatCompletion = await openai.chat.completions.create({
     messages: [{ role: 'user', content: prompt }],
     model: openaiModel,
@@ -277,7 +292,7 @@ async function getAIResponse (prompt) {
   if (response.endsWith('.')) {
     response = response.slice(0, -1) // Removes the last character if it is a dot because it doesn't feel very natural in a twitch chat
   }
-  console.log('Generated text : ' + response)
+  console.log('[AI] Generated text : ' + response)
   return response
 }
 
@@ -343,8 +358,14 @@ async function multiFact () {
 
 // Says a single random fact about forsen (can lie)
 async function singleFact () {
-  const aiMessage = await getAIResponse("Tell a very short random fact about america being the best in less than 30 words, you are allowed to lie, don't mention imaginary animals. Be cocky and proud.")
-  say('forsen', 'forsenKKona 🇺🇸 🦅 ' + aiMessage.substring(0, maxMessageSize - 11), 0)
+  const prompt = getPrompt()
+  let aiMessage = ''
+  let cpt = 0
+  do {
+    cpt++
+    aiMessage = await getAIResponse(prompt)
+  } while (aiMessage.length > (maxMessageSize - factPrefix.length - 1) && cpt < maxAiRetries)
+  say('forsen', (factPrefix + aiMessage).substring(0, maxMessageSize), 0)
 }
 
 function farm (identity) {
@@ -393,6 +414,20 @@ function checkEnvVariables () {
     }
   }
   return isFine
+}
+
+function getPrompt () {
+  const sumOfWeights = prompts.reduce((accumulator, currentPrompt) => { return accumulator + currentPrompt.weight }, 0)
+  let rand = Math.floor(Math.random() * sumOfWeights + 1)
+  // console.log(prompts)
+  // console.log('Sum of weights: ' + sumOfWeights)
+  // console.log('rand(1..' + sumOfWeights + '): ' + rand)
+  for (const prompt of prompts) {
+    rand = rand - prompt.weight
+    if (rand <= 0) return prompt.prompt
+  }
+  console.log('ERROR: there is a bug in the prompt selecting algorithm')
+  return ''
 }
 
 // The main function
