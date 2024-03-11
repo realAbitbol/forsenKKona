@@ -7,10 +7,10 @@ import { dirname, join } from 'path'
 
 // Debug
 const isDebugActivated = process.env.DEBUG_ENABLED === 'true'
-console.log('Debug ? ' + isDebugActivated)
+if (isDebugActivated) console.log('## DEBUG MODE ACTIVE ##')
 
 // Environment variables
-const envVariables = ['USERNAME1', 'USERNAME2', 'USERNAME3', 'PASSWORD1', 'PASSWORD2', 'PASSWORD3', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'AI_PROMPTS', 'MAX_AI_RETRIES', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM']
+const envVariables = ['USERNAME1', 'USERNAME2', 'USERNAME3', 'PASSWORD1', 'PASSWORD2', 'PASSWORD3', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'AI_PROMPTS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM']
 
 // Get the directory of the current module
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -31,13 +31,16 @@ const identities = [
   { username: process.env.USERNAME3, password: process.env.PASSWORD3, client: '' }
 ]
 
-// Trivia topics
-const topics = JSON.parse(process.env.TRIVIA_TOPICS)
+// Custom topics and prompts
+const triviaTopics = JSON.parse(process.env.TRIVIA_TOPICS)
 const prompts = JSON.parse(process.env.AI_PROMPTS)
+const assistantPrompt = process.env.ASSISTANT_PROMPT
+const assistantTrigger = process.env.ASSISTANT_TRIGGER
 
 // Message settings
 const maxMessageSize = process.env.MAX_MESSAGE_SIZE
 const factPrefix = process.env.FACT_PREFIX
+const duplicateSuffix = '󠀀'
 
 // Timings
 const timeSConstant = 1000
@@ -58,13 +61,13 @@ let isStopTriviaActive = false
 let isXdActive = false
 let isEchoActive = false
 let isPyramidActive = false
+let isAssistantActive = false
 let spamContent = process.env.DEFAULT_SPAM
 let pyramidEmote = 'forsenKKona'
 let pyramidWidth = 3
 
 // Work variables
 let isAvoidDupe = false
-const duplicateSuffix = '󠀀'
 let currentPyramidWidth = 0
 let currentPyramidPhase = true
 
@@ -87,18 +90,21 @@ function randTime (maxTime) {
   return Math.floor(Math.random() * (maxTime + 1))
 }
 
-// Called every time a message comes
+// Called every time a new message is posted in the chat
 async function onMessageHandler (target, context, msg, self) {
-  // if (self) { return; } // Ignore messages from the bot
-
-  // if(msg.includes("forsenKKona") && context['display-name']=="Abitbol") { // FIXME: Handle identities or handle some specific keyword like "Hey identities[0].username"
-  //  console.log(context['display-name'] + " talked to me : " + msg)
-  //  let response = await getAIResponse("You are forsenKKona an human that answers as concisely as possible, you don't offer help or assistance. Reply in 150 characters or less to the following message: " + "\"" + msg + "\"");
-  //  if(response.toLowerCase().startsWith("forsenKKona, "))
-  //    response = response.slice(15)
-  //  console.log("I replied : " + response)
-  //  say('forsen', "@" + context['display-name'] + " " + response.substring(0,150), "forsenKKona");
-  // }
+  // Assistant functionality
+  if (msg.startsWith(assistantTrigger) && isAssistantActive && context['display-name'] !== identities[0].username) {
+    console.log(context['display-name'] + ' talked to me: ' + msg)
+    let response = ''
+    let cpt = 0
+    do {
+      cpt++
+      response = await getAIResponse(assistantPrompt + msg.slice(assistantTrigger.length))
+    } while (response.length > (maxMessageSize - 25) && cpt < maxAiRetries)
+    if (response.toLowerCase().startsWith('forsenKKona, ')) response = response.slice('forsenKKona, '.length)
+    console.log('I replied : ' + response)
+    say('forsen', ('@' + context['display-name'] + ' ' + response).substring(0, maxMessageSize), 'forsenKKona')
+  }
 
   // Trivia chainer
   if (context['display-name'] === 'FeelsStrongBot' && msg === 'trivia ended nam') {
@@ -186,6 +192,9 @@ async function processCommand (command) {
         currentPyramidWidth = 0
         currentPyramidPhase = true
         break
+      case 'assistant':
+        isAssistantActive = false
+        break
       case 'all':
         isMultifactActive = false
         isChainTriviaActive = false
@@ -236,6 +245,9 @@ async function processCommand (command) {
       case 'echo':
         isEchoActive = true
         break
+      case 'assistant':
+        isAssistantActive = true
+        break
       default:
         console.log("ERROR: invalid enable target '" + target + "'")
         return { status: 'KO' }
@@ -269,7 +281,7 @@ async function processCommand (command) {
 
 // Starts a trivia
 function doTrivia () {
-  const topic = topics[Math.floor(Math.random() * topics.length)]
+  const topic = triviaTopics[Math.floor(Math.random() * triviaTopics.length)]
   say('forsen', `>trivia ai ${topic}`, 0)
   console.log('Started a trivia')
 }
@@ -353,7 +365,9 @@ function joinRaid (identity) {
 async function multiFact () {
   if (!isMultifactActive) { return }
   singleFact()
-  setTimeout(multiFact, randTime(timeXLVariable) + timeXLConstant)
+  const nextTime = randTime(timeXLVariable) + timeXLConstant
+  console.log('Next fact in ' + millisToMinutesAndSeconds(nextTime))
+  setTimeout(multiFact, nextTime)
 }
 
 // Says a single random fact about forsen (can lie)
@@ -397,7 +411,7 @@ function farm (identity) {
 }
 
 function getSettings () {
-  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, spamContent, pyramidEmote, pyramidWidth, username1: identities[0].username, username2: identities[1].username, username3: identities[2].username }
+  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, spamContent, pyramidEmote, pyramidWidth, username1: identities[0].username, username2: identities[1].username, username3: identities[2].username }
 }
 
 // Called every time the bot connects to Twitch chat
@@ -428,6 +442,16 @@ function getPrompt () {
   }
   console.log('ERROR: there is a bug in the prompt selecting algorithm')
   return ''
+}
+
+function millisToMinutesAndSeconds (millis) {
+  const minutes = Math.floor(millis / 60000)
+  const seconds = ((millis % 60000) / 1000).toFixed(0)
+  return (
+    seconds === 60
+      ? (minutes + 1) + ':00'
+      : minutes + ':' + (seconds < 10 ? '0' : '') + seconds
+  )
 }
 
 // The main function

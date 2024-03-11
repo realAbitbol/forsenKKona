@@ -12,6 +12,7 @@ async function refreshDisplay () {
   $('#togEcho').bootstrapToggle(settings.isEchoActive ? 'on' : 'off', true)
   $('#togSpam').bootstrapToggle(settings.isSpamActive ? 'on' : 'off', true)
   $('#togPyramid').bootstrapToggle(settings.isPyramidActive ? 'on' : 'off', true)
+  $('#togAssistant').bootstrapToggle(settings.isAssistantActive ? 'on' : 'off', true)
   $('#spam').val(settings.spamContent)
   $('#identity').append($('<option>', { value: '0', text: settings.username1 }).prop('selected', true))
   $('#identity').append($('<option>', { value: '1', text: settings.username2 }))
@@ -89,6 +90,12 @@ $(function () {
 $(function () {
   $('#togEcho').change(function () {
     if ($(this).prop('checked')) { command('enable echo') } else { command('disable echo') }
+  })
+})
+
+$(function () {
+  $('#togAssistant').change(function () {
+    if ($(this).prop('checked')) { command('enable assistant') } else { command('disable assistant') }
   })
 })
 
