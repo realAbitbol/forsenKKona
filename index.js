@@ -10,7 +10,7 @@ const isDebugActivated = process.env.DEBUG_ENABLED === 'true'
 if (isDebugActivated) console.log('## DEBUG MODE ACTIVE ##')
 
 // Environment variables
-const envVariables = ['USERNAME1', 'USERNAME2', 'USERNAME3', 'PASSWORD1', 'PASSWORD2', 'PASSWORD3', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'AI_PROMPTS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM']
+const envVariables = ['USERNAME1', 'USERNAME2', 'USERNAME3', 'PASSWORD1', 'PASSWORD2', 'PASSWORD3', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM']
 
 // Get the directory of the current module
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -33,7 +33,7 @@ const identities = [
 
 // Custom topics and prompts
 const triviaTopics = JSON.parse(process.env.TRIVIA_TOPICS)
-const prompts = JSON.parse(process.env.AI_PROMPTS)
+const factPrompts = JSON.parse(process.env.FACT_PROMPTS)
 const assistantPrompt = process.env.ASSISTANT_PROMPT
 const assistantTrigger = process.env.ASSISTANT_TRIGGER
 
@@ -92,18 +92,12 @@ function randTime (maxTime) {
 
 // Called every time a new message is posted in the chat
 async function onMessageHandler (target, context, msg, self) {
-  // Assistant functionality
-  if (msg.startsWith(assistantTrigger) && isAssistantActive && context['display-name'] !== identities[0].username) {
+  // Assistant
+  if (msg.startsWith(assistantTrigger + ' ') && isAssistantActive && context['display-name'] !== identities[0].username) {
     console.log(context['display-name'] + ' talked to me: ' + msg)
-    let response = ''
-    let cpt = 0
-    do {
-      cpt++
-      response = await getAIResponse(assistantPrompt + msg.slice(assistantTrigger.length))
-    } while (response.length > (maxMessageSize - 25) && cpt < maxAiRetries)
-    if (response.toLowerCase().startsWith('forsenKKona, ')) response = response.slice('forsenKKona, '.length)
+    const response = await getAIResponse(assistantPrompt, '@' + context['display-name'], msg.slice(assistantTrigger.length + 1))
     console.log('I replied : ' + response)
-    say('forsen', ('@' + context['display-name'] + ' ' + response).substring(0, maxMessageSize), 'forsenKKona')
+    say('forsen', response, 'forsenKKona')
   }
 
   // Trivia chainer
@@ -262,8 +256,7 @@ async function processCommand (command) {
     return { status: 'OK' }
   } else if (command.startsWith('aiprompt')) {
     console.log('Answering AI prompt : ' + command.substring(command.indexOf(' ') + 1))
-    const response = await getAIResponse("You're a human, don't ask how you can help or offer help, just make the shortest reply posible to the following : " + command.substring(command.indexOf(' ') + 1))
-    // say("forsen", "🤖 @" + context['display-name'] + " " + response, "forsenKKona");
+    const response = await getAIResponse(assistantPrompt, '', command.substring(command.indexOf(' ') + 1))
     say('forsen', response, 0)
     console.log('Answered AI prompt : ' + response)
     return { status: 'OK' }
@@ -287,25 +280,32 @@ function doTrivia () {
 }
 
 // Gat a response from the AI using the given prompt
-async function getAIResponse (prompt) {
-  console.log('[AI] Got prompt : ' + prompt)
-  const chatCompletion = await openai.chat.completions.create({
-    messages: [{ role: 'user', content: prompt }],
-    model: openaiModel,
-    max_tokens: 50,
-    temperature: 0.70,
-    top_p: 0.95,
-    n: 1,
-    echo: false,
-    stream: false
-  })
-  // console.log(util.inspect(chatCompletion, {showHidden: false, depth: null, colors: true}));
-  let response = chatCompletion.choices[0].message.content.replace(/\r?\n/g, ' ')
-  if (response.endsWith('.')) {
-    response = response.slice(0, -1) // Removes the last character if it is a dot because it doesn't feel very natural in a twitch chat
-  }
-  console.log('[AI] Generated text : ' + response)
-  return response
+async function getAIResponse (role, prefix, prompt) {
+  console.log('[AI] Got prompt : ' + role + prompt)
+  let response = ''
+  let cpt = 0
+  do {
+    cpt++
+    const chatCompletion = await openai.chat.completions.create({
+      messages: [{ role: 'user', content: prompt }],
+      model: openaiModel,
+      max_tokens: 50,
+      temperature: 0.70,
+      top_p: 0.95,
+      n: 1,
+      echo: false,
+      stream: false
+    })
+    // console.log(util.inspect(chatCompletion, {showHidden: false, depth: null, colors: true}));
+    response = chatCompletion.choices[0].message.content.replace(/\r?\n/g, ' ')
+    if (response.toLowerCase().startsWith('forsenKKona, ')) response = response.slice('forsenKKona, '.length)
+    if (response.endsWith('.')) {
+      response = response.slice(0, -1) // Removes the last character if it is a dot because it doesn't feel very natural in a twitch chat
+    }
+    console.log('[AI] Generated text : ' + response)
+    response = (prefix + ' ' + response).trim()
+  } while (response.length > maxMessageSize && cpt < maxAiRetries)
+  return response.substring(0, maxMessageSize)
 }
 
 function eShrug () {
@@ -372,14 +372,8 @@ async function multiFact () {
 
 // Says a single random fact about forsen (can lie)
 async function singleFact () {
-  const prompt = getPrompt()
-  let aiMessage = ''
-  let cpt = 0
-  do {
-    cpt++
-    aiMessage = await getAIResponse(prompt)
-  } while (aiMessage.length > (maxMessageSize - factPrefix.length - 1) && cpt < maxAiRetries)
-  say('forsen', (factPrefix + aiMessage).substring(0, maxMessageSize), 0)
+  const aiMessage = await getAIResponse('', factPrefix, getFactPrompt())
+  say('forsen', aiMessage, 0)
 }
 
 function farm (identity) {
@@ -430,13 +424,10 @@ function checkEnvVariables () {
   return isFine
 }
 
-function getPrompt () {
-  const sumOfWeights = prompts.reduce((accumulator, currentPrompt) => { return accumulator + currentPrompt.weight }, 0)
+function getFactPrompt () {
+  const sumOfWeights = factPrompts.reduce((accumulator, currentPrompt) => { return accumulator + currentPrompt.weight }, 0)
   let rand = Math.floor(Math.random() * sumOfWeights + 1)
-  // console.log(prompts)
-  // console.log('Sum of weights: ' + sumOfWeights)
-  // console.log('rand(1..' + sumOfWeights + '): ' + rand)
-  for (const prompt of prompts) {
+  for (const prompt of factPrompts) {
     rand = rand - prompt.weight
     if (rand <= 0) return prompt.prompt
   }
