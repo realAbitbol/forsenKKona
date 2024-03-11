@@ -26,3 +26,7 @@ select {
 .toggle {
     margin-right: 10px;
 }
+
+.banner:hover {
+    cursor: pointer;
+}
