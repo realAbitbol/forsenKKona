@@ -13,7 +13,7 @@
 
 <body>
   <img src="banner.png" alt="banner" />
-  <h1 class="display-4" style="margin-top: 20px;">Commands ⚙️</h1>
+  <h1 style="margin-top: 20px;">Commands ⚙️</h1>
   <button type="button" class="btn btn-success" onclick="command('singlefact')">Single Fact</button>
   <button type="button" class="btn btn-warning" onclick="command('singletrivia')">Single trivia</button>
   <input type="checkbox" data-toggle="toggle" data-onstyle="primary" data-offstyle="outline-primary"
@@ -26,11 +26,14 @@
     data-off="XD off" data-width="150px" data-height="38px" id="togXd">
   <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger" data-on="Spam on"
     data-off="Spam off" data-width="150px" data-height="38px" id="togSpam">
+  <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger" data-on="Pyramid on"
+    data-off="Pyramid off" data-width="150px" data-height="38px" id="togPyramid">
   <input type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="outline-success"
-    data-on="Stoptrivia on" data-off="Stoptrivia off" data-width="150px" data-height="38px" id="togStoptrivia">
+    data-on="Stoptrivia on" data-off="Stoptrivia off" data-width="150px" data-height="38px" id="togStopTrivia">
   <input type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="Echo on"
     data-off="Echo off" data-width="150px" data-height="38px" id="togEcho">
-  <button type="button" class="btn btn-danger" onclick="command('disable all')">Stop everything</button>
+  <button type="button" class="btn btn-danger" onclick="command('disable all');refreshDisplay();">Stop
+    everything</button>
   <button type="button" class="btn btn-primary"
     onclick="command('say 0 pls carpet bomb all weebs Donald Trump forsenRNG')">Fuck weebs</button>
   <button type="button" class="btn btn-primary"
@@ -38,36 +41,37 @@
   <button type="button" class="btn btn-primary"
     onclick="command('say 0 pls nuke all furries Donald Trump forsenRNG')">Fuck furries</button>
 
-  <h1 class="display-4" style="margin-top: 40px;">Send a message 💬</h1>
+  <h1 style="margin-top: 40px;">Send a message 💬</h1>
 
   <form id="messageForm" style="display: flex; align-items: center;">
-    <label class="form-label" for="message" style="margin-right: 10px;">Message:</label>
+    <label class="form-label" for="message" style="margin-right: 10px;">Message</label>
     <input class="form-control" type="text" id="message" name="message" style="flex: 4; margin-right: 10px;" required>
-    <label class="form-label" for="identity" style="margin-right: 10px;">Identity:</label>
+    <label class="form-label" for="identity" style="margin-right: 10px;">Identity</label>
     <select class="form-select" name="identity" id="identity" style="flex: 1; margin-right: 10px;">
     </select>
     <button type="submit" class="btn btn-primary" style="flex: 0;">Send</button>
   </form>
 
-  <h1 class="display-4" style="margin-top: 40px;">Farm points 🚜</h1>
+  <h1 style="margin-top: 40px;">Farm points 🚜</h1>
   <form id="farmForm" style="display: flex; align-items: center;">
-    <label class="form-label" for="identity">Identity:</label>
+    <label class="form-label" for="identityFarm">Identity</label>
     <select class="form-select" name="identityFarm" id="identityFarm">
     </select>
     <button type="submit" class="btn btn-primary">Send</button>
   </form>
 
-  <h1 class="display-4" style="margin-top: 40px;">Ask AI something 🤖</h1>
+  <h1 style="margin-top: 40px;">Ask AI something 🤖</h1>
   <form id="aiForm" style="display: flex; align-items: center;">
-    <label class="form-label" for="message">Prompt:</label>
+    <label class="form-label" for="prompt">Prompt</label>
     <input class="form-control" type="text" id="prompt" name="prompt" size="185" required>
     <button type="submit" class="btn btn-primary">Send</button>
   </form>
 
-  <h1 class="display-4" style="margin-top: 40px;">Set spam content 🗑️</h1>
+  <h1 style="margin-top: 40px;">Set spam content 🗑️</h1>
   <form id="spamForm" style="display: flex; align-items: center;">
-    <label class="form-label" for="message">Spam content:</label>
+    <label class="form-label" for="spam">Spam content</label>
     <input class="form-control" type="text" id="spam" name="spam" size="185" required>
+    <button type="submit" class="btn btn-primary">Send</button>
     <select class="form-select" name="spamSelect" id="spamSelect">
       <option selected>Choose...</option>
       <option value="weebs">pls carpet bomb all weebs Donald Trump forsenRNG</option>
@@ -79,11 +83,20 @@
       <option value="usa">🦅 🇺🇸 USA &gt; ALL 🇺🇸 🦅 LAND OF THE FREE 🦅 🇺🇸 HOME OF THE BRAVE 🇺🇸 🦅</option>
       <option value="donald2024">DonaldPls 2024</option>
     </select>
+  </form>
+
+  <h1 style="margin-top: 40px;">Set Pyramid 🔺</h1>
+  <form id="pyraForm" style="display: flex; align-items: center;">
+    <label class="form-label" for="pyramidEmote">Emote</label>
+    <input class="form-control" type="text" id="pyramidEmote" name="pyramidEmote" required>
+    <label class="form-label" for="pyramidWidth">Width</label>
+    <input class="form-control" type="number" id="pyramidWidth" name="pyramidWidth" required>
     <button type="submit" class="btn btn-primary">Send</button>
   </form>
 
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
+
+    async function refreshDisplay() {
       const settings = await getSettings();
       $('#togMultifact').bootstrapToggle(settings.isMultifactActive ? 'on' : 'off', true);
       $('#togSpam').bootstrapToggle(settings.isSpamActive ? 'on' : 'off', true);
@@ -93,6 +106,7 @@
       $('#togStopTrivia').bootstrapToggle(settings.isStopTriviaActive ? 'on' : 'off', true);
       $('#togEcho').bootstrapToggle(settings.isEchoActive ? 'on' : 'off', true);
       $('#togSpam').bootstrapToggle(settings.isSpamActive ? 'on' : 'off', true);
+      $('#togPyramid').bootstrapToggle(settings.isPyramidActive ? 'on' : 'off', true);
       $('#spam').val(settings.spamContent);
       $('#identity').append($('<option>', { value: '0', text: settings.username1 }).prop('selected', true));
       $('#identity').append($('<option>', { value: '1', text: settings.username2 }));
@@ -100,6 +114,12 @@
       $('#identityFarm').append($('<option>', { value: '0', text: settings.username1 }).prop('selected', true));
       $('#identityFarm').append($('<option>', { value: '1', text: settings.username2 }));
       $('#identityFarm').append($('<option>', { value: '2', text: settings.username3 }));
+      $('#pyramidEmote').val(settings.pyramidEmote);
+      $('#pyramidWidth').val(settings.pyramidWidth);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      refreshDisplay();
     });
 
     $(function () {
@@ -110,6 +130,17 @@
         }
         else
           command("disable spam");
+      })
+    });
+
+    $(function () {
+      $('#togPyramid').change(function () {
+        if ($(this).prop('checked')) {
+          command("enable pyramid");
+          setTimeout(function () { $('#togPyramid').bootstrapToggle('off'); }, 300000);
+        }
+        else
+          command("disable pyramid");
       })
     });
 
@@ -162,7 +193,7 @@
     });
 
     $(function () {
-      $('#togStoptrivia').change(function () {
+      $('#togStopTrivia').change(function () {
         if ($(this).prop('checked'))
           command("enable stoptrivia");
         else
@@ -179,28 +210,30 @@
       })
     });
 
-    document.getElementById('aiForm').addEventListener('submit', async function (event) {
+    $('#aiForm').on('submit', async function (event) {
       event.preventDefault();
-      command("aiprompt " + document.getElementById('prompt').value);
-      // Clear the text area after sending the message
-      document.getElementById('prompt').value = '';
+      command("aiprompt " + $('#prompt').val());
     });
 
-    document.getElementById('messageForm').addEventListener('submit', async function (event) {
+    $('#messageForm').on('submit', async function (event) {
       event.preventDefault();
-      command("say " + document.getElementById('identity').value + " " + document.getElementById('message').value);
-      // Clear the text area after sending the message
-      document.getElementById('message').value = '';
+      command("say " + $('#identity').val() + " " + $('#message').val());
     });
 
-    document.getElementById('farmForm').addEventListener('submit', async function (event) {
+    $('#farmForm').on('submit', async function (event) {
       event.preventDefault();
-      command("farm " + document.getElementById('identityFarm').value);
+      command("farm " + $('#identityFarm').val());
     });
 
-    document.getElementById('spamForm').addEventListener('submit', async function (event) {
+    $('#spamForm').on('submit', async function (event) {
       event.preventDefault();
-      command("setspamcontent " + document.getElementById('spam').value);
+      command("setspamcontent " + $('#spam').val());
+    });
+
+    $('#pyraForm').on('submit', async function (event) {
+      event.preventDefault();
+      command("setpyramidemote " + $('#pyramidEmote').val());
+      command("setpyramidwidth " + $('#pyramidWidth').val());
     });
 
     async function getSettings() {

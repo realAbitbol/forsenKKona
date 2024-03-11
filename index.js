@@ -49,11 +49,17 @@ var isSpamActive = false;
 var isStopTriviaActive = false;
 var isXdActive = false;
 var isEchoActive = false;
-var spamContent = "DonaldPls 2024"
+var isPyramidActive = false;
+var spamContent = "DonaldPls 2024";
+var pyramidEmote = "forsenKKona";
+var pyramidWidth = 4;
 
 // Work variables
 let isAvoidDupe = false;
 const duplicateSuffix = "󠀀"
+var currentPyramidWidth = 0;
+var currentPyramidPhase = true;
+
 
 // Says a message to a channel
 function say(channel, message, identity = 0) {
@@ -131,6 +137,18 @@ async function processCommand(command) {
     say("forsen", text, identity);
     return { status: "OK" };
   }
+  else if (command.startsWith("setpyramidemote")) {
+    const emote = command.substring(command.indexOf(' ') + 1);
+    pyramidEmote = emote;
+    console.log("Set pyramid emote to : " + emote)
+    return { status: "OK" };
+  }
+  else if (command.startsWith("setpyramidwidth")) {
+    const width = command.substring(command.indexOf(' ') + 1);
+    pyramidWidth = Number(width);
+    console.log("Set pyramid width to : " + pyramidWidth)
+    return { status: "OK" };
+  }
   else if (command.startsWith("setspamcontent")) {
     const text = command.substring(command.indexOf(' ') + 1);
     spamContent = text;
@@ -161,6 +179,11 @@ async function processCommand(command) {
       case 'echo':
         isEchoActive = false;
         break;
+      case 'pyramid':
+        isPyramidActive = false;
+        currentPyramidWidth = 0;
+        currentPyramidPhase = true;
+        break;
       case 'all':
         isMultifactActive = false;
         isChainTriviaActive = false;
@@ -169,6 +192,9 @@ async function processCommand(command) {
         isStopTriviaActive = false;
         isXdActive = false;
         isEchoActive = false;
+        isPyramidActive = false;
+        currentPyramidWidth = 0;
+        currentPyramidPhase = true;
         break;
       default:
         console.log("ERROR: invalid disable target '" + target + "'");
@@ -190,6 +216,10 @@ async function processCommand(command) {
       case 'spam':
         isSpamActive = true;
         spam();
+        break;
+      case 'pyramid':
+        isPyramidActive = true;
+        pyramid();
         break;
       case 'eshrug':
         isEshrugActive = true;
@@ -272,22 +302,45 @@ async function getAIResponse(prompt) {
 
 function eShrug() {
   if (isEshrugActive) {
-    say('forsen', "$fill eShrug", 1)
+    say('forsen', "$fill eShrug", 1);
     setTimeout(eShrug, randTime(timeLVariable) + timeLConstant);
   }
 }
 
 function xd() {
   if (isXdActive) {
-    say('forsen', "$$xd", 1)
+    say('forsen', "$$xd", 1);
     setTimeout(xd, randTime(timeLVariable) + timeLConstant);
   }
 }
 
 function spam() {
   if (isSpamActive) {
-    say('forsen', spamContent, 0)
+    say('forsen', spamContent, 0);
     setTimeout(spam, randTime(timeSVariable) + timeSConstant);
+  }
+}
+
+function nextPyramidWidth() {
+  if (currentPyramidPhase) {
+    currentPyramidWidth++;
+    if (currentPyramidWidth === pyramidWidth)
+      currentPyramidPhase = false;
+    return currentPyramidWidth;
+  } else {
+    currentPyramidWidth--;
+    if (currentPyramidWidth === 0) {
+      currentPyramidPhase = true;
+      currentPyramidWidth = 1;
+    }
+    return currentPyramidWidth;
+  }
+}
+
+function pyramid() {
+  if (isPyramidActive) {
+    say('forsen', new Array(nextPyramidWidth()).fill(pyramidEmote).join(' '), 0);
+    setTimeout(pyramid, randTime(timeSVariable) + timeSConstant);
   }
 }
 
@@ -312,8 +365,7 @@ async function multiFact() {
 // Says a single random fact about forsen (can lie)
 async function singleFact() {
   let ai_message = await getAIResponse("Tell a very short random fact about america being the best in less than 30 words, you are allowed to lie, don't mention imaginary animals. Be cocky and proud.");
-  say('forsen', "forsenKKona " + ai_message.substring(0, maxMessageSize - 11), 0);
-  console.log("Said fact : " + ai_message.substring(0, maxMessageSize - 11));
+  say('forsen', "forsenKKona 🇺🇸 🦅 " + ai_message.substring(0, maxMessageSize - 11), 0);
 }
 
 function farm(identity) {
@@ -345,7 +397,7 @@ function farm(identity) {
 }
 
 function getSettings() {
-  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, spamContent, username1: identities[0].username, username2: identities[1].username, username3: identities[2].username };
+  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, spamContent, pyramidEmote, pyramidWidth, username1: identities[0].username, username2: identities[1].username, username3: identities[2].username };
 }
 
 // Called every time the bot connects to Twitch chat
