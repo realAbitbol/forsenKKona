@@ -511,7 +511,8 @@ async function main () {
   })
 
   app.listen(port, () => {
-    console.log(`REST API server is running on port ${port}`)
+    console.log('# forsenKKona  an AI powered overly patriotic bot\n')
+    console.log(`REST API server is up and running on port ${port}`)
   })
 }
 main()
