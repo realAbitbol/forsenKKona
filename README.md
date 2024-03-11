@@ -31,5 +31,8 @@ OPENAI_MODEL=Mistral OpenOrca
 
 NODE_NO_WARNINGS=1
 
+## Run with docker
+Image is here : https://hub.docker.com/repository/docker/damastah/forsenkkona/
+
 
 Have fun bajs forsenE
