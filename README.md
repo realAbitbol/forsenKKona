@@ -1,8 +1,9 @@
-# forsenKKona an AI powered overly patriotic bot
+# forsenKKona an AI powered overly patriotic Twitch bot
 
 ![banner](banner.png)
 
 ## Functions
+
 - Tells random facts to demonstrate the superiority of the USA (or anything you want), either one at a time or periodically
 - Trolls the trivia
 - Can throw walls of ![eShrug](https://cdn.frankerfacez.com/emoticon/107715/1) periodically
@@ -17,13 +18,17 @@
 - Pulverize furries
 - Has a WebUI (yeah I suck at bootstrap, feel free to PR)
 
+## UI
+
+![UI](ui.png)
+
 ## Usage
 
 - create a .env file containing  the necessary environment variables (see below)
 - npm i
 - npm i dotenv-cli
 - dotenv npm start
-- Go to the UI [http://localhost:3000](http://localhost:3000)
+- Go to the UI <http://localhost:3000>
 
 ## AI
 
@@ -36,7 +41,7 @@ This application can run a LLM for free on your PC, just remember to enable the 
 ## Environment variables
 
 Create a .env file by copying the .env-sample file and edit it
-Use https://twitchapps.com/tmi to get your oauth tokens
+Use <https://twitchapps.com/tmi> to get your oauth tokens
 
 ## Run with docker
 

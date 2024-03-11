@@ -10,7 +10,7 @@ const isDebugActivated = process.env.DEBUG_ENABLED === 'true'
 if (isDebugActivated) console.log('## DEBUG MODE ACTIVE ##')
 
 // Environment variables
-const envVariables = ['USERNAME1', 'USERNAME2', 'USERNAME3', 'PASSWORD1', 'PASSWORD2', 'PASSWORD3', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM']
+const envVariables = ['USERNAME1', 'USERNAME2', 'USERNAME3', 'PASSWORD1', 'PASSWORD2', 'PASSWORD3', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM', 'CHANNEL']
 
 // Get the directory of the current module
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -30,6 +30,7 @@ const identities = [
   { username: process.env.USERNAME2, password: process.env.PASSWORD2, client: '' },
   { username: process.env.USERNAME3, password: process.env.PASSWORD3, client: '' }
 ]
+const channel = process.env.CHANNEL
 
 // Custom topics and prompts
 const triviaTopics = JSON.parse(process.env.TRIVIA_TOPICS)
@@ -97,7 +98,7 @@ async function onMessageHandler (target, context, msg, self) {
     console.log(context['display-name'] + ' talked to me: ' + msg)
     const response = await getAIResponse(assistantPrompt, '@' + context['display-name'], msg.slice(assistantTrigger.length + 1))
     console.log('I replied : ' + response)
-    say('forsen', response, 'forsenKKona')
+    say(channel, response, 'forsenKKona')
   }
 
   // Trivia chainer
@@ -128,7 +129,7 @@ async function onMessageHandler (target, context, msg, self) {
   if (isEchoActive && context['display-name'] === identities[0].username) {
     for (let i = 0; i <= 2; i++) {
       if (identities[i].username !== context['display-name']) {
-        setTimeout(function () { say('forsen', msg, i) }, randTime(timeSVariable) + timeMConstant)
+        setTimeout(function () { say(channel, msg, i) }, randTime(timeSVariable) + timeMConstant)
         console.log("Echoing '" + msg + "' as " + identities[i].username)
       }
     }
@@ -140,7 +141,7 @@ async function processCommand (command) {
     const args = command.split(' ')
     const identity = args[1]
     const text = args.slice(2).join(' ')
-    say('forsen', text, identity)
+    say(channel, text, identity)
     return { status: 'OK' }
   } else if (command.startsWith('setpyramidemote')) {
     const emote = command.substring(command.indexOf(' ') + 1)
@@ -257,7 +258,7 @@ async function processCommand (command) {
   } else if (command.startsWith('aiprompt')) {
     console.log('Answering AI prompt : ' + command.substring(command.indexOf(' ') + 1))
     const response = await getAIResponse(assistantPrompt, '', command.substring(command.indexOf(' ') + 1))
-    say('forsen', response, 0)
+    say(channel, response, 0)
     console.log('Answered AI prompt : ' + response)
     return { status: 'OK' }
   } else if (command.startsWith('farm')) {
@@ -275,7 +276,7 @@ async function processCommand (command) {
 // Starts a trivia
 function doTrivia () {
   const topic = triviaTopics[Math.floor(Math.random() * triviaTopics.length)]
-  say('forsen', `>trivia ai ${topic}`, 0)
+  say(channel, `>trivia ai ${topic}`, 0)
   console.log('Started a trivia')
 }
 
@@ -310,21 +311,21 @@ async function getAIResponse (role, prefix, prompt) {
 
 function eShrug () {
   if (isEshrugActive) {
-    say('forsen', '$fill eShrug', 1)
+    say(channel, '$fill eShrug', 0)
     setTimeout(eShrug, randTime(timeLVariable) + timeLConstant)
   }
 }
 
 function xd () {
   if (isXdActive) {
-    say('forsen', '$$xd', 1)
+    say(channel, '$$xd', 0)
     setTimeout(xd, randTime(timeLVariable) + timeLConstant)
   }
 }
 
 function spam () {
   if (isSpamActive) {
-    say('forsen', spamContent, 0)
+    say(channel, spamContent, 0)
     setTimeout(spam, randTime(timeSVariable) + timeSConstant)
   }
 }
@@ -346,22 +347,22 @@ function nextPyramidWidth () {
 
 function pyramid () {
   if (isPyramidActive) {
-    say('forsen', new Array(nextPyramidWidth()).fill(pyramidEmote).join(' '), 0)
+    say(channel, new Array(nextPyramidWidth()).fill(pyramidEmote).join(' '), 0)
     setTimeout(pyramid, randTime(timeSVariable) + timeSConstant)
   }
 }
 
 function stopTrivia (identity) {
   if (isStopTriviaActive) {
-    say('forsen', '>trivia stop', identity)
+    say(channel, '>trivia stop', identity)
   }
 }
 
 function joinRaid (identity) {
-  say('forsen', '+join', identity)
+  say(channel, '+join', identity)
 }
 
-// Says a random fact about forsen (can lie)
+// Says a random fact periodically (can lie)
 async function multiFact () {
   if (!isMultifactActive) { return }
   singleFact()
@@ -370,10 +371,10 @@ async function multiFact () {
   setTimeout(multiFact, nextTime)
 }
 
-// Says a single random fact about forsen (can lie)
+// Says a single random fact (can lie)
 async function singleFact () {
   const aiMessage = await getAIResponse('', factPrefix, getFactPrompt())
-  say('forsen', aiMessage, 0)
+  say(channel, aiMessage, 0)
 }
 
 function farm (identity) {
@@ -381,27 +382,27 @@ function farm (identity) {
   const stdActions = ['+ed', '+eg', '$fish trap reset', 'Okayeg gib eg', '?cookie', '¿taco pepeSenora', '%hw'].sort(() => Math.random() - 0.5)
   let timer = 0
   for (const action of stdActions) {
-    setTimeout(function () { say('forsen', action, identity) }, timer)
+    setTimeout(function () { say(channel, action, identity) }, timer)
     timer += randTime(timeSVariable) + timeSConstant + 1500
   }
 
   let potatoActions = ['#p', '#steal', '#trample'].sort(() => Math.random() - 0.5)
   for (const action of potatoActions) {
-    setTimeout(function () { say('forsen', action, identity) }, timer)
+    setTimeout(function () { say(channel, action, identity) }, timer)
     timer += randTime(10000) + 30000
   }
-  setTimeout(function () { say('forsen', '#cdr', identity) }, timer)
+  setTimeout(function () { say(channel, '#cdr', identity) }, timer)
   timer += randTime(10000) + 30000
-  setTimeout(function () { say('forsen', '?cdr', identity) }, timer)
+  setTimeout(function () { say(channel, '?cdr', identity) }, timer)
   timer += randTime(timeSVariable) + timeSConstant
   potatoActions = potatoActions.sort(() => Math.random() - 0.5)
   for (const action of potatoActions) {
-    setTimeout(function () { say('forsen', action, identity) }, timer)
+    setTimeout(function () { say(channel, action, identity) }, timer)
     timer += randTime(10000) + 30000
   }
-  setTimeout(function () { say('forsen', '?cookie', identity) }, timer)
+  setTimeout(function () { say(channel, '?cookie', identity) }, timer)
   timer += randTime(timeSVariable) + timeSConstant + 1500
-  setTimeout(function () { say('forsen', '$remind me in 60 minutes 🚜', identity) }, timer)
+  setTimeout(function () { say(channel, '$remind me in 60 minutes 🚜', identity) }, timer)
 }
 
 function getSettings () {
@@ -452,7 +453,7 @@ async function main () {
     process.exit()
   }
   // Create a client with our options
-  const client1 = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identities[0].username, password: identities[0].password }, channels: ['forsen'] })
+  const client1 = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identities[0].username, password: identities[0].password }, channels: [channel] })
   // Register our event handlers (defined below)
   client1.on('message', onMessageHandler)
   client1.on('connected', onConnectedHandler)
@@ -460,11 +461,11 @@ async function main () {
   client1.connect()
   identities[0].client = client1
 
-  const client2 = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identities[1].username, password: identities[1].password }, channels: ['forsen'] })
+  const client2 = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identities[1].username, password: identities[1].password }, channels: [channel] })
   client2.connect()
   identities[1].client = client2
 
-  const client3 = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identities[2].username, password: identities[2].password }, channels: ['forsen'] })
+  const client3 = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identities[2].username, password: identities[2].password }, channels: [channel] })
   client3.connect()
   identities[2].client = client3
 
