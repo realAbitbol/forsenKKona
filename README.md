@@ -29,6 +29,7 @@
 - create a .env file containing  the necessary environment variables by copying and editing .env-sample
 - `npm install`
 - `npm install dotenv-cli`
+- Setup the AI (see below)
 - `dotenv npm start`
 - Go to the UI <http://localhost:3000>
 
@@ -48,6 +49,7 @@ Use <https://twitchapps.com/tmi> to get your oauth tokens
 ## Run with docker
 
 Image is here : <https://hub.docker.com/repository/docker/damastah/forsenkkona/>
+It's automatically updated each time I push
 
 ## That's all folks
 
