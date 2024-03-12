@@ -47,6 +47,6 @@ Use <https://twitchapps.com/tmi> to get your oauth tokens
 
 Image is here : <https://hub.docker.com/repository/docker/damastah/forsenkkona/>
 
-Have fun bajs ![forsenE](https://cdn.frankerfacez.com/emoticon/545961/1)
+Use responsibly and have fun bajs ![forsenE](https://cdn.frankerfacez.com/emoticon/545961/1)
 
 Also, pls pls come to mozambique forsan ![ZULUL](https://cdn.frankerfacez.com/emoticon/130077/1)

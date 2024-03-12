@@ -22,6 +22,10 @@ async function refreshDisplay () {
   $('#identityFarm').append($('<option>', { value: '2', text: settings.username3 }))
   $('#pyramidEmote').val(settings.pyramidEmote)
   $('#pyramidWidth').val(settings.pyramidWidth)
+  $('#spamSelect').append($('<option>', { text: 'Choose...' }).prop('selected', true))
+  for (const spam of settings.spamPresets) {
+    $('#spamSelect').append($('<option>', { value: spam.preset, text: spam.id }))
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -48,10 +52,10 @@ $(function () {
 
 $(function () {
   $('#spamSelect').change(function () {
-    const selectedOptionText = $('#spamSelect option[value]:selected').text()
-    if ($('#spamSelect option[value]:selected').text() !== '') {
-      $('#spam').val(selectedOptionText)
-      command('setspamcontent ' + selectedOptionText)
+    const selectedOption = $('#spamSelect option[value]:selected')
+    if (selectedOption.text() !== '') {
+      $('#spam').val(selectedOption.val())
+      command('setspamcontent ' + selectedOption.val())
       $(this).prop('selectedIndex', 0)
     }
   })

@@ -10,7 +10,7 @@ const isDebugActivated = process.env.DEBUG_ENABLED === 'true'
 if (isDebugActivated) console.log('## DEBUG MODE ACTIVE ##')
 
 // Environment variables
-const envVariables = ['USERNAME1', 'USERNAME2', 'USERNAME3', 'PASSWORD1', 'PASSWORD2', 'PASSWORD3', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM', 'CHANNEL']
+const envVariables = ['USERNAME1', 'USERNAME2', 'USERNAME3', 'PASSWORD1', 'PASSWORD2', 'PASSWORD3', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM', 'CHANNEL']
 
 // Get the directory of the current module
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -35,6 +35,7 @@ const channel = process.env.CHANNEL
 // Custom topics and prompts
 const triviaTopics = JSON.parse(process.env.TRIVIA_TOPICS)
 const factPrompts = JSON.parse(process.env.FACT_PROMPTS)
+const spamPresets = JSON.parse(process.env.SPAM_PRESETS)
 const assistantPrompt = process.env.ASSISTANT_PROMPT
 const assistantTrigger = process.env.ASSISTANT_TRIGGER
 
@@ -137,6 +138,7 @@ async function onMessageHandler (target, context, msg, self) {
 }
 
 async function processCommand (command) {
+  command = command.trim()
   if (command.startsWith('say')) {
     const args = command.split(' ')
     const identity = args[1]
@@ -406,7 +408,7 @@ function farm (identity) {
 }
 
 function getSettings () {
-  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, spamContent, pyramidEmote, pyramidWidth, username1: identities[0].username, username2: identities[1].username, username3: identities[2].username }
+  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, spamContent, pyramidEmote, pyramidWidth, username1: identities[0].username, username2: identities[1].username, username3: identities[2].username, spamPresets }
 }
 
 // Called every time the bot connects to Twitch chat
@@ -503,8 +505,9 @@ async function main () {
   })
 
   app.listen(port, () => {
-    console.log('# forsenKKona  an AI powered overly patriotic bot\n')
+    console.log('# forsenKKona an AI powered overly patriotic bot\n')
     console.log(`REST API server is up and running on port ${port}`)
+    console.log('WebUI is available at http://localhost:3000')
   })
 }
 main()
