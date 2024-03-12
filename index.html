@@ -13,47 +13,43 @@
 </head>
 
 <body>
-  <img src="banner.webp" alt="banner" class="banner"
-    onclick="window.open('https:\/\/www.twitch.tv/forsen', '_blank').focus()" />
+  <img id="imgBanner" src="banner.webp" alt="banner" class="banner"/>
   <h3>⚙️ Commands</h3>
-  <button type="button" class="btn btn-success" onclick="command('singlefact')">Single Fact</button>
-  <button type="button" class="btn btn-warning" onclick="command('singletrivia')">Single trivia</button>
-  <input type="checkbox" data-toggle="toggle" data-onstyle="primary" data-offstyle="outline-primary"
-    data-on="Multifact on" data-off="Multifact off" data-width="150px" data-height="38px" id="togMultifact">
-  <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger"
-    data-on="Chaintrivia on" data-off="Chaintrivia off" data-width="150px" data-height="38px" id="togChaintrivia">
-  <input type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="eShrug on"
-    data-off="eShrug off" data-width="150px" data-height="38px" id="togEshrug">
-  <input type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="XD on"
-    data-off="XD off" data-width="150px" data-height="38px" id="togXd">
-  <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger" data-on="Spam on"
-    data-off="Spam off" data-width="150px" data-height="38px" id="togSpam">
-  <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger" data-on="Pyramid on"
-    data-off="Pyramid off" data-width="150px" data-height="38px" id="togPyramid">
-  <input type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="outline-info" data-on="Assistant on"
-    data-off="Assistant off" data-width="150px" data-height="38px" id="togAssistant">
-  <input type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="outline-success"
-    data-on="Stoptrivia on" data-off="Stoptrivia off" data-width="150px" data-height="38px" id="togStopTrivia">
-  <input type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="Echo on"
-    data-off="Echo off" data-width="150px" data-height="38px" id="togEcho">
-  <button type="button" class="btn btn-danger" onclick="command('disable all');refreshDisplay();">Stop
+  <button id="btnSingleFact" type="button" class="btn btn-success">Single Fact</button>
+  <button id="btnSingleTrivia" type="button" class="btn btn-warning">Single trivia</button>
+  <input id="togMultifact" type="checkbox" data-toggle="toggle" data-onstyle="primary" data-offstyle="outline-primary"
+    data-on="Multifact on" data-off="Multifact off" data-width="150px" data-height="38px">
+  <input id="togChaintrivia" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger"
+    data-on="Chaintrivia on" data-off="Chaintrivia off" data-width="150px" data-height="38px">
+  <input id="togEshrug" type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="eShrug on"
+    data-off="eShrug off" data-width="150px" data-height="38px">
+  <input id="togXd" type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="XD on"
+    data-off="XD off" data-width="150px" data-height="38px">
+  <input id="togSpam" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger" data-on="Spam on"
+    data-off="Spam off" data-width="150px" data-height="38px">
+  <input id="togPyramid" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger" data-on="Pyramid on"
+    data-off="Pyramid off" data-width="150px" data-height="38px">
+  <input id="togAssistant" type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="outline-info" data-on="Assistant on"
+    data-off="Assistant off" data-width="150px" data-height="38px">
+  <input id="togStopTrivia" type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="outline-success"
+    data-on="Stoptrivia on" data-off="Stoptrivia off" data-width="150px" data-height="38px">
+  <input id="togEcho" type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="Echo on"
+    data-off="Echo off" data-width="150px" data-height="38px">
+  <button id="btnDisableAll" type="button" class="btn btn-danger">Stop
     everything</button>
-  <button type="button" class="btn btn-primary"
-    onclick="command('say 0 pls carpet bomb all weebs Donald Trump forsenRNG')">Fuck weebs</button>
-  <button type="button" class="btn btn-primary"
-    onclick="command('say 0 pls waterboard all elis subs Donald Trump forsenRNG')">Fuck elis</button>
-  <button type="button" class="btn btn-primary"
-    onclick="command('say 0 pls nuke all furries Donald Trump forsenRNG')">Fuck furries</button>
-  <input type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger" data-on="Debug on"
-    data-off="Debug off" data-width="150px" data-height="38px" id="togDebug">
+  <button id="btnWeebs" type="button" class="btn btn-primary">Fuck weebs</button>
+  <button id="btnElis" type="button" class="btn btn-primary">Fuck elis</button>
+  <button id="btnFurries" type="button" class="btn btn-primary">Fuck furries</button>
+  <input id="togDebug" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger" data-on="Debug on"
+    data-off="Debug off" data-width="150px" data-height="38px">
 
   <h3>💬 Send a message</h3>
 
   <form id="messageForm">
     <label class="form-label" for="message">Message</label>
-    <input class="form-control" type="text" id="message" name="message" required>
-    <label class="form-label" for="identity">Identity</label>
-    <select class="form-select" name="identity" id="identity">
+    <input id="message" class="form-control" type="text" name="message" required>
+    <label class="form-label" for="identityMessage">Identity</label>
+    <select id="identityMessage" class="form-select" name="identityMessage">
     </select>
     <button type="submit" class="btn btn-primary">Send</button>
   </form>
@@ -61,7 +57,7 @@
   <h3>🚜 Farm points</h3>
   <form id="farmForm">
     <label class="form-label" for="identityFarm">Identity</label>
-    <select class="form-select" name="identityFarm" id="identityFarm">
+    <select id="identityFarm" class="form-select" name="identityFarm">
     </select>
     <button type="submit" class="btn btn-primary">Send</button>
   </form>
@@ -69,27 +65,55 @@
   <h3>🤖 Ask AI something</h3>
   <form id="aiForm">
     <label class="form-label" for="prompt">Prompt</label>
-    <input class="form-control" type="text" id="prompt" name="prompt" size="185" required>
+    <input id="prompt" class="form-control" type="text" name="prompt" size="185" required>
     <button type="submit" class="btn btn-primary">Send</button>
   </form>
 
   <h3>🗑️ Set spam content</h3>
   <form id="spamForm">
     <label class="form-label" for="spam">Spam content</label>
-    <input class="form-control" type="text" id="spam" name="spam" size="185" required>
+    <input id="spam" class="form-control" type="text" name="spam" size="185" required>
     <button type="submit" class="btn btn-primary">Send</button>
-    <label class="form-label" for="spamSelect">Spam presets</label>
-    <select class="form-select" name="spamSelect" id="spamSelect">
+    <label class="form-label" for="spamPresetsSelect">Spam presets</label>
+    <select id="spamPresetsSelect" class="form-select" name="spamPresetsSelect">
     </select>
   </form>
 
   <h3>🔺 Set Pyramid</h3>
   <form id="pyraForm">
     <label class="form-label" for="pyramidEmote">Emote</label>
-    <input class="form-control" type="text" id="pyramidEmote" name="pyramidEmote" required>
+    <input id="pyramidEmote" class="form-control" type="text" name="pyramidEmote" required>
     <label class="form-label" for="pyramidWidth">Width</label>
-    <input class="form-control" type="number" id="pyramidWidth" name="pyramidWidth" required>
+    <input id="pyramidWidth" class="form-control" type="number" name="pyramidWidth" required>
     <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+
+  <h3>👷‍♂️ Assignments</h3>
+  <form id="assignmentsForm">
+    <label class="form-label" for="factsAndFucksSelect">Facts & fucks</label>
+    <select id="factsAndFucksSelect" class="form-select" name="factsAndFucksSelect">
+    </select>
+    <label class="form-label" for="triviasSelect">Trivias</label>
+    <select id="triviasSelect" class="form-select" name="triviasSelect">
+    </select>
+    <label class="form-label" for="eshrugsSelect">eShrugs</label>
+    <select id="eshrugsSelect" class="form-select" name="eshrugsSelect">
+    </select>
+    <label class="form-label" for="xdsSelect">XDs</label>
+    <select id="xdsSelect" class="form-select" name="xdsSelect">
+    </select>
+    <label class="form-label" for="spamSelect">Spam</label>
+    <select id="spamSelect" class="form-select" name="spamSelect">
+    </select>
+    <label class="form-label" for="pyramidSelect">Pyramids</label>
+    <select id="pyramidSelect" class="form-select" name="pyramidSelect">
+    </select>
+    <label class="form-label" for="assistantSelect">Assistant</label>
+    <select id="assistantSelect" class="form-select" name="assistantSelect">
+    </select>
+    <label class="form-label" for="echoeeSelect">Echoee</label>
+    <select id="echoeeSelect" class="form-select" name="echoeeSelect">
+    </select>
   </form>
 
   <script src="frontend.js"></script>

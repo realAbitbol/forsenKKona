@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
 // Environment variables
-const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM', 'CHANNEL']
+const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM']
 
 // Get the directory of the current module
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -22,7 +22,6 @@ const maxAiRetries = process.env.MAX_AI_RETRIES
 
 // TMI setup
 const identities = JSON.parse(process.env.IDENTITIES)
-const channel = process.env.CHANNEL
 
 // Custom topics and prompts
 const triviaTopics = JSON.parse(process.env.TRIVIA_TOPICS)
@@ -64,39 +63,23 @@ let pyramidWidth = 3
 // Work variables
 let currentPyramidWidth = 0
 let currentPyramidPhase = true
-
-// Says a message to a channel
-function say (channel, message, identity = 0) {
-  if (identities[identity].isAvoidDupe) { message = message + ' ' + duplicateSuffix }
-  const msg = message.substring(0, maxMessageSize)
-  identities[identity].isAvoidDupe = !identities[identity].isAvoidDupe
-
-  if (isDebugActive) {
-    console.log('DEBUG: Would have said: ' + msg)
-  } else {
-    identities[identity].client.say(channel, msg)
-    console.log('Said as ' + identities[identity].username + ': ' + msg)
-  }
-}
-
-// Returns a random time between 0 and maxTime milliseconds
-function randTime (maxTime) {
-  return Math.floor(Math.random() * (maxTime + 1))
-}
+let currentChainTriviaIdentity = identities[0]
+let currentAssistantIdentity = identities[0]
+let currentEchoeeIdentity = identities[0]
 
 // Called every time a new message is posted in the chat
 async function onMessageHandler (target, context, msg, self) {
   // Assistant
-  if (msg.startsWith(assistantTrigger + ' ') && isAssistantActive && context['display-name'] !== identities[0].username) {
+  if (msg.startsWith(assistantTrigger + ' ') && isAssistantActive && context['display-name'] !== currentAssistantIdentity.username) {
     console.log(context['display-name'] + ' talked to me: ' + msg)
     const response = await getAIResponse(assistantPrompt, '@' + context['display-name'], msg.slice(assistantTrigger.length + 1))
     console.log('I replied : ' + response)
-    say(channel, response, 'forsenKKona')
+    say(currentAssistantIdentity, response)
   }
 
   // Trivia chainer
   if (context['display-name'] === 'FeelsStrongBot' && msg === 'trivia ended nam') {
-    if (isChainTriviaActive) { setTimeout(doTrivia, randTime(timeSVariable) + timeSConstant) }
+    if (isChainTriviaActive) { setTimeout(() => doTrivia(currentChainTriviaIdentity), randTime(timeSVariable) + timeSConstant) }
     return
   }
 
@@ -104,7 +87,7 @@ async function onMessageHandler (target, context, msg, self) {
   if (context['display-name'] === 'FeelsStrongBot' && msg.includes("Trivia's about to pop off")) {
     if (isStopTriviaActive) {
       for (let i = 0; i < identities.length; i++) {
-        setTimeout(function () { stopTrivia(i) }, randTime(timeMVariable) + timeMConstant * (i + 1))
+        setTimeout(() => stopTrivia(identities[i]), randTime(timeMVariable) + timeMConstant * (i + 1))
       }
     }
     return
@@ -113,48 +96,42 @@ async function onMessageHandler (target, context, msg, self) {
   // Raid joiner
   if (context['display-name'] === 'DeepDankDungeonBot' && msg.includes('A Raid Event at Level')) {
     for (let i = 0; i < identities.length; i++) {
-      setTimeout(function () { joinRaid(i) }, randTime(timeMVariable) + timeMConstant * (i + 1))
+      setTimeout(() => joinRaid(i), randTime(timeMVariable) + timeMConstant * (i + 1))
     }
     return
   }
 
   // Echoer
-  if (isEchoActive && context['display-name'] === identities[0].username) {
-    for (let i = 0; i < identities.length; i++) {
-      if (identities[i].username !== context['display-name']) {
-        setTimeout(function () { say(channel, msg, i) }, randTime(timeSVariable) + timeMConstant)
-        console.log("Echoing '" + msg + "' as " + identities[i].username)
+  if (isEchoActive && context['display-name'] === currentEchoeeIdentity.username) {
+    for (const identity of identities) {
+      if (identity.username !== currentEchoeeIdentity.username) {
+        setTimeout(() => say(identity, msg), randTime(timeSVariable) + timeMConstant)
+        console.log("Echoing '" + msg + "' as " + identity.username)
       }
     }
   }
 }
 
 async function processCommand (command) {
-  command = command.trim()
-  if (command.startsWith('say')) {
-    const args = command.split(' ')
-    const identity = args[1]
-    const text = args.slice(2).join(' ')
-    say(channel, text, identity)
+  const args = command.trim().split(' ')
+
+  if (args[0] === 'say') {
+    say(getIdentity(args[1]), args.slice(2).join(' '))
     return { status: 'OK' }
-  } else if (command.startsWith('setpyramidemote')) {
-    const emote = command.substring(command.indexOf(' ') + 1)
-    pyramidEmote = emote
-    console.log('Set pyramid emote to : ' + emote)
+  } else if (args[0] === 'setpyramidemote') {
+    pyramidEmote = args[1]
+    console.log('Set pyramid emote to : ' + pyramidEmote)
     return { status: 'OK' }
-  } else if (command.startsWith('setpyramidwidth')) {
-    const width = command.substring(command.indexOf(' ') + 1)
-    pyramidWidth = Number(width)
+  } else if (args[0] === 'setpyramidwidth') {
+    pyramidWidth = Number(args[1])
     console.log('Set pyramid width to : ' + pyramidWidth)
     return { status: 'OK' }
-  } else if (command.startsWith('setspamcontent')) {
-    const text = command.substring(command.indexOf(' ') + 1)
-    spamContent = text
-    console.log('Set spam content to : ' + text)
+  } else if (args[0] === 'setspamcontent') {
+    spamContent = args.slice(1).join(' ')
+    console.log('Set spam content to : ' + spamContent)
     return { status: 'OK' }
-  } else if (command.startsWith('disable')) {
-    const target = command.substring(command.indexOf(' ') + 1)
-    switch (target) {
+  } else if (args[0] === 'disable') {
+    switch (args[1]) {
       case 'multifact':
         isMultifactActive = false
         break
@@ -201,72 +178,74 @@ async function processCommand (command) {
         currentPyramidPhase = true
         break
       default:
-        console.log("ERROR: invalid disable target '" + target + "'")
+        console.log("ERROR: invalid disable target '" + args[1] + "'")
         return { status: 'KO' }
     }
-    console.log('Disabled ' + target)
+    console.log('Disabled ' + args[1])
     return { status: 'OK' }
-  } else if (command.startsWith('enable')) {
-    const target = command.substring(command.indexOf(' ') + 1)
-    switch (target) {
+  } else if (args[0] === 'enable') {
+    switch (args[1]) {
       case 'multifact':
         isMultifactActive = true
-        multiFact()
+        multiFact(getIdentity(args[2]))
         break
       case 'chaintrivia':
+        currentChainTriviaIdentity = getIdentity(args[2])
         isChainTriviaActive = true
         break
       case 'spam':
         isSpamActive = true
-        spam()
+        spam(getIdentity(args[2]))
         break
       case 'pyramid':
         isPyramidActive = true
-        pyramid()
+        pyramid(getIdentity(args[2]))
         break
       case 'eshrug':
         isEshrugActive = true
-        eShrug()
+        eShrug(getIdentity(args[2]))
         break
       case 'xd':
         isXdActive = true
-        xd()
+        xd(getIdentity(args[2]))
         break
       case 'stoptrivia':
         isStopTriviaActive = true
         break
       case 'echo':
+        currentEchoeeIdentity = getIdentity(args[2])
         isEchoActive = true
         break
       case 'assistant':
+        currentAssistantIdentity = getIdentity(args[2])
         isAssistantActive = true
         break
       case 'debug':
         isDebugActive = true
         break
       default:
-        console.log("ERROR: invalid enable target '" + target + "'")
+        console.log("ERROR: invalid enable target '" + args[1] + "'")
         return { status: 'KO' }
     }
-    console.log('Enabled ' + target)
+    console.log('Enabled ' + args[1])
     return { status: 'OK' }
-  } else if (command === 'singlefact') {
-    singleFact()
+  } else if (args[0] === 'singlefact') {
+    singleFact(getIdentity(args[1]))
     return { status: 'OK' }
-  } else if (command === 'singletrivia') {
-    doTrivia()
+  } else if (args[0] === 'singletrivia') {
+    doTrivia(getIdentity(args[1]))
     return { status: 'OK' }
-  } else if (command.startsWith('aiprompt')) {
-    console.log('Answering AI prompt : ' + command.substring(command.indexOf(' ') + 1))
-    const response = await getAIResponse(assistantPrompt, '', command.substring(command.indexOf(' ') + 1))
-    say(channel, response, 0)
-    console.log('Answered AI prompt : ' + response)
+  } else if (args[0] === 'aiprompt') {
+    const prompt = args.slice(2).join(' ')
+    console.log('Answering AI prompt: ' + prompt)
+    const response = await getAIResponse(assistantPrompt, '', prompt)
+    say(getIdentity(args[1]), response)
+    console.log('Answered AI prompt as ' + currentAssistantIdentity.username + ': ' + response)
     return { status: 'OK' }
-  } else if (command.startsWith('farm')) {
-    const identity = command.substring(command.indexOf(' ') + 1)
-    farm(identity)
+  } else if (args[0] === 'farm') {
+    farm(getIdentity(args[1]))
     return { status: 'OK' }
-  } else if (command === ('getsettings')) {
+  } else if (args[0] === 'getsettings') {
     return getSettings()
   } else {
     console.log('ERROR : unsupported command :' + command)
@@ -275,9 +254,9 @@ async function processCommand (command) {
 }
 
 // Starts a trivia
-function doTrivia () {
+function doTrivia (identity) {
   const topic = triviaTopics[Math.floor(Math.random() * triviaTopics.length)]
-  say(channel, `>trivia ai ${topic}`, 0)
+  say(identity, `>trivia ai ${topic}`)
   console.log('Started a trivia')
 }
 
@@ -310,24 +289,24 @@ async function getAIResponse (role, prefix, prompt) {
   return response.substring(0, maxMessageSize)
 }
 
-function eShrug () {
+function eShrug (identity) {
   if (isEshrugActive) {
-    say(channel, '$fill eShrug', 0)
-    setTimeout(eShrug, randTime(timeLVariable) + timeLConstant)
+    say(identity, '$fill eShrug')
+    setTimeout(() => eShrug(identity), randTime(timeLVariable) + timeLConstant)
   }
 }
 
-function xd () {
+function xd (identity) {
   if (isXdActive) {
-    say(channel, '$$xd', 0)
-    setTimeout(xd, randTime(timeLVariable) + timeLConstant)
+    say(identity, '$$xd')
+    setTimeout(() => xd(identity), randTime(timeLVariable) + timeLConstant)
   }
 }
 
-function spam () {
+function spam (identity) {
   if (isSpamActive) {
-    say(channel, spamContent, 0)
-    setTimeout(spam, randTime(timeSVariable) + timeSConstant)
+    say(identity, spamContent)
+    setTimeout(() => spam(identity), randTime(timeSVariable) + timeSConstant)
   }
 }
 
@@ -346,79 +325,102 @@ function nextPyramidWidth () {
   }
 }
 
-function pyramid () {
+function pyramid (identity) {
   if (isPyramidActive) {
-    say(channel, new Array(nextPyramidWidth()).fill(pyramidEmote).join(' '), 0)
-    setTimeout(pyramid, randTime(timeSVariable) + timeSConstant)
+    say(identity, new Array(nextPyramidWidth()).fill(pyramidEmote).join(' '))
+    setTimeout(() => pyramid(identity), randTime(timeSVariable) + timeSConstant)
   }
 }
 
 function stopTrivia (identity) {
   if (isStopTriviaActive) {
-    say(channel, '>trivia stop', identity)
+    say(identity, '>trivia stop')
   }
 }
 
 function joinRaid (identity) {
-  say(channel, '+join', identity)
+  say(identity, '+join')
 }
 
 // Says a random fact periodically (can lie)
-async function multiFact () {
+async function multiFact (identity) {
   if (!isMultifactActive) { return }
-  singleFact()
+  singleFact(identity)
   const nextTime = randTime(timeXLVariable) + timeXLConstant
   console.log('Next fact in ' + millisToMinutesAndSeconds(nextTime))
-  setTimeout(multiFact, nextTime)
+  setTimeout(() => multiFact(identity), nextTime)
 }
 
 // Says a single random fact (can lie)
-async function singleFact () {
+async function singleFact (identity) {
   const aiMessage = await getAIResponse('', factPrefix, getFactPrompt())
-  say(channel, aiMessage, 0)
+  say(identity, aiMessage)
 }
 
 function farm (identity) {
-  console.log('Farming as ' + identities[identity].username)
+  console.log('Farming as ' + identity.username)
   const stdActions = ['+ed', '+eg', '$fish trap reset', 'Okayeg gib eg', '?cookie', '¿taco pepeSenora', '%hw'].sort(() => Math.random() - 0.5)
   let timer = 0
   for (const action of stdActions) {
-    setTimeout(function () { say(channel, action, identity) }, timer)
+    setTimeout(() => say(identity, action), timer)
     timer += randTime(timeSVariable) + timeSConstant + 1500
   }
 
   let potatoActions = ['#p', '#steal', '#trample'].sort(() => Math.random() - 0.5)
   for (const action of potatoActions) {
-    setTimeout(function () { say(channel, action, identity) }, timer)
+    setTimeout(() => say(identity, action), timer)
     timer += randTime(10000) + 30000
   }
-  setTimeout(function () { say(channel, '#cdr', identity) }, timer)
+  setTimeout(() => say(identity, '#cdr'), timer)
   timer += randTime(10000) + 30000
-  setTimeout(function () { say(channel, '?cdr', identity) }, timer)
+  setTimeout(() => say(identity, '?cdr'), timer)
   timer += randTime(timeSVariable) + timeSConstant
   potatoActions = potatoActions.sort(() => Math.random() - 0.5)
   for (const action of potatoActions) {
-    setTimeout(function () { say(channel, action, identity) }, timer)
+    setTimeout(() => say(identity, action), timer)
     timer += randTime(10000) + 30000
   }
-  setTimeout(function () { say(channel, '?cookie', identity) }, timer)
+  setTimeout(() => say(identity, '?cookie'), timer)
   timer += randTime(timeSVariable) + timeSConstant + 1500
-  setTimeout(function () { say(channel, '$remind me in 60 minutes 🚜', identity) }, timer)
+  setTimeout(() => say(identity, '$remind me in 60 minutes 🚜'), timer)
+}
+
+// Says a message to a channel
+function say (identity, message) {
+  if (identity.isAvoidDupe) { message = message + ' ' + duplicateSuffix }
+  const msg = message.substring(0, maxMessageSize)
+  identity.isAvoidDupe = !identity.isAvoidDupe
+
+  if (isDebugActive) {
+    console.log('DEBUG: Would have said as ' + identity.username + ' on #' + identity.channel + ': ' + msg)
+  } else {
+    identity.client.say(identity.channel, msg)
+    console.log('Said as ' + identity.username + ' on #' + identity.channel + ': ' + msg)
+  }
+}
+
+function getIdentity (username) {
+  const identity = identities.find(identity => identity.username === username)
+  if (identity) return identity
+  else {
+    console.log('ERROR: Identity ' + username + ' not found, returning ' + identities[0].username + ' instead')
+    return identities[0]
+  }
 }
 
 function getSettings () {
-  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isDebugActive, spamContent, pyramidEmote, pyramidWidth, usernames: identities.map(identity => identity.username), spamPresets }
+  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isDebugActive, spamContent, pyramidEmote, pyramidWidth, usernames: identities.map(identity => identity.username), spamPresets, chainTriviaIdentity: currentChainTriviaIdentity.username, assistantIdentity: currentAssistantIdentity.username, echoeeIdentity: currentEchoeeIdentity.username }
 }
 
 function startupCheck () {
-  let isFine = true
+  let isEnvFine = true
   for (const envVariable of envVariables) {
     if (process.env?.[envVariable] === undefined) {
-      isFine = false
+      isEnvFine = false
       console.log('ERROR: Environment variable ' + envVariable + ' is undefined')
     }
   }
-  return isFine && identities.length > 0
+  return isEnvFine && identities.length > 0
 }
 
 function getFactPrompt () {
@@ -432,6 +434,11 @@ function getFactPrompt () {
   return ''
 }
 
+// Returns a random time between 0 and maxTime milliseconds
+function randTime (maxTime) {
+  return Math.floor(Math.random() * (maxTime + 1))
+}
+
 function millisToMinutesAndSeconds (millis) {
   const minutes = Math.floor(millis / 60000)
   const seconds = ((millis % 60000) / 1000).toFixed(0)
@@ -442,24 +449,19 @@ function millisToMinutesAndSeconds (millis) {
   )
 }
 
-// The main function
-async function main () {
-  if (!startupCheck()) {
-    console.log('ERROR: Some of the necessary environment variables  are undefined. Program will exit.')
-    process.exit()
-  }
-
+function initializeClients () {
   let isFirst = true
   for (const identity of identities) {
-    identity.client = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identity.username, password: identity.password }, channels: [channel] })
+    identity.client = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identity.username, password: identity.password }, channels: [identity.channel] })
     if (isFirst) {
       identity.client.on('message', onMessageHandler)
       isFirst = false
     }
     identity.client.connect()
   }
+}
 
-  // Create the Express server for the REST API
+function initializeApi () {
   const app = express()
   const port = 3000
 
@@ -497,5 +499,14 @@ async function main () {
     console.log(`REST API server is up and running on port ${port}`)
     console.log('WebUI is available at http://localhost:3000')
   })
+}
+
+async function main () {
+  if (!startupCheck()) {
+    console.log('ERROR: Some of the necessary environment variables  are undefined. Program will exit.')
+    process.exit()
+  }
+  initializeClients()
+  initializeApi()
 }
 main()
