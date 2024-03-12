@@ -27,6 +27,11 @@ select {
     margin-right: 10px;
 }
 
+.banner {
+    width: 50%;
+    height: 50%;
+}
+
 .banner:hover {
     cursor: pointer;
 }
