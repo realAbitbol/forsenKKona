@@ -155,6 +155,10 @@ $('#btnFurries').on('click', async function (event) {
   command('say ' + $('#factsAndFucksSelect').val() + ' pls nuke all furries Donald Trump forsenRNG')
 })
 
+$('#btnCoffee').on('click', async function (event) {
+  window.open('https://www.buymeacoffee.com/abitbol', '_blank').focus()
+})
+
 $('#imgBanner').on('click', async function (event) {
   window.open('https://www.twitch.tv/forsen', '_blank').focus()
 })
