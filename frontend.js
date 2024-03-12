@@ -15,14 +15,24 @@ async function refreshDisplay () {
   $('#togAssistant').bootstrapToggle(settings.isAssistantActive ? 'on' : 'off', true)
   $('#togDebug').bootstrapToggle(settings.isDebugActive ? 'on' : 'off', true)
   $('#spam').val(settings.spamContent)
-  $('#identity').append($('<option>', { value: '0', text: settings.username1 }).prop('selected', true))
-  $('#identity').append($('<option>', { value: '1', text: settings.username2 }))
-  $('#identity').append($('<option>', { value: '2', text: settings.username3 }))
-  $('#identityFarm').append($('<option>', { value: '0', text: settings.username1 }).prop('selected', true))
-  $('#identityFarm').append($('<option>', { value: '1', text: settings.username2 }))
-  $('#identityFarm').append($('<option>', { value: '2', text: settings.username3 }))
+
+  $('#identity').find('option').remove().end()
+  $('#identityFarm').find('option').remove().end()
+  let cpt = 0
+  for (const username of settings.usernames) {
+    if (cpt === 0) {
+      $('#identity').append($('<option>', { value: String(cpt), text: username }).prop('selected', true))
+      $('#identityFarm').append($('<option>', { value: String(cpt), text: username }).prop('selected', true))
+      cpt++
+    } else {
+      $('#identity').append($('<option>', { value: String(cpt), text: username }))
+      $('#identityFarm').append($('<option>', { value: String(cpt), text: username }))
+    }
+  }
   $('#pyramidEmote').val(settings.pyramidEmote)
   $('#pyramidWidth').val(settings.pyramidWidth)
+
+  $('#spamSelect').find('option').remove().end()
   $('#spamSelect').append($('<option>', { text: 'Choose...' }).prop('selected', true))
   for (const spam of settings.spamPresets) {
     $('#spamSelect').append($('<option>', { value: spam.preset, text: spam.id }))

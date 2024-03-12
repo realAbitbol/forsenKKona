@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
 // Environment variables
-const envVariables = ['USERNAME1', 'USERNAME2', 'USERNAME3', 'PASSWORD1', 'PASSWORD2', 'PASSWORD3', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM', 'CHANNEL']
+const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM', 'CHANNEL']
 
 // Get the directory of the current module
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -21,11 +21,7 @@ const openai = new OpenAI(openaiOptions)
 const maxAiRetries = process.env.MAX_AI_RETRIES
 
 // TMI setup
-const identities = [
-  { username: process.env.USERNAME1, password: process.env.PASSWORD1, client: '' },
-  { username: process.env.USERNAME2, password: process.env.PASSWORD2, client: '' },
-  { username: process.env.USERNAME3, password: process.env.PASSWORD3, client: '' }
-]
+const identities = JSON.parse(process.env.IDENTITIES)
 const channel = process.env.CHANNEL
 
 // Custom topics and prompts
@@ -66,14 +62,14 @@ let pyramidEmote = 'forsenKKona'
 let pyramidWidth = 3
 
 // Work variables
-let isAvoidDupe = false
 let currentPyramidWidth = 0
 let currentPyramidPhase = true
 
 // Says a message to a channel
 function say (channel, message, identity = 0) {
-  if (isAvoidDupe) { message = message + ' ' + duplicateSuffix }
+  if (identities[identity].isAvoidDupe) { message = message + ' ' + duplicateSuffix }
   const msg = message.substring(0, maxMessageSize)
+  identities[identity].isAvoidDupe = !identities[identity].isAvoidDupe
 
   if (isDebugActive) {
     console.log('DEBUG: Would have said: ' + msg)
@@ -81,7 +77,6 @@ function say (channel, message, identity = 0) {
     identities[identity].client.say(channel, msg)
     console.log('Said as ' + identities[identity].username + ': ' + msg)
   }
-  isAvoidDupe = !isAvoidDupe
 }
 
 // Returns a random time between 0 and maxTime milliseconds
@@ -412,15 +407,10 @@ function farm (identity) {
 }
 
 function getSettings () {
-  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isDebugActive, spamContent, pyramidEmote, pyramidWidth, username1: identities[0].username, username2: identities[1].username, username3: identities[2].username, spamPresets }
+  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isDebugActive, spamContent, pyramidEmote, pyramidWidth, usernames: identities.map(identity => identity.username), spamPresets }
 }
 
-// Called every time the bot connects to Twitch chat
-async function onConnectedHandler (addr, port) {
-  console.log(`* Connected to ${addr}:${port}`)
-}
-
-function checkEnvVariables () {
+function startupCheck () {
   let isFine = true
   for (const envVariable of envVariables) {
     if (process.env?.[envVariable] === undefined) {
@@ -428,7 +418,7 @@ function checkEnvVariables () {
       console.log('ERROR: Environment variable ' + envVariable + ' is undefined')
     }
   }
-  return isFine
+  return isFine && identities.length > 0
 }
 
 function getFactPrompt () {
@@ -454,26 +444,20 @@ function millisToMinutesAndSeconds (millis) {
 
 // The main function
 async function main () {
-  if (!checkEnvVariables()) {
+  if (!startupCheck()) {
     console.log('ERROR: Some of the necessary environment variables  are undefined. Program will exit.')
     process.exit()
   }
-  // Create a client with our options
-  const client1 = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identities[0].username, password: identities[0].password }, channels: [channel] })
-  // Register our event handlers (defined below)
-  client1.on('message', onMessageHandler)
-  client1.on('connected', onConnectedHandler)
-  // Connect to Twitch:
-  client1.connect()
-  identities[0].client = client1
 
-  const client2 = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identities[1].username, password: identities[1].password }, channels: [channel] })
-  client2.connect()
-  identities[1].client = client2
-
-  const client3 = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identities[2].username, password: identities[2].password }, channels: [channel] })
-  client3.connect()
-  identities[2].client = client3
+  let isFirst = true
+  for (const identity of identities) {
+    identity.client = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identity.username, password: identity.password }, channels: [channel] })
+    if (isFirst) {
+      identity.client.on('message', onMessageHandler)
+      isFirst = false
+    }
+    identity.client.connect()
+  }
 
   // Create the Express server for the REST API
   const app = express()
