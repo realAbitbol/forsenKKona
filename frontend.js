@@ -16,19 +16,11 @@ async function refreshDisplay () {
   $('#togDebug').bootstrapToggle(settings.isDebugActive ? 'on' : 'off', true)
   $('#spam').val(settings.spamContent)
 
-  let isFirst = true
+  const selects = [$('#identityMessage'), $('#identityFarm'), $('#assistantSelect'), $('#factsAndFucksSelect'), $('#triviasSelect'), $('#eshrugsSelect'), $('#xdsSelect'), $('#spamSelect'), $('#pyramidSelect'), $('#echoeeSelect')]
+  clearSelects(selects)
   for (const username of settings.usernames) {
-    const selects = ['identityMessage', 'identityFarm', 'assistantSelect', 'factsAndFucksSelect', 'triviasSelect', 'eshrugsSelect', 'xdsSelect', 'spamSelect', 'pyramidSelect', 'echoeeSelect']
-    if (isFirst) {
-      for (const select of selects) {
-        $('#' + select).find('option').remove().end()
-        $('#' + select).append($('<option>', { value: username, text: username }).prop('selected', true))
-      }
-      isFirst = false
-    } else {
-      for (const select of selects) {
-        $('#' + select).append($('<option>', { value: username, text: username }))
-      }
+    for (const select of selects) {
+      select.append($('<option>', { value: username, text: username }))
     }
   }
   $('#triviasSelect').val(settings.chainTriviaIdentity)
@@ -166,6 +158,24 @@ $('#btnFurries').on('click', async function (event) {
 $('#imgBanner').on('click', async function (event) {
   window.open('https://www.twitch.tv/forsen', '_blank').focus()
 })
+
+$('#triviasSelect').on('change', async function (event) {
+  if ($('#togChaintrivia').prop('checked')) $('#togChaintrivia').bootstrapToggle('on')
+})
+
+$('#assistantSelect').on('change', async function (event) {
+  if ($('#togAssistant').prop('checked')) $('#togAssistant').bootstrapToggle('on')
+})
+
+$('#echoeeSelect').on('change', async function (event) {
+  if ($('#togEcho').prop('checked')) $('#togEcho').bootstrapToggle('on')
+})
+
+function clearSelects (selects) {
+  for (const select of selects) {
+    select.find('option').remove().end()
+  }
+}
 
 async function getSettings () {
   return await command('getsettings')

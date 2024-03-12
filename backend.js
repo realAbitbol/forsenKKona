@@ -66,21 +66,20 @@ let currentEchoeeIdentity = identities[0]
 
 // Called every time a new message is posted in the chat
 async function onMessageHandler (target, context, msg, self) {
-  // Assistant
-  if (msg.startsWith(assistantTrigger + ' ') && isAssistantActive && context['display-name'] !== currentAssistantIdentity.username) {
-    console.log(context['display-name'] + ' talked to me: ' + msg)
-    const response = await getAIResponse(assistantPrompt, '@' + context['display-name'], msg.slice(assistantTrigger.length + 1))
-    console.log('I replied : ' + response)
-    say(currentAssistantIdentity, response)
-  }
+  await handleMessageAssistant(msg, context)
+  handleMessageTriviaChainer(context, msg)
+  handleMessageTriviaStopper(context, msg)
+  handleMessageRaidJoiner(context, msg)
+  handleMessageEchoer(context, msg)
+}
 
-  // Trivia chainer
+function handleMessageTriviaChainer (context, msg) {
   if (context['display-name'] === 'FeelsStrongBot' && msg === 'trivia ended nam') {
     if (isChainTriviaActive) { setTimeout(() => doTrivia(currentChainTriviaIdentity), randTime(timeSpam)) }
-    return
   }
+}
 
-  // Trivia stopper
+function handleMessageTriviaStopper (context, msg) {
   if (context['display-name'] === 'FeelsStrongBot' && msg.includes("Trivia's about to pop off")) {
     if (isStopTriviaActive) {
       let cpt = 0
@@ -89,171 +88,181 @@ async function onMessageHandler (target, context, msg, self) {
         cpt++
       }
     }
-    return
   }
+}
 
-  // Raid joiner
+function handleMessageRaidJoiner (context, msg) {
   if (context['display-name'] === 'DeepDankDungeonBot' && msg.includes('A Raid Event at Level')) {
     let cpt = 0
     for (const identity of identities.sort(() => Math.random() - 0.5)) {
       setTimeout(() => joinRaid(identity), randTime(timeSeconds, cpt))
       cpt++
     }
-    return
   }
+}
 
-  // Echoer
+function handleMessageEchoer (context, msg) {
   if (isEchoActive && context['display-name'] === currentEchoeeIdentity.username) {
     let cpt = 0
-    for (const identity of identities.sort(() => Math.random() - 0.5)) {
-      if (identity.username !== currentEchoeeIdentity.username) {
-        setTimeout(() => say(identity, msg), randTime(timeSeconds, cpt))
-        cpt++
-        console.log("Echoing '" + msg + "' as " + identity.username)
-      }
+    for (const identity of identities.filter((id) => id.username !== currentEchoeeIdentity.username).sort(() => Math.random() - 0.5)) {
+      setTimeout(() => say(identity, msg), randTime(timeSeconds, cpt))
+      cpt++
+      console.log("Echoing '" + msg + "' as " + identity.username)
     }
+  }
+}
+
+async function handleMessageAssistant (msg, context) {
+  if (msg.startsWith(assistantTrigger + ' ') && isAssistantActive && context['display-name'] !== currentAssistantIdentity.username) {
+    console.log(context['display-name'] + ' talked to me: ' + msg)
+    const response = await getAIResponse(assistantPrompt, '@' + context['display-name'], msg.slice(assistantTrigger.length + 1))
+    console.log('I replied : ' + response)
+    say(currentAssistantIdentity, response)
   }
 }
 
 async function processCommand (command) {
   const args = command.trim().split(' ')
 
-  if (args[0] === 'say') {
-    say(getIdentity(args[1]), args.slice(2).join(' '))
-    return { status: 'OK' }
-  } else if (args[0] === 'setpyramidemote') {
-    pyramidEmote = args[1]
-    console.log('Set pyramid emote to : ' + pyramidEmote)
-    return { status: 'OK' }
-  } else if (args[0] === 'setpyramidwidth') {
-    pyramidWidth = Number(args[1])
-    console.log('Set pyramid width to : ' + pyramidWidth)
-    return { status: 'OK' }
-  } else if (args[0] === 'setspamcontent') {
-    spamContent = args.slice(1).join(' ')
-    console.log('Set spam content to : ' + spamContent)
-    return { status: 'OK' }
-  } else if (args[0] === 'disable') {
-    switch (args[1]) {
-      case 'multifact':
-        isMultifactActive = false
-        break
-      case 'chaintrivia':
-        isChainTriviaActive = false
-        break
-      case 'spam':
-        isSpamActive = false
-        break
-      case 'eshrug':
-        isEshrugActive = false
-        break
-      case 'xd':
-        isXdActive = false
-        break
-      case 'stoptrivia':
-        isStopTriviaActive = false
-        break
-      case 'echo':
-        isEchoActive = false
-        break
-      case 'pyramid':
-        isPyramidActive = false
-        currentPyramidWidth = 0
-        currentPyramidPhase = true
-        break
-      case 'assistant':
-        isAssistantActive = false
-        break
-      case 'debug':
-        isDebugActive = false
-        break
-      case 'all':
-        isMultifactActive = false
-        isChainTriviaActive = false
-        isSpamActive = false
-        isEshrugActive = false
-        isStopTriviaActive = false
-        isXdActive = false
-        isEchoActive = false
-        isPyramidActive = false
-        isAssistantActive = false
-        currentPyramidWidth = 0
-        currentPyramidPhase = true
-        break
-      default:
-        console.log("ERROR: invalid disable target '" + args[1] + "'")
-        return { status: 'KO' }
+  switch (args[0]) {
+    case 'say':
+      say(getIdentity(args[1]), args.slice(2).join(' '))
+      break
+    case 'setpyramidemote':
+      pyramidEmote = args[1]
+      console.log('Set pyramid emote to : ' + pyramidEmote)
+      break
+    case 'setpyramidwidth':
+      pyramidWidth = Number(args[1])
+      console.log('Set pyramid width to : ' + pyramidWidth)
+      break
+    case 'setspamcontent':
+      spamContent = args.slice(1).join(' ')
+      console.log('Set spam content to : ' + spamContent)
+      break
+    case 'disable':
+      switch (args[1]) {
+        case 'multifact':
+          isMultifactActive = false
+          break
+        case 'chaintrivia':
+          isChainTriviaActive = false
+          break
+        case 'spam':
+          isSpamActive = false
+          break
+        case 'eshrug':
+          isEshrugActive = false
+          break
+        case 'xd':
+          isXdActive = false
+          break
+        case 'stoptrivia':
+          isStopTriviaActive = false
+          break
+        case 'echo':
+          isEchoActive = false
+          break
+        case 'pyramid':
+          isPyramidActive = false
+          currentPyramidWidth = 0
+          currentPyramidPhase = true
+          break
+        case 'assistant':
+          isAssistantActive = false
+          break
+        case 'debug':
+          isDebugActive = false
+          break
+        case 'all':
+          isMultifactActive = false
+          isChainTriviaActive = false
+          isSpamActive = false
+          isEshrugActive = false
+          isStopTriviaActive = false
+          isXdActive = false
+          isEchoActive = false
+          isPyramidActive = false
+          isAssistantActive = false
+          currentPyramidWidth = 0
+          currentPyramidPhase = true
+          break
+        default:
+          console.log("ERROR: invalid disable target '" + args[1] + "'")
+          return { status: 'KO' }
+      }
+      console.log('Disabled ' + args[1])
+      break
+    case 'enable':
+      switch (args[1]) {
+        case 'multifact':
+          isMultifactActive = true
+          multiFact(getIdentity(args[2]))
+          break
+        case 'chaintrivia':
+          currentChainTriviaIdentity = getIdentity(args[2])
+          isChainTriviaActive = true
+          break
+        case 'spam':
+          isSpamActive = true
+          spam(getIdentity(args[2]))
+          break
+        case 'pyramid':
+          isPyramidActive = true
+          pyramid(getIdentity(args[2]))
+          break
+        case 'eshrug':
+          isEshrugActive = true
+          eShrug(getIdentity(args[2]))
+          break
+        case 'xd':
+          isXdActive = true
+          xd(getIdentity(args[2]))
+          break
+        case 'stoptrivia':
+          isStopTriviaActive = true
+          break
+        case 'echo':
+          currentEchoeeIdentity = getIdentity(args[2])
+          isEchoActive = true
+          break
+        case 'assistant':
+          currentAssistantIdentity = getIdentity(args[2])
+          isAssistantActive = true
+          break
+        case 'debug':
+          isDebugActive = true
+          break
+        default:
+          console.log("ERROR: invalid enable target '" + args[1] + "'")
+          return { status: 'KO' }
+      }
+      console.log('Enabled ' + args[1])
+      break
+    case 'singlefact':
+      singleFact(getIdentity(args[1]))
+      break
+    case 'singletrivia':
+      doTrivia(getIdentity(args[1]))
+      break
+    case 'aiprompt': {
+      const prompt = args.slice(2).join(' ')
+      console.log('Answering AI prompt: ' + prompt)
+      const response = await getAIResponse(assistantPrompt, '', prompt)
+      say(getIdentity(args[1]), response)
+      console.log('Answered AI prompt as ' + currentAssistantIdentity.username + ': ' + response)
+      break
     }
-    console.log('Disabled ' + args[1])
-    return { status: 'OK' }
-  } else if (args[0] === 'enable') {
-    switch (args[1]) {
-      case 'multifact':
-        isMultifactActive = true
-        multiFact(getIdentity(args[2]))
-        break
-      case 'chaintrivia':
-        currentChainTriviaIdentity = getIdentity(args[2])
-        isChainTriviaActive = true
-        break
-      case 'spam':
-        isSpamActive = true
-        spam(getIdentity(args[2]))
-        break
-      case 'pyramid':
-        isPyramidActive = true
-        pyramid(getIdentity(args[2]))
-        break
-      case 'eshrug':
-        isEshrugActive = true
-        eShrug(getIdentity(args[2]))
-        break
-      case 'xd':
-        isXdActive = true
-        xd(getIdentity(args[2]))
-        break
-      case 'stoptrivia':
-        isStopTriviaActive = true
-        break
-      case 'echo':
-        currentEchoeeIdentity = getIdentity(args[2])
-        isEchoActive = true
-        break
-      case 'assistant':
-        currentAssistantIdentity = getIdentity(args[2])
-        isAssistantActive = true
-        break
-      case 'debug':
-        isDebugActive = true
-        break
-      default:
-        console.log("ERROR: invalid enable target '" + args[1] + "'")
-        return { status: 'KO' }
-    }
-    console.log('Enabled ' + args[1])
-    return { status: 'OK' }
-  } else if (args[0] === 'singlefact') {
-    singleFact(getIdentity(args[1]))
-    return { status: 'OK' }
-  } else if (args[0] === 'singletrivia') {
-    doTrivia(getIdentity(args[1]))
-    return { status: 'OK' }
-  } else if (args[0] === 'aiprompt') {
-    const prompt = args.slice(2).join(' ')
-    console.log('Answering AI prompt: ' + prompt)
-    const response = await getAIResponse(assistantPrompt, '', prompt)
-    say(getIdentity(args[1]), response)
-    console.log('Answered AI prompt as ' + currentAssistantIdentity.username + ': ' + response)
-    return { status: 'OK' }
-  } else if (args[0] === 'farm') {
-    farm(getIdentity(args[1]))
-    return { status: 'OK' }
-  } else if (args[0] === 'getsettings') {
-    return getSettings()
-  } else {
-    console.log('ERROR : unsupported command :' + command)
-    return { status: 'KO' }
+    case 'farm':
+      farm(getIdentity(args[1]))
+      break
+    case 'getsettings':
+      return getSettings()
+    default:
+      console.log('ERROR : unsupported command :' + command)
+      return { status: 'KO' }
   }
+  return { status: 'OK' }
 }
 
 // Starts a trivia
@@ -280,7 +289,6 @@ async function getAIResponse (role, prefix, prompt) {
       echo: false,
       stream: false
     })
-    // console.log(util.inspect(chatCompletion, {showHidden: false, depth: null, colors: true}));
     response = chatCompletion.choices[0].message.content.replace(/\r?\n/g, ' ')
     if (response.toLowerCase().startsWith('forsenKKona, ')) response = response.slice('forsenKKona, '.length)
     if (response.endsWith('.')) {
