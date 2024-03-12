@@ -34,9 +34,9 @@
 
 Uses any OpenAI compatible API (including OpenAI's official one).
 
-I recomment using the free application [gpt4all](https://gpt4all.io/index.html) with the Mistral OpenOrca model.
+I recomment using the free application [gpt4all](https://gpt4all.io/index.html) with the Mistral OpenOrca model
 
-This application can run a LLM for free on your PC, just remember to enable the API server in it's settings.
+This application can run a LLM for free on your PC, just remember to enable the API server in it's settings
 
 ## Environment variables
 
