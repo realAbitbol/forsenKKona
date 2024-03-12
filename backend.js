@@ -500,8 +500,8 @@ async function main () {
     res.sendFile(join(currentDir, 'frontend.css'))
   })
 
-  app.get('/banner.png', (req, res) => {
-    res.sendFile(join(currentDir, 'banner.png'))
+  app.get('/banner.webp', (req, res) => {
+    res.sendFile(join(currentDir, 'banner.webp'))
   })
 
   app.get('/favicon.ico', (req, res) => {

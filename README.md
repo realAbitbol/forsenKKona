@@ -1,6 +1,6 @@
 # forsenKKona an AI powered overly patriotic Twitch bot
 
-![banner](banner.png)
+![banner](banner.webp)
 
 ## Functions
 
@@ -20,7 +20,7 @@
 
 ## UI
 
-![UI](ui.png)
+![UI](ui.webp)
 
 ## Usage
 
