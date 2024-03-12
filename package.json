@@ -3,9 +3,9 @@
   "type": "module",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "backend.js",
   "scripts": {
-    "start": "node --no-warnings ./index.js"
+    "start": "node --no-warnings ./backend.js"
   },
   "keywords": [],
   "author": "",

@@ -492,12 +492,12 @@ async function main () {
     res.sendFile(join(currentDir, 'index.html'))
   })
 
-  app.get('/forsenkkona.js', (req, res) => {
-    res.sendFile(join(currentDir, 'forsenkkona.js'))
+  app.get('/frontend.js', (req, res) => {
+    res.sendFile(join(currentDir, 'frontend.js'))
   })
 
-  app.get('/forsenkkona.css', (req, res) => {
-    res.sendFile(join(currentDir, 'forsenkkona.css'))
+  app.get('/frontend.css', (req, res) => {
+    res.sendFile(join(currentDir, 'frontend.css'))
   })
 
   app.get('/banner.png', (req, res) => {
