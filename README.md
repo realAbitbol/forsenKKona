@@ -53,6 +53,6 @@ Image is here : <https://hub.docker.com/repository/docker/damastah/forsenkkona/>
 
 Use responsibly and have fun bajs ![forsenE](https://cdn.frankerfacez.com/emoticon/545961/1)
 
-If you like it and want to support me just [buy me a coffee](https://www.buymeacoffee.com/abitbol)
+If you like it and want to support me just [buy me a coffee ☕️](https://www.buymeacoffee.com/abitbol)
 
 Also, pls pls come to mozambique forsan ![ZULUL](https://cdn.frankerfacez.com/emoticon/130077/1)
