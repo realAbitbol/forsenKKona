@@ -5,10 +5,6 @@ import bodyParser from 'body-parser'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
-// Debug
-const isDebugActivated = process.env.DEBUG_ENABLED === 'true'
-if (isDebugActivated) console.log('## DEBUG MODE ACTIVE ##')
-
 // Environment variables
 const envVariables = ['USERNAME1', 'USERNAME2', 'USERNAME3', 'PASSWORD1', 'PASSWORD2', 'PASSWORD3', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM', 'CHANNEL']
 
@@ -64,6 +60,7 @@ let isXdActive = false
 let isEchoActive = false
 let isPyramidActive = false
 let isAssistantActive = false
+let isDebugActive = false
 let spamContent = process.env.DEFAULT_SPAM
 let pyramidEmote = 'forsenKKona'
 let pyramidWidth = 3
@@ -78,7 +75,7 @@ function say (channel, message, identity = 0) {
   if (isAvoidDupe) { message = message + ' ' + duplicateSuffix }
   const msg = message.substring(0, maxMessageSize)
 
-  if (isDebugActivated) {
+  if (isDebugActive) {
     console.log('DEBUG: Would have said: ' + msg)
   } else {
     identities[identity].client.say(channel, msg)
@@ -192,6 +189,9 @@ async function processCommand (command) {
       case 'assistant':
         isAssistantActive = false
         break
+      case 'debug':
+        isDebugActive = false
+        break
       case 'all':
         isMultifactActive = false
         isChainTriviaActive = false
@@ -201,6 +201,7 @@ async function processCommand (command) {
         isXdActive = false
         isEchoActive = false
         isPyramidActive = false
+        isAssistantActive = false
         currentPyramidWidth = 0
         currentPyramidPhase = true
         break
@@ -244,6 +245,9 @@ async function processCommand (command) {
         break
       case 'assistant':
         isAssistantActive = true
+        break
+      case 'debug':
+        isDebugActive = true
         break
       default:
         console.log("ERROR: invalid enable target '" + target + "'")
@@ -408,7 +412,7 @@ function farm (identity) {
 }
 
 function getSettings () {
-  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, spamContent, pyramidEmote, pyramidWidth, username1: identities[0].username, username2: identities[1].username, username3: identities[2].username, spamPresets }
+  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isDebugActive, spamContent, pyramidEmote, pyramidWidth, username1: identities[0].username, username2: identities[1].username, username3: identities[2].username, spamPresets }
 }
 
 // Called every time the bot connects to Twitch chat
@@ -505,7 +509,7 @@ async function main () {
   })
 
   app.listen(port, () => {
-    console.log('# forsenKKona an AI powered overly patriotic bot\n')
+    console.log('# forsenKKona an AI powered overly patriotic bot 🇺🇸 🦅\n')
     console.log(`REST API server is up and running on port ${port}`)
     console.log('WebUI is available at http://localhost:3000')
   })
