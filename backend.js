@@ -435,7 +435,7 @@ function envVariablesCheck () {
   }
   if (!isFine) {
     console.log('ERROR: Some of the necessary environment variables are undefined. Program will exit.')
-    process.exit()
+    process.exit(1)
   }
 }
 
@@ -516,7 +516,7 @@ function initializeApi () {
 async function main () {
   if (identities.length === 0) {
     console.log('ERROR: You must provide at least one identity. Program will exit')
-    process.exit()
+    process.exit(1)
   }
   initializeClients()
   initializeApi()
