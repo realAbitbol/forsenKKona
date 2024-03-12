@@ -6,7 +6,8 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
 // Environment variables
-const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM']
+const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM', 'TIME_SPAM', 'TIME_SECONDS', 'TIME_MINUTES', 'TIME_10MINUTES'
+]
 
 // Get the directory of the current module
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -18,7 +19,7 @@ const openaiOptions = {
 }
 const openaiModel = process.env.OPENAI_MODEL
 const openai = new OpenAI(openaiOptions)
-const maxAiRetries = process.env.MAX_AI_RETRIES
+const maxAiRetries = Number(process.env.MAX_AI_RETRIES)
 
 // TMI setup
 const identities = JSON.parse(process.env.IDENTITIES)
@@ -31,19 +32,15 @@ const assistantPrompt = process.env.ASSISTANT_PROMPT
 const assistantTrigger = process.env.ASSISTANT_TRIGGER
 
 // Message settings
-const maxMessageSize = process.env.MAX_MESSAGE_SIZE
+const maxMessageSize = Number(process.env.MAX_MESSAGE_SIZE)
 const factPrefix = process.env.FACT_PREFIX
 const duplicateSuffix = ' 󠀀'
 
 // Timings
-const timeSConstant = 1000
-const timeSVariable = 2000
-const timeMConstant = 3000
-const timeMVariable = 10000
-const timeLConstant = 60000
-const timeLVariable = 300000
-const timeXLConstant = 300000
-const timeXLVariable = 900000
+const timeSpam = Number(process.env.TIME_SPAM)
+const timeSeconds = Number(process.env.TIME_SECONDS)
+const timeMinutes = Number(process.env.TIME_MINUTES)
+const time10Minutes = Number(process.env.TIME_10MINUTES)
 
 // Settings
 let isMultifactActive = false
@@ -79,15 +76,17 @@ async function onMessageHandler (target, context, msg, self) {
 
   // Trivia chainer
   if (context['display-name'] === 'FeelsStrongBot' && msg === 'trivia ended nam') {
-    if (isChainTriviaActive) { setTimeout(() => doTrivia(currentChainTriviaIdentity), randTime(timeSVariable) + timeSConstant) }
+    if (isChainTriviaActive) { setTimeout(() => doTrivia(currentChainTriviaIdentity), randTime(timeSpam)) }
     return
   }
 
   // Trivia stopper
   if (context['display-name'] === 'FeelsStrongBot' && msg.includes("Trivia's about to pop off")) {
     if (isStopTriviaActive) {
-      for (let i = 0; i < identities.length; i++) {
-        setTimeout(() => stopTrivia(identities[i]), randTime(timeMVariable) + timeMConstant * (i + 1))
+      let cpt = 0
+      for (const identity of identities.sort(() => Math.random() - 0.5)) {
+        setTimeout(() => stopTrivia(identity), randTime(timeSeconds, cpt))
+        cpt++
       }
     }
     return
@@ -95,17 +94,21 @@ async function onMessageHandler (target, context, msg, self) {
 
   // Raid joiner
   if (context['display-name'] === 'DeepDankDungeonBot' && msg.includes('A Raid Event at Level')) {
-    for (let i = 0; i < identities.length; i++) {
-      setTimeout(() => joinRaid(i), randTime(timeMVariable) + timeMConstant * (i + 1))
+    let cpt = 0
+    for (const identity of identities.sort(() => Math.random() - 0.5)) {
+      setTimeout(() => joinRaid(identity), randTime(timeSeconds, cpt))
+      cpt++
     }
     return
   }
 
   // Echoer
   if (isEchoActive && context['display-name'] === currentEchoeeIdentity.username) {
-    for (const identity of identities) {
+    let cpt = 0
+    for (const identity of identities.sort(() => Math.random() - 0.5)) {
       if (identity.username !== currentEchoeeIdentity.username) {
-        setTimeout(() => say(identity, msg), randTime(timeSVariable) + timeMConstant)
+        setTimeout(() => say(identity, msg), randTime(timeSeconds, cpt))
+        cpt++
         console.log("Echoing '" + msg + "' as " + identity.username)
       }
     }
@@ -292,21 +295,21 @@ async function getAIResponse (role, prefix, prompt) {
 function eShrug (identity) {
   if (isEshrugActive) {
     say(identity, '$fill eShrug')
-    setTimeout(() => eShrug(identity), randTime(timeLVariable) + timeLConstant)
+    setTimeout(() => eShrug(identity), randTime(timeMinutes))
   }
 }
 
 function xd (identity) {
   if (isXdActive) {
     say(identity, '$$xd')
-    setTimeout(() => xd(identity), randTime(timeLVariable) + timeLConstant)
+    setTimeout(() => xd(identity), randTime(timeMinutes))
   }
 }
 
 function spam (identity) {
   if (isSpamActive) {
     say(identity, spamContent)
-    setTimeout(() => spam(identity), randTime(timeSVariable) + timeSConstant)
+    setTimeout(() => spam(identity), randTime(timeSpam))
   }
 }
 
@@ -328,7 +331,7 @@ function nextPyramidWidth () {
 function pyramid (identity) {
   if (isPyramidActive) {
     say(identity, new Array(nextPyramidWidth()).fill(pyramidEmote).join(' '))
-    setTimeout(() => pyramid(identity), randTime(timeSVariable) + timeSConstant)
+    setTimeout(() => pyramid(identity), randTime(timeSpam))
   }
 }
 
@@ -346,7 +349,7 @@ function joinRaid (identity) {
 async function multiFact (identity) {
   if (!isMultifactActive) { return }
   singleFact(identity)
-  const nextTime = randTime(timeXLVariable) + timeXLConstant
+  const nextTime = randTime(time10Minutes)
   console.log('Next fact in ' + millisToMinutesAndSeconds(nextTime))
   setTimeout(() => multiFact(identity), nextTime)
 }
@@ -363,7 +366,7 @@ function farm (identity) {
   let timer = 0
   for (const action of stdActions) {
     setTimeout(() => say(identity, action), timer)
-    timer += randTime(timeSVariable) + timeSConstant + 1500
+    timer += randTime(timeSeconds)
   }
 
   let potatoActions = ['#p', '#steal', '#trample'].sort(() => Math.random() - 0.5)
@@ -374,14 +377,14 @@ function farm (identity) {
   setTimeout(() => say(identity, '#cdr'), timer)
   timer += randTime(10000) + 30000
   setTimeout(() => say(identity, '?cdr'), timer)
-  timer += randTime(timeSVariable) + timeSConstant
+  timer += randTime(timeSpam)
   potatoActions = potatoActions.sort(() => Math.random() - 0.5)
   for (const action of potatoActions) {
     setTimeout(() => say(identity, action), timer)
     timer += randTime(10000) + 30000
   }
   setTimeout(() => say(identity, '?cookie'), timer)
-  timer += randTime(timeSVariable) + timeSConstant + 1500
+  timer += randTime(timeSeconds)
   setTimeout(() => say(identity, '$remind me in 60 minutes 🚜'), timer)
 }
 
@@ -434,19 +437,15 @@ function getFactPrompt () {
   return ''
 }
 
-// Returns a random time between 0 and maxTime milliseconds
-function randTime (maxTime) {
-  return Math.floor(Math.random() * (maxTime + 1))
+// Returns a random time between time and 3*time milliseconds
+function randTime (time, delayFactor = 0) {
+  return time * (1 + delayFactor) + Math.floor(Math.random() * (time + 1)) * 2
 }
 
 function millisToMinutesAndSeconds (millis) {
   const minutes = Math.floor(millis / 60000)
-  const seconds = ((millis % 60000) / 1000).toFixed(0)
-  return (
-    seconds === 60
-      ? (minutes + 1) + ':00'
-      : minutes + ':' + (seconds < 10 ? '0' : '') + seconds
-  )
+  const seconds = ((millis - minutes * 60000) / 1000).toFixed(0)
+  return minutes + 'm' + seconds + 's'
 }
 
 function initializeClients () {
