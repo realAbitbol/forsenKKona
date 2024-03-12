@@ -12,6 +12,8 @@ const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_M
 // Get the directory of the current module
 const currentDir = dirname(fileURLToPath(import.meta.url))
 
+envVariablesCheck()
+
 // AI Setup
 const openaiOptions = {
   apiKey: process.env.OPENAI_APIKEY,
@@ -423,15 +425,18 @@ function getSettings () {
   return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isDebugActive, spamContent, pyramidEmote, pyramidWidth, usernames: identities.map(identity => identity.username), spamPresets, chainTriviaIdentity: currentChainTriviaIdentity.username, assistantIdentity: currentAssistantIdentity.username, echoeeIdentity: currentEchoeeIdentity.username }
 }
 
-function startupCheck () {
-  let isEnvFine = true
+function envVariablesCheck () {
+  let isFine = true
   for (const envVariable of envVariables) {
     if (process.env?.[envVariable] === undefined) {
-      isEnvFine = false
+      isFine = false
       console.log('ERROR: Environment variable ' + envVariable + ' is undefined')
     }
   }
-  return isEnvFine && identities.length > 0
+  if (!isFine) {
+    console.log('ERROR: Some of the necessary environment variables are undefined. Program will exit.')
+    process.exit()
+  }
 }
 
 function getFactPrompt () {
@@ -509,8 +514,8 @@ function initializeApi () {
 }
 
 async function main () {
-  if (!startupCheck()) {
-    console.log('ERROR: Some of the necessary environment variables  are undefined. Program will exit.')
+  if (identities.length === 0) {
+    console.log('ERROR: You must provide at least one identity. Program will exit')
     process.exit()
   }
   initializeClients()
