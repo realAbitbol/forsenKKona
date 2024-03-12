@@ -7,11 +7,14 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "forsenKKona",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/index.js",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "start"
+            ],
             "envFile": "${workspaceFolder}/.env"
         }
     ]
