@@ -38,7 +38,7 @@ const assistantTrigger = process.env.ASSISTANT_TRIGGER
 // Message settings
 const maxMessageSize = process.env.MAX_MESSAGE_SIZE
 const factPrefix = process.env.FACT_PREFIX
-const duplicateSuffix = '󠀀'
+const duplicateSuffix = ' 󠀀'
 
 // Timings
 const timeSConstant = 1000
@@ -108,7 +108,7 @@ async function onMessageHandler (target, context, msg, self) {
   // Trivia stopper
   if (context['display-name'] === 'FeelsStrongBot' && msg.includes("Trivia's about to pop off")) {
     if (isStopTriviaActive) {
-      for (let i = 0; i <= 2; i++) {
+      for (let i = 0; i < identities.length; i++) {
         setTimeout(function () { stopTrivia(i) }, randTime(timeMVariable) + timeMConstant * (i + 1))
       }
     }
@@ -117,7 +117,7 @@ async function onMessageHandler (target, context, msg, self) {
 
   // Raid joiner
   if (context['display-name'] === 'DeepDankDungeonBot' && msg.includes('A Raid Event at Level')) {
-    for (let i = 0; i <= 2; i++) {
+    for (let i = 0; i < identities.length; i++) {
       setTimeout(function () { joinRaid(i) }, randTime(timeMVariable) + timeMConstant * (i + 1))
     }
     return
@@ -125,7 +125,7 @@ async function onMessageHandler (target, context, msg, self) {
 
   // Echoer
   if (isEchoActive && context['display-name'] === identities[0].username) {
-    for (let i = 0; i <= 2; i++) {
+    for (let i = 0; i < identities.length; i++) {
       if (identities[i].username !== context['display-name']) {
         setTimeout(function () { say(channel, msg, i) }, randTime(timeSVariable) + timeMConstant)
         console.log("Echoing '" + msg + "' as " + identities[i].username)
