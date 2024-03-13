@@ -8,6 +8,7 @@ async function refreshDisplay () {
   $('#togStopTrivia').bootstrapToggle(settings.isStopTriviaActive ? 'on' : 'off', true)
   $('#togEcho').bootstrapToggle(settings.isEchoActive ? 'on' : 'off', true)
   $('#togSpam').bootstrapToggle(settings.isSpamActive ? 'on' : 'off', true)
+  $('#togAction').bootstrapToggle(settings.isActionActive ? 'on' : 'off', true)
   $('#togPyramid').bootstrapToggle(settings.isPyramidActive ? 'on' : 'off', true)
   $('#togAssistant').bootstrapToggle(settings.isAssistantActive ? 'on' : 'off', true)
   $('#togColorChanger').bootstrapToggle(settings.isColorChangerActive ? 'on' : 'off', true)
@@ -44,8 +45,11 @@ $('#togSpam').on('change', async function (event) {
   } else { command('disable', 'spam') }
 })
 
-$('#btnManualSpam').on('click', async function (event) {
-  command('say', undefined, $('#spamSelect').val(), $('#spam').val())
+$('#togAction').on('change', async function (event) {
+  if ($(this).prop('checked')) {
+    command('enable', 'action')
+    setTimeout(function () { $('#togSpam').bootstrapToggle('off') }, 300000)
+  } else { command('disable', 'action') }
 })
 
 $('#togPyramid').on('change', async function (event) {

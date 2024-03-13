@@ -62,6 +62,7 @@ let isEchoActive = false
 let isPyramidActive = false
 let isAssistantActive = false
 let isColorChangerActive = false
+let isActionActive = false
 let isDebugActive = false
 let spamContent = process.env.DEFAULT_SPAM
 let pyramidEmote = 'forsenKKona'
@@ -170,6 +171,9 @@ async function processCommand (message) {
         case 'spam':
           isSpamActive = false
           break
+        case 'action':
+          isActionActive = false
+          break
         case 'eshrug':
           isEshrugActive = false
           break
@@ -201,6 +205,7 @@ async function processCommand (message) {
           isMultifactActive = false
           isChainTriviaActive = false
           isSpamActive = false
+          isActionActive = false
           isEshrugActive = false
           isStopTriviaActive = false
           isXdActive = false
@@ -230,6 +235,9 @@ async function processCommand (message) {
         case 'spam':
           isSpamActive = true
           spam(getIdentity(message.identity))
+          break
+        case 'action':
+          isActionActive = true
           break
         case 'pyramid':
           isPyramidActive = true
@@ -423,10 +431,11 @@ function say (identity, message) {
   identity.isAvoidDupe = !identity.isAvoidDupe
 
   if (isDebugActive) {
-    console.log(`DEBUG: Would have said as ${identity.username} on #${identity.channel}: ${msg}`)
+    console.log(`DEBUG: Would have said as ${identity.username} on #${identity.channel}: ${isActionActive ? '/me ' : ''}${msg}`)
   } else {
-    identity.client.say(identity.channel, msg)
-    console.log(`Said as ${identity.username} on #${identity.channel}: ${msg}`)
+    if (!isActionActive) identity.client.say(identity.channel, msg)
+    else identity.client.action(identity.channel, msg)
+    console.log(`Said as ${identity.username} on #${identity.channel}: ${isActionActive ? '/me ' : ''}${msg}`)
   }
 }
 
@@ -469,7 +478,7 @@ function getIdentity (username) {
 }
 
 function getSettings () {
-  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, isDebugActive, spamContent, pyramidEmote, pyramidWidth, usernames: identities.map(identity => identity.username), spamPresets, chainTriviaIdentity: currentChainTriviaIdentity.username, assistantIdentity: currentAssistantIdentity.username, echoeeIdentity: currentEchoeeIdentity.username }
+  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, isActionActive, isDebugActive, spamContent, pyramidEmote, pyramidWidth, usernames: identities.map(identity => identity.username), spamPresets, chainTriviaIdentity: currentChainTriviaIdentity.username, assistantIdentity: currentAssistantIdentity.username, echoeeIdentity: currentEchoeeIdentity.username }
 }
 
 function envVariablesCheck () {
