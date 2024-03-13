@@ -6,8 +6,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
 // Environment variables
-const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_PROMPT', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM', 'TIME_SPAM', 'TIME_SECONDS', 'TIME_MINUTES', 'TIME_10MINUTES'
-]
+const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_ROLE', 'CHATTER_ROLE', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM', 'TIME_SPAM', 'TIME_SECONDS', 'TIME_MINUTES', 'TIME_10MINUTES']
 
 // Get the directory of the current module
 const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -30,7 +29,8 @@ const identities = JSON.parse(process.env.IDENTITIES)
 const triviaTopics = JSON.parse(process.env.TRIVIA_TOPICS)
 const factPrompts = JSON.parse(process.env.FACT_PROMPTS)
 const spamPresets = JSON.parse(process.env.SPAM_PRESETS)
-const assistantPrompt = process.env.ASSISTANT_PROMPT
+const assistantRole = process.env.ASSISTANT_ROLE
+const chatterRole = process.env.CHATTER_ROLE
 const assistantTrigger = process.env.ASSISTANT_TRIGGER
 
 // Message settings
@@ -117,7 +117,7 @@ function handleMessageEchoer (context, msg) {
 async function handleMessageAssistant (msg, context) {
   if (msg.startsWith(assistantTrigger + ' ') && isAssistantActive && context['display-name'] !== currentAssistantIdentity.username) {
     console.log(`${context['display-name']} talked to me: ${msg}`)
-    const response = await getAIResponse(assistantPrompt, `@${context['display-name']}`, msg.slice(assistantTrigger.length + 1))
+    const response = await getAIResponse(assistantRole, `@${context['display-name']}`, msg.slice(assistantTrigger.length + 1))
     console.log(`I replied: ${response}`)
     say(currentAssistantIdentity, response)
   }
@@ -248,7 +248,7 @@ async function processCommand (message) {
     case 'aiprompt': {
       const prompt = message.arg
       console.log(`Got AI prompt: ${prompt}`)
-      const response = await getAIResponse(assistantPrompt, '', prompt)
+      const response = await getAIResponse(assistantRole, '', prompt)
       say(getIdentity(message.identity), response)
       console.log(`Answered AI prompt as ${message.identity}: ${response}`)
       break
@@ -357,7 +357,7 @@ async function multiFact (identity) {
 
 // Says a single random fact (can lie)
 async function singleFact (identity) {
-  say(identity, await getAIResponse('', factPrefix, getFactPrompt()))
+  say(identity, await getAIResponse(chatterRole, factPrefix, getFactPrompt()))
 }
 
 function farm (identity) {
