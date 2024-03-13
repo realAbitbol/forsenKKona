@@ -289,10 +289,7 @@ async function getAIResponse (role, prefix, prompt) {
       echo: false,
       stream: false
     })
-    response = chatCompletion.choices[0].message.content.replace(/\r?\n/g, ' ')
-    if (response.toLowerCase().startsWith('forsenKKona, ')) response = response.slice('forsenKKona, '.length)
-    if (response.endsWith('.')) response = response.slice(0, -1) // Removes the last character if it is a dot because it doesn't feel very natural in a twitch chat
-
+    response = chatCompletion.choices[0].message.content.replace(/\r?\n/gm, ' ').replace(/(^")|("$)/g, '').replace(/\.$/, '').replace(/^forsenKKona, /, '')
     console.log(`[AI] Generated text: ${response}`)
     response = smartJoin(prefix, response, ' ')
   } while (response.length > maxMessageSize && cpt < maxAiRetries)
