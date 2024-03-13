@@ -24,11 +24,12 @@
 
 ## Usage
 
+- Install [NodeJS](https://nodejs.org/en)
 - In a terminal : `git clone https://github.com/realAbitbol/forsenkkona.git`
 - `cd forsenkkona`
 - create a .env file containing  the necessary environment variables by copying and editing .env-sample
 - `npm install`
-- `npm install dotenv-cli`
+- `npm install -g dotenv-cli`
 - Setup the AI (see below)
 - `dotenv npm start`
 - Go to the UI <http://localhost:3000>
@@ -50,11 +51,12 @@ Use <https://twitchapps.com/tmi> to get your oauth tokens
 
 Image is here : <https://hub.docker.com/repository/docker/damastah/forsenkkona/>
 It's automatically updated each time I push
+Remember to map a port (server is listening on 3000/tcp) and provide the required environment variables (see .env-sample)
 
 ## That's all folks
 
 Use responsibly and have fun bajs ![forsenE](https://cdn.frankerfacez.com/emoticon/545961/1)
 
-If you like it and want to support me just [buy me a coffee ☕️](https://www.buymeacoffee.com/abitbol)
+If you like it and want to support me you can [buy me a coffee ☕️](https://www.buymeacoffee.com/abitbol)
 
 Also, pls pls come to mozambique forsan ![ZULUL](https://cdn.frankerfacez.com/emoticon/130077/1)
