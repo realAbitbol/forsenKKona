@@ -342,9 +342,7 @@ function pyramid (identity) {
 }
 
 function stopTrivia (identity) {
-  if (isStopTriviaActive) {
-    say(identity, '>trivia stop')
-  }
+  if (isStopTriviaActive) say(identity, '>trivia stop')
 }
 
 function joinRaid (identity) {
@@ -362,8 +360,7 @@ async function multiFact (identity) {
 
 // Says a single random fact (can lie)
 async function singleFact (identity) {
-  const aiMessage = await getAIResponse('', factPrefix, getFactPrompt())
-  say(identity, aiMessage)
+  say(identity, await getAIResponse('', factPrefix, getFactPrompt()))
 }
 
 function farm (identity) {
