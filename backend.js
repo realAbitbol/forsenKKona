@@ -123,27 +123,25 @@ async function handleMessageAssistant (msg, context) {
   }
 }
 
-async function processCommand (command) {
-  const args = command.trim().split(' ')
-
-  switch (args[0]) {
+async function processCommand (message) {
+  switch (message.command) {
     case 'say':
-      say(getIdentity(args[1]), args.slice(2).join(' '))
+      say(getIdentity(message.identity), message.arg)
       break
     case 'setpyramidemote':
-      pyramidEmote = args[1]
+      pyramidEmote = message.arg
       console.log(`Set pyramid emote to: ${pyramidEmote}`)
       break
     case 'setpyramidwidth':
-      pyramidWidth = Number(args[1])
+      pyramidWidth = Number(message.arg)
       console.log(`Set pyramid width to: ${pyramidWidth}`)
       break
     case 'setspamcontent':
-      spamContent = args.slice(1).join(' ')
+      spamContent = message.arg
       console.log(`Set spam content to: ${spamContent}`)
       break
     case 'disable':
-      switch (args[1]) {
+      switch (message.target) {
         case 'multifact':
           isMultifactActive = false
           break
@@ -190,78 +188,78 @@ async function processCommand (command) {
           currentPyramidPhase = true
           break
         default:
-          console.log(`ERROR: invalid disable target '${args[1]}'`)
+          console.log(`ERROR: invalid disable target '${message.target}'`)
           return { status: 'KO' }
       }
-      console.log(`Disabled ${args[1]}`)
+      console.log(`Disabled ${message.target}`)
       break
     case 'enable':
-      switch (args[1]) {
+      switch (message.target) {
         case 'multifact':
           isMultifactActive = true
-          multiFact(getIdentity(args[2]))
+          multiFact(getIdentity(message.identity))
           break
         case 'chaintrivia':
-          currentChainTriviaIdentity = getIdentity(args[2])
+          currentChainTriviaIdentity = getIdentity(message.identity)
           isChainTriviaActive = true
           break
         case 'spam':
           isSpamActive = true
-          spam(getIdentity(args[2]))
+          spam(getIdentity(message.identity))
           break
         case 'pyramid':
           isPyramidActive = true
-          pyramid(getIdentity(args[2]))
+          pyramid(getIdentity(message.identity))
           break
         case 'eshrug':
           isEshrugActive = true
-          eShrug(getIdentity(args[2]))
+          eShrug(getIdentity(message.identity))
           break
         case 'xd':
           isXdActive = true
-          xd(getIdentity(args[2]))
+          xd(getIdentity(message.identity))
           break
         case 'stoptrivia':
           isStopTriviaActive = true
           break
         case 'echo':
-          currentEchoeeIdentity = getIdentity(args[2])
+          currentEchoeeIdentity = getIdentity(message.identity)
           isEchoActive = true
           break
         case 'assistant':
-          currentAssistantIdentity = getIdentity(args[2])
+          currentAssistantIdentity = getIdentity(message.identity)
           isAssistantActive = true
           break
         case 'debug':
           isDebugActive = true
           break
         default:
-          console.log(`ERROR: invalid enable target '${args[1]}'`)
+          console.log(`ERROR: invalid enable target '${message.target}'`)
           return { status: 'KO' }
       }
-      console.log(`Enabled ${args[1]}`)
+      console.log(`Enabled ${message.target}`)
       break
     case 'singlefact':
-      singleFact(getIdentity(args[1]))
+      singleFact(getIdentity(message.identity))
       break
     case 'singletrivia':
-      doTrivia(getIdentity(args[1]))
+      doTrivia(getIdentity(message.identity))
       break
     case 'aiprompt': {
-      const prompt = args.slice(2).join(' ')
+      const prompt = message.arg
       console.log(`Got AI prompt: ${prompt}`)
       const response = await getAIResponse(assistantPrompt, '', prompt)
-      say(getIdentity(args[1]), response)
-      console.log(`Answered AI prompt as ${currentAssistantIdentity.username}: ${response}`)
+      say(getIdentity(message.identity), response)
+      console.log(`Answered AI prompt as ${message.identity}: ${response}`)
       break
     }
     case 'farm':
-      farm(getIdentity(args[1]))
+      farm(getIdentity(message.identity))
       break
     case 'getsettings':
       return getSettings()
     default:
-      console.log(`ERROR : unsupported command '${command}'`)
+      console.log(`ERROR : unsupported command '${message}'`)
       return { status: 'KO' }
   }
   return { status: 'OK' }
@@ -458,7 +456,17 @@ function randTime (time, delayFactor = 0) {
 function millisToMinutesAndSeconds (millis) {
   const minutes = Math.floor(millis / 60000)
   const seconds = ((millis - minutes * 60000) / 1000).toFixed(0)
-  return `${minutes}m ${seconds}s`
+  return `${minutes}m${seconds}s`
+}
+
+function prettyPrintCommand (message) {
+  const arr = []
+  if (message.command) arr.push(`Command: '${message.command}'`)
+  if (message.target) arr.push(`Target: '${message.target}'`)
+  if (message.identity) arr.push(`Identity: '${message.identity}'`)
+  if (message.arg) arr.push(`Arg: '${message.arg}'`)
+
+  return arr.join(', ')
 }
 
 function initializeClients () {
@@ -473,15 +481,15 @@ function initializeClients () {
   }
 }
 
-function initializeApi () {
+function initializeBackend () {
   const app = express()
   const port = 3000
 
   app.use(bodyParser.json())
 
   app.post('/command', async (req, res) => {
-    const { message } = req.body
-    console.log(`Received command: ${message}`)
+    const message = req.body
+    console.log(`Received message: ${prettyPrintCommand(message)}`)
     const output = await processCommand(message)
     res.status(200).json(output)
   })
@@ -519,6 +527,6 @@ async function main () {
     process.exit(1)
   }
   initializeClients()
-  initializeApi()
+  initializeBackend()
 }
 main()
