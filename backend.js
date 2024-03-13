@@ -441,7 +441,7 @@ async function changeColor (identity, color) {
   } else {
     const response = await fetch(`https://api.twitch.tv/helix/chat/color?user_id=${identity.userId}&color=${color}`, {
       method: 'PUT',
-      headers: { Authorization: `Bearer ${identity.password.slice(6)}`, 'Client-ID': helixClientId }
+      headers: { Authorization: `Bearer ${identity.password}`, 'Client-ID': helixClientId }
     })
     switch (response.status) {
       case 204:
