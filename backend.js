@@ -8,6 +8,10 @@ import { dirname, join } from 'path'
 // Environment variables
 const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_ROLE', 'CHATTER_ROLE', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM', 'TIME_SPAM', 'TIME_SECONDS', 'TIME_MINUTES', 'TIME_10MINUTES']
 
+// Twitch colors
+const colors = ['blue', 'blue_violet', 'cadet_blue', 'chocolate', 'coral', 'dodger_blue', 'firebrick', 'golden_rod', 'green', 'hot_pink', 'orange_red', 'red', 'sea_green', 'spring_green', 'yellow_green']
+let isColorChangerAvailable = false
+
 // Get the directory of the current module
 const currentDir = dirname(fileURLToPath(import.meta.url))
 
@@ -24,6 +28,9 @@ const maxAiRetries = Number(process.env.MAX_AI_RETRIES)
 
 // TMI setup
 const identities = JSON.parse(process.env.IDENTITIES)
+
+// HELIX setup (for Color changer)
+const helixClientId = process.env?.HELIX_CLIENT_ID
 
 // Custom topics and prompts
 const triviaTopics = JSON.parse(process.env.TRIVIA_TOPICS)
@@ -54,6 +61,7 @@ let isXdActive = false
 let isEchoActive = false
 let isPyramidActive = false
 let isAssistantActive = false
+let isColorChangerActive = false
 let isDebugActive = false
 let spamContent = process.env.DEFAULT_SPAM
 let pyramidEmote = 'forsenKKona'
@@ -68,11 +76,22 @@ let currentEchoeeIdentity = identities[0]
 
 // Called every time a new message is posted in the chat
 async function onMessageHandler (target, context, msg, self) {
+  handleColorChanger(msg, context)
   await handleMessageAssistant(msg, context)
   handleMessageTriviaChainer(context, msg)
   handleMessageTriviaStopper(context, msg)
   handleMessageRaidJoiner(context, msg)
   handleMessageEchoer(context, msg)
+}
+
+function handleColorChanger (msg, context) {
+  if (isColorChangerActive && isColorChangerAvailable) {
+    const identity = identities.find((id) => id.username === context['display-name'])
+    if (identity?.isColorChangerCompatible) {
+      identity.currentColor = randColor(identity.currentColor)
+      changeColor(identity, identity.currentColor)
+    }
+  }
 }
 
 function handleMessageTriviaChainer (context, msg) {
@@ -85,7 +104,7 @@ function handleMessageTriviaStopper (context, msg) {
   if (context['display-name'] === 'FeelsStrongBot' && msg.includes("Trivia's about to pop off")) {
     if (isStopTriviaActive) {
       let cpt = 0
-      for (const identity of identities.sort(() => Math.random() - 0.5)) {
+      for (const identity of shuffleArray(identities)) {
         setTimeout(() => stopTrivia(identity), randTime(timeSeconds, cpt))
         cpt++
       }
@@ -96,7 +115,7 @@ function handleMessageTriviaStopper (context, msg) {
 function handleMessageRaidJoiner (context, msg) {
   if (context['display-name'] === 'DeepDankDungeonBot' && msg.includes('A Raid Event at Level')) {
     let cpt = 0
-    for (const identity of identities.sort(() => Math.random() - 0.5)) {
+    for (const identity of shuffleArray(identities)) {
       setTimeout(() => joinRaid(identity), randTime(timeSeconds, cpt))
       cpt++
     }
@@ -106,7 +125,7 @@ function handleMessageRaidJoiner (context, msg) {
 function handleMessageEchoer (context, msg) {
   if (isEchoActive && context['display-name'] === currentEchoeeIdentity.username) {
     let cpt = 0
-    for (const identity of identities.filter((id) => id.username !== currentEchoeeIdentity.username).sort(() => Math.random() - 0.5)) {
+    for (const identity of shuffleArray(identities.filter((id) => id.username !== currentEchoeeIdentity.username))) {
       setTimeout(() => say(identity, msg), randTime(timeSeconds, cpt))
       cpt++
       console.log(`Echoing ${msg} as ${identity.username}`)
@@ -174,6 +193,10 @@ async function processCommand (message) {
         case 'debug':
           isDebugActive = false
           break
+        case 'colorchanger':
+          isColorChangerActive = false
+          resetColors()
+          break
         case 'all':
           isMultifactActive = false
           isChainTriviaActive = false
@@ -184,6 +207,7 @@ async function processCommand (message) {
           isEchoActive = false
           isPyramidActive = false
           isAssistantActive = false
+          isColorChangerActive = false
           currentPyramidWidth = 0
           currentPyramidPhase = true
           break
@@ -229,6 +253,9 @@ async function processCommand (message) {
         case 'assistant':
           currentAssistantIdentity = getIdentity(message.identity)
           isAssistantActive = true
+          break
+        case 'colorchanger':
+          isColorChangerActive = true
           break
         case 'debug':
           isDebugActive = true
@@ -362,14 +389,14 @@ async function singleFact (identity) {
 
 function farm (identity) {
   console.log(`Farming as ${identity.username}`)
-  const stdActions = ['+ed', '+eg', '$fish trap reset', 'Okayeg gib eg', '?cookie', '¿taco pepeSenora', '%hw'].sort(() => Math.random() - 0.5)
+  const stdActions = shuffleArray(['+ed', '+eg', '$fish trap reset', 'Okayeg gib eg', '?cookie', '¿taco pepeSenora', '%hw'])
   let timer = 0
   for (const action of stdActions) {
     setTimeout(() => say(identity, action), timer)
     timer += randTime(timeSeconds)
   }
 
-  let potatoActions = ['#p', '#steal', '#trample'].sort(() => Math.random() - 0.5)
+  let potatoActions = shuffleArray(['#p', '#steal', '#trample'])
   for (const action of potatoActions) {
     setTimeout(() => say(identity, action), timer)
     timer += randTime(10000) + 30000
@@ -378,7 +405,7 @@ function farm (identity) {
   timer += randTime(10000) + 30000
   setTimeout(() => say(identity, '?cdr'), timer)
   timer += randTime(timeSpam)
-  potatoActions = potatoActions.sort(() => Math.random() - 0.5)
+  potatoActions = shuffleArray(potatoActions)
   for (const action of potatoActions) {
     setTimeout(() => say(identity, action), timer)
     timer += randTime(10000) + 30000
@@ -398,7 +425,36 @@ function say (identity, message) {
     console.log(`DEBUG: Would have said as ${identity.username} on #${identity.channel}: ${msg}`)
   } else {
     identity.client.say(identity.channel, msg)
-    console.log(`Said as '${identity.username}' on #${identity.channel}: ${msg}`)
+    console.log(`Said as ${identity.username} on #${identity.channel}: ${msg}`)
+  }
+}
+
+function resetColors () {
+  for (const identity of identities) {
+    if (identity.isColorChangerCompatible) changeColor(identity, identity.defaultColor)
+  }
+}
+
+async function changeColor (identity, color) {
+  if (isDebugActive) {
+    console.log(`DEBUG: Would have changed the color of ${identity.username} to ${color}`)
+  } else {
+    const response = await fetch(`https://api.twitch.tv/helix/chat/color?user_id=${identity.userId}&color=${color}`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${identity.password.slice(6)}`, 'Client-ID': helixClientId }
+    })
+    switch (response.status) {
+      case 204:
+        console.log(`Changed the color of ${identity.username} to ${color}`)
+        break
+      case 400:
+        console.log(`WARNING: The user_id proided for the user ${identity.username} is invalid. Color changer has been disabled for this user`)
+        identity.isColorChangerCompatible = false
+        break
+      case 401:
+        console.log(`WARNING: The oauth token provided proided for the user ${identity.username} doesn't include the user:manage:chat_color scope. Color changer has been disabled for this user`)
+        identity.isColorChangerCompatible = false
+    }
   }
 }
 
@@ -412,7 +468,7 @@ function getIdentity (username) {
 }
 
 function getSettings () {
-  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isDebugActive, spamContent, pyramidEmote, pyramidWidth, usernames: identities.map(identity => identity.username), spamPresets, chainTriviaIdentity: currentChainTriviaIdentity.username, assistantIdentity: currentAssistantIdentity.username, echoeeIdentity: currentEchoeeIdentity.username }
+  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, isDebugActive, spamContent, pyramidEmote, pyramidWidth, usernames: identities.map(identity => identity.username), spamPresets, chainTriviaIdentity: currentChainTriviaIdentity.username, assistantIdentity: currentAssistantIdentity.username, echoeeIdentity: currentEchoeeIdentity.username }
 }
 
 function envVariablesCheck () {
@@ -423,6 +479,13 @@ function envVariablesCheck () {
       console.log(`ERROR: Environment variable ${envVariable} is undefined`)
     }
   }
+
+  if (process.env?.HELIX_CLIENT_ID?.length > 0) isColorChangerAvailable = true
+  else {
+    console.log("WARNING: The CLIENT_ID environment variable hasn't been provided. Color changer will be unavailable")
+    isColorChangerAvailable = false
+  }
+
   if (!isFine) {
     console.log('ERROR: Some of the necessary environment variables are undefined. Program will exit.')
     process.exit(1)
@@ -461,14 +524,33 @@ function prettyPrintCommand (message) {
   return arr.join(', ')
 }
 
+function shuffleArray (array) {
+  return array.map(value => ({ value, sort: Math.random() })).sort((a, b) => a.sort - b.sort).map(({ value }) => value)
+}
+
 function smartJoin (str1, str2, spacer) {
   return str1?.length > 0 ? `${str1}${spacer}${str2}` : str2
+}
+
+function randColor (except = undefined) {
+  return shuffleArray(colors.filter((item) => item !== except)).pop()
 }
 
 function initializeClients () {
   let isFirst = true
   for (const identity of identities) {
     identity.client = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identity.username, password: identity.password }, channels: [identity.channel] })
+    identity.isAvoidDupe = false
+    identity.isColorChangerCompatible = false
+
+    if (identity?.userId.length > 0) {
+      if (isColorChangerAvailable) {
+        if (colors.find((color) => color === identity.defaultColor).length > 0) identity.currentColor = identity.defaultColor
+        else identity.currentColor = randColor()
+        identity.isColorChangerCompatible = true
+      }
+    } else console.log(`WARNING: a userId hasn't been provided for ${identity.username}, color changer will be unavailable for this user`)
+
     if (isFirst) {
       identity.client.on('message', onMessageHandler)
       isFirst = false

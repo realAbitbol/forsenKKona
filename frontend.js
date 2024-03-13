@@ -10,16 +10,15 @@ async function refreshDisplay () {
   $('#togSpam').bootstrapToggle(settings.isSpamActive ? 'on' : 'off', true)
   $('#togPyramid').bootstrapToggle(settings.isPyramidActive ? 'on' : 'off', true)
   $('#togAssistant').bootstrapToggle(settings.isAssistantActive ? 'on' : 'off', true)
+  $('#togColorChanger').bootstrapToggle(settings.isColorChangerActive ? 'on' : 'off', true)
+  if (!settings.isColorChangerAvailable) $('#togColorChanger').bootstrapToggle('disable')
   $('#togDebug').bootstrapToggle(settings.isDebugActive ? 'on' : 'off', true)
   $('#spam').val(settings.spamContent)
 
   const selects = [$('#identityMessage'), $('#identityFarm'), $('#assistantSelect'), $('#factsAndFucksSelect'), $('#triviasSelect'), $('#eshrugsSelect'), $('#xdsSelect'), $('#spamSelect'), $('#pyramidSelect'), $('#echoeeSelect')]
   clearSelects(selects)
-  for (const username of settings.usernames) {
-    for (const select of selects) {
-      select.append($('<option>', { value: username, text: username }))
-    }
-  }
+  fillIdentitySelects(selects, settings.usernames)
+
   $('#triviasSelect').val(settings.chainTriviaIdentity)
   $('#assistantSelect').val(settings.assistantIdentity)
   $('#echoeeSelect').val(settings.echoeeIdentity)
@@ -97,6 +96,11 @@ $('#togEcho').on('change', async function (event) {
 $('#togAssistant').on('change', async function (event) {
   if ($(this).prop('checked')) command('enable', 'assistant', $('#assistantSelect').val())
   else command('disable', 'assistant')
+})
+
+$('#togColorChanger').on('change', async function (event) {
+  if ($(this).prop('checked')) command('enable', 'colorchanger')
+  else command('disable', 'colorchanger')
 })
 
 $('#togDebug').on('change', async function (event) {
@@ -182,6 +186,14 @@ $('#echoeeSelect').on('change', async function (event) {
 function clearSelects (selects) {
   for (const select of selects) {
     select.find('option').remove().end()
+  }
+}
+
+function fillIdentitySelects (selects, usernames) {
+  for (const username of usernames) {
+    for (const select of selects) {
+      select.append($('<option>', { value: username, text: username }))
+    }
   }
 }
 
