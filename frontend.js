@@ -1,6 +1,3 @@
-/* eslint-disable no-undef */
-/// <reference path="./node_modules/jquery/dist/jquery.min.js" />
-
 async function refreshDisplay () {
   const settings = await getSettings()
   $('#togMultifact').bootstrapToggle(settings.isMultifactActive ? 'on' : 'off', true)
