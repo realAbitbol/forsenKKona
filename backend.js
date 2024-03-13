@@ -126,8 +126,9 @@ function handleMessageRaidJoiner (context, msg) {
 function handleMessageEchoer (context, msg) {
   if (isEchoActive && context['display-name'] === currentEchoeeIdentity.username) {
     let cpt = 0
+    msg = msg.replace(/󠀀/g, '').trim()
     for (const identity of shuffleArray(identities.filter((id) => id.username !== currentEchoeeIdentity.username))) {
-      setTimeout(() => say(identity, msg.replace(/󠀀/g, '').trim()), randTime(timeSeconds, cpt))
+      setTimeout(() => say(identity, msg), randTime(timeSeconds, cpt))
       cpt++
       console.log(`Echoing ${msg} as ${identity.username}`)
     }
