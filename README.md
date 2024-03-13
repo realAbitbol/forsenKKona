@@ -48,7 +48,7 @@ Create a .env file by copying the .env-sample file and edit it
 
 ## PSA
 
-⚠️ As [tmi.js](https://tmijs.com) color method seems to be broken ![FailFors](https://cdn.betterttv.net/emote/64af454ffb5565fe6eacd326/3x.webp), you're required a few extra steps if you want the ColorChanger™️ functionality to work. Fortunately, it's not very hard or long.
+⚠️ As [tmi.js](https://tmijs.com) color method seems to be broken ![FailFors](https://cdn.betterttv.net/emote/64af454ffb5565fe6eacd326/1x.webp), you're required a few extra steps if you want the ColorChanger™️ functionality to work. Fortunately, it's not very hard or long.
 
 ### OAuth tokens (password property)
 
