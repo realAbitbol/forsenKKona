@@ -84,12 +84,12 @@ async function onMessageHandler (target, context, msg, self) {
   handleMessageEchoer(context, msg)
 }
 
-function handleColorChanger (msg, context) {
+async function handleColorChanger (msg, context) {
   if (isColorChangerActive && isColorChangerAvailable) {
     const identity = identities.find((id) => id.username === context['display-name'])
     if (identity?.isColorChangerCompatible) {
       identity.currentColor = randColor(identity.currentColor)
-      changeColor(identity, identity.currentColor)
+      await changeColor(identity, identity.currentColor)
     }
   }
 }
@@ -388,7 +388,7 @@ async function singleFact (identity) {
 }
 
 function farm (identity) {
-  const stdActions = ['+ed', '+eg', '$fish trap reset', 'Okayeg gib eg', '?cookie', '¿taco pepeSenora', '%hw']
+  const stdActions = ['+ed', '+eg', '`eg', '$fish trap reset', 'Okayeg gib eg', '?cookie', '¿taco pepeSenora', '%hw']
   const potatoActions = ['#p', '#steal', '#trample']
 
   console.log(`Farming as ${identity.username}`)
