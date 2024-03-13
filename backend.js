@@ -388,7 +388,7 @@ async function singleFact (identity) {
 }
 
 function farm (identity) {
-  const stdActions = ['+ed', '+eg', '`eg', '$fish trap reset', 'Okayeg gib eg', '?cookie', '¿taco pepeSenora', '%hw']
+  const stdActions = ['+ed', '+eg', '$fish trap reset', 'Okayeg gib eg', '?cookie', '¿taco pepeSenora', '%hw']
   const potatoActions = ['#p', '#steal', '#trample']
 
   console.log(`Farming as ${identity.username}`)
