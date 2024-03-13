@@ -42,13 +42,13 @@ I recomment using the free application [gpt4all](https://gpt4all.io/index.html) 
 
 This application can run a LLM for free on your PC, just remember to enable the API server in it's settings
 
+## PSA : getting ColorChanger™️ to work
+
+⚠️ As [tmi.js](https://tmijs.com) color method seems to be broken ![FailFors](https://cdn.betterttv.net/emote/64af454ffb5565fe6eacd326/1x.webp), you're required a few extra steps if you want the ColorChanger™️ functionality to work. Fortunately, it's not very hard or long, see below.
+
 ## Environment variables
 
 Create a .env file by copying the .env-sample file and edit it
-
-## PSA
-
-⚠️ As [tmi.js](https://tmijs.com) color method seems to be broken ![FailFors](https://cdn.betterttv.net/emote/64af454ffb5565fe6eacd326/1x.webp), you're required a few extra steps if you want the ColorChanger™️ functionality to work. Fortunately, it's not very hard or long.
 
 ### OAuth tokens (password property)
 
