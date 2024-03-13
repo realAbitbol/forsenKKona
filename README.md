@@ -53,6 +53,14 @@ Image is here : <https://hub.docker.com/repository/docker/damastah/forsenkkona/>
 It's automatically updated each time I push
 Remember to map a port (server is listening on 3000/tcp) and provide the required environment variables (see .env-sample)
 
+## Ideas for future updates (might or might not be implemented)
+
+- Use toad-scheduler (or a simpler alternative) instead of using timeouts
+- Implement perfect farming
+- Implement even more perfect farming by reading the bot replies
+- Implement dynamically configurable facts and spam presets
+- Succeed in having a good bootstrap UI or replace it with another CSS library (Flycast ?)
+
 ## That's all folks
 
 Use responsibly and have fun bajs ![forsenE](https://cdn.frankerfacez.com/emoticon/545961/1)
