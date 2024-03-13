@@ -45,6 +45,10 @@ $('#togSpam').on('change', async function (event) {
   } else { command('disable', 'spam') }
 })
 
+$('#btnManualSpam').on('click', async function (event) {
+  command('say', undefined, $('#spamSelect').val(), $('#spam').val())
+})
+
 $('#togPyramid').on('change', async function (event) {
   if ($(this).prop('checked')) {
     command('enable', 'pyramid', $('#pyramidSelect').val())
