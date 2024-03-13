@@ -116,7 +116,7 @@ function handleMessageRaidJoiner (context, msg) {
   if (context['display-name'] === 'DeepDankDungeonBot' && msg.includes('A Raid Event at Level')) {
     let cpt = 0
     for (const identity of shuffleArray(identities)) {
-      setTimeout(() => joinRaid(identity), randTime(timeSeconds, cpt))
+      setTimeout(() => joinRaid(identity), randTime(timeSeconds, cpt * 2))
       cpt++
     }
   }
@@ -496,7 +496,7 @@ function envVariablesCheck () {
 function getFactPrompt () {
   const sumOfWeights = factPrompts.reduce((accumulator, currentPrompt) => { return accumulator + currentPrompt.weight }, 0)
   let rand = Math.floor(Math.random() * sumOfWeights + 1)
-  for (const prompt of factPrompts) {
+  for (const prompt of shuffleArray(factPrompts)) {
     rand = rand - prompt.weight
     if (rand <= 0) return prompt.prompt
   }
@@ -550,6 +550,7 @@ function initializeClients () {
         if (colors.find((color) => color === identity.defaultColor).length > 0) identity.currentColor = identity.defaultColor
         else identity.currentColor = randColor()
         identity.isColorChangerCompatible = true
+        changeColor(identity, identity.currentColor)
       }
     } else console.log(`WARNING: a userId hasn't been provided for ${identity.username}, color changer will be unavailable for this user`)
 
