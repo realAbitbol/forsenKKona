@@ -274,13 +274,13 @@ function doTrivia (identity) {
 
 // Gat a response from the AI using the given prompt
 async function getAIResponse (role, prefix, prompt) {
-  console.log(`[AI] Got prompt: ${role}${prompt}`)
+  console.log(`[AI] Got prompt: ${smartJoin(role, prompt, ' ')}`)
   let response = ''
   let cpt = 0
   do {
     cpt++
     const chatCompletion = await openai.chat.completions.create({
-      messages: [{ role: 'user', content: `${role}${prompt}` }],
+      messages: [{ role: 'user', content: `${smartJoin(role, prompt, ' ')}` }],
       model: openaiModel,
       max_tokens: 50,
       temperature: 0.70,
@@ -291,11 +291,10 @@ async function getAIResponse (role, prefix, prompt) {
     })
     response = chatCompletion.choices[0].message.content.replace(/\r?\n/g, ' ')
     if (response.toLowerCase().startsWith('forsenKKona, ')) response = response.slice('forsenKKona, '.length)
-    if (response.endsWith('.')) {
-      response = response.slice(0, -1) // Removes the last character if it is a dot because it doesn't feel very natural in a twitch chat
-    }
+    if (response.endsWith('.')) response = response.slice(0, -1) // Removes the last character if it is a dot because it doesn't feel very natural in a twitch chat
+
     console.log(`[AI] Generated text: ${response}`)
-    response = (`${prefix} ${response}`).trim()
+    response = smartJoin(prefix, response, ' ')
   } while (response.length > maxMessageSize && cpt < maxAiRetries)
   return response.substring(0, maxMessageSize)
 }
@@ -467,6 +466,10 @@ function prettyPrintCommand (message) {
   if (message.arg) arr.push(`Arg: '${message.arg}'`)
 
   return arr.join(', ')
+}
+
+function smartJoin (str1, str2, spacer) {
+  return str1?.length > 0 ? `${str1}${spacer}${str2}` : str2
 }
 
 function initializeClients () {
