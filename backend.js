@@ -388,16 +388,18 @@ async function singleFact (identity) {
 }
 
 function farm (identity) {
+  const stdActions = ['+ed', '+eg', '$fish trap reset', 'Okayeg gib eg', '?cookie', '¿taco pepeSenora', '%hw']
+  const potatoActions = ['#p', '#steal', '#trample']
+
   console.log(`Farming as ${identity.username}`)
-  const stdActions = shuffleArray(['+ed', '+eg', '$fish trap reset', 'Okayeg gib eg', '?cookie', '¿taco pepeSenora', '%hw'])
+
   let timer = 0
-  for (const action of stdActions) {
+  for (const action of shuffleArray(stdActions)) {
     setTimeout(() => say(identity, action), timer)
     timer += randTime(timeSeconds)
   }
 
-  let potatoActions = shuffleArray(['#p', '#steal', '#trample'])
-  for (const action of potatoActions) {
+  for (const action of shuffleArray(potatoActions)) {
     setTimeout(() => say(identity, action), timer)
     timer += randTime(10000) + 30000
   }
@@ -405,8 +407,7 @@ function farm (identity) {
   timer += randTime(10000) + 30000
   setTimeout(() => say(identity, '?cdr'), timer)
   timer += randTime(timeSpam)
-  potatoActions = shuffleArray(potatoActions)
-  for (const action of potatoActions) {
+  for (const action of shuffleArray(potatoActions)) {
     setTimeout(() => say(identity, action), timer)
     timer += randTime(10000) + 30000
   }
