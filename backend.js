@@ -127,7 +127,7 @@ function handleMessageEchoer (context, msg) {
   if (isEchoActive && context['display-name'] === currentEchoeeIdentity.username) {
     let cpt = 0
     for (const identity of shuffleArray(identities.filter((id) => id.username !== currentEchoeeIdentity.username))) {
-      setTimeout(() => say(identity, msg), randTime(timeSeconds, cpt))
+      setTimeout(() => say(identity, msg.replace(/󠀀/g, '').trim()), randTime(timeSeconds, cpt))
       cpt++
       console.log(`Echoing ${msg} as ${identity.username}`)
     }
@@ -333,14 +333,14 @@ async function getAIResponse (role, prefix, prompt) {
 
 function eShrug (identity) {
   if (isEshrugActive) {
-    say(identity, '$fill eShrug')
+    say(identity, '$fill eShrug', false)
     setTimeout(() => eShrug(identity), randTime(timeMinutes))
   }
 }
 
 function xd (identity) {
   if (isXdActive) {
-    say(identity, '$$xd')
+    say(identity, '$$xd', false)
     setTimeout(() => xd(identity), randTime(timeMinutes))
   }
 }
@@ -374,11 +374,11 @@ function pyramid (identity) {
 }
 
 function stopTrivia (identity) {
-  if (isStopTriviaActive) say(identity, '>trivia stop')
+  if (isStopTriviaActive) say(identity, '>trivia stop', false)
 }
 
 function joinRaid (identity) {
-  say(identity, '+join')
+  say(identity, '+join', false)
 }
 
 // Says a random fact periodically (can lie)
@@ -403,39 +403,40 @@ function farm (identity) {
 
   let timer = 0
   for (const action of shuffleArray(stdActions)) {
-    setTimeout(() => say(identity, action), timer)
+    setTimeout(() => say(identity, action, false), timer)
     timer += randTime(timeSeconds)
   }
 
   for (const action of shuffleArray(potatoActions)) {
-    setTimeout(() => say(identity, action), timer)
+    setTimeout(() => say(identity, action, false), timer)
     timer += randTime(10000) + 30000
   }
-  setTimeout(() => say(identity, '#cdr'), timer)
+  setTimeout(() => say(identity, '#cdr', false), timer)
   timer += randTime(10000) + 30000
-  setTimeout(() => say(identity, '?cdr'), timer)
+  setTimeout(() => say(identity, '?cdr', false), timer)
   timer += randTime(timeSpam)
   for (const action of shuffleArray(potatoActions)) {
-    setTimeout(() => say(identity, action), timer)
+    setTimeout(() => say(identity, action, false), timer)
     timer += randTime(10000) + 30000
   }
-  setTimeout(() => say(identity, '?cookie'), timer)
+  setTimeout(() => say(identity, '?cookie', false), timer)
   timer += randTime(timeSeconds)
-  setTimeout(() => say(identity, '$remind me in 60 minutes 🚜'), timer)
+  setTimeout(() => say(identity, '$remind me in 60 minutes 🚜', false), timer)
 }
 
 // Says a message to a channel
-function say (identity, message) {
+function say (identity, message, isAction) {
+  isAction = isAction ?? isActionActive
   if (identity.isAvoidDupe) { message = `${message} ${duplicateSuffix}` }
   const msg = message.substring(0, maxMessageSize)
   identity.isAvoidDupe = !identity.isAvoidDupe
 
   if (isDebugActive) {
-    console.log(`DEBUG: Would have said as ${identity.username} on #${identity.channel}: ${isActionActive ? '/me ' : ''}${msg}`)
+    console.log(`DEBUG: Would have said as ${identity.username} on #${identity.channel}: ${isAction ? '/me ' : ''}${msg}`)
   } else {
-    if (!isActionActive) identity.client.say(identity.channel, msg)
+    if (!isAction) identity.client.say(identity.channel, msg)
     else identity.client.action(identity.channel, msg)
-    console.log(`Said as ${identity.username} on #${identity.channel}: ${isActionActive ? '/me ' : ''}${msg}`)
+    console.log(`Said as ${identity.username} on #${identity.channel}: ${isAction ? '/me ' : ''}${msg}`)
   }
 }
 
