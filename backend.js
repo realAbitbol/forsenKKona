@@ -36,7 +36,7 @@ const assistantTrigger = process.env.ASSISTANT_TRIGGER
 // Message settings
 const maxMessageSize = Number(process.env.MAX_MESSAGE_SIZE)
 const factPrefix = process.env.FACT_PREFIX
-const duplicateSuffix = ' 󠀀'
+const duplicateSuffix = '󠀀'
 
 // Timings
 const timeSpam = Number(process.env.TIME_SPAM)
@@ -109,16 +109,16 @@ function handleMessageEchoer (context, msg) {
     for (const identity of identities.filter((id) => id.username !== currentEchoeeIdentity.username).sort(() => Math.random() - 0.5)) {
       setTimeout(() => say(identity, msg), randTime(timeSeconds, cpt))
       cpt++
-      console.log("Echoing '" + msg + "' as " + identity.username)
+      console.log(`Echoing ${msg} as ${identity.username}`)
     }
   }
 }
 
 async function handleMessageAssistant (msg, context) {
   if (msg.startsWith(assistantTrigger + ' ') && isAssistantActive && context['display-name'] !== currentAssistantIdentity.username) {
-    console.log(context['display-name'] + ' talked to me: ' + msg)
-    const response = await getAIResponse(assistantPrompt, '@' + context['display-name'], msg.slice(assistantTrigger.length + 1))
-    console.log('I replied : ' + response)
+    console.log(`${context['display-name']} talked to me: ${msg}`)
+    const response = await getAIResponse(assistantPrompt, `@${context['display-name']}`, msg.slice(assistantTrigger.length + 1))
+    console.log(`I replied: ${response}`)
     say(currentAssistantIdentity, response)
   }
 }
@@ -132,15 +132,15 @@ async function processCommand (command) {
       break
     case 'setpyramidemote':
       pyramidEmote = args[1]
-      console.log('Set pyramid emote to : ' + pyramidEmote)
+      console.log(`Set pyramid emote to: ${pyramidEmote}`)
       break
     case 'setpyramidwidth':
       pyramidWidth = Number(args[1])
-      console.log('Set pyramid width to : ' + pyramidWidth)
+      console.log(`Set pyramid width to: ${pyramidWidth}`)
       break
     case 'setspamcontent':
       spamContent = args.slice(1).join(' ')
-      console.log('Set spam content to : ' + spamContent)
+      console.log(`Set spam content to: ${spamContent}`)
       break
     case 'disable':
       switch (args[1]) {
@@ -190,10 +190,10 @@ async function processCommand (command) {
           currentPyramidPhase = true
           break
         default:
-          console.log("ERROR: invalid disable target '" + args[1] + "'")
+          console.log(`ERROR: invalid disable target '${args[1]}'`)
           return { status: 'KO' }
       }
-      console.log('Disabled ' + args[1])
+      console.log(`Disabled ${args[1]}`)
       break
     case 'enable':
       switch (args[1]) {
@@ -236,10 +236,10 @@ async function processCommand (command) {
           isDebugActive = true
           break
         default:
-          console.log("ERROR: invalid enable target '" + args[1] + "'")
+          console.log(`ERROR: invalid enable target '${args[1]}'`)
           return { status: 'KO' }
       }
-      console.log('Enabled ' + args[1])
+      console.log(`Enabled ${args[1]}`)
       break
     case 'singlefact':
       singleFact(getIdentity(args[1]))
@@ -249,10 +249,10 @@ async function processCommand (command) {
       break
     case 'aiprompt': {
       const prompt = args.slice(2).join(' ')
-      console.log('Answering AI prompt: ' + prompt)
+      console.log(`Got AI prompt: ${prompt}`)
       const response = await getAIResponse(assistantPrompt, '', prompt)
       say(getIdentity(args[1]), response)
-      console.log('Answered AI prompt as ' + currentAssistantIdentity.username + ': ' + response)
+      console.log(`Answered AI prompt as ${currentAssistantIdentity.username}: ${response}`)
       break
     }
     case 'farm':
@@ -261,7 +261,7 @@ async function processCommand (command) {
     case 'getsettings':
       return getSettings()
     default:
-      console.log('ERROR : unsupported command :' + command)
+      console.log(`ERROR : unsupported command '${command}'`)
       return { status: 'KO' }
   }
   return { status: 'OK' }
@@ -276,13 +276,13 @@ function doTrivia (identity) {
 
 // Gat a response from the AI using the given prompt
 async function getAIResponse (role, prefix, prompt) {
-  console.log('[AI] Got prompt : ' + role + prompt)
+  console.log(`[AI] Got prompt: ${role}${prompt}`)
   let response = ''
   let cpt = 0
   do {
     cpt++
     const chatCompletion = await openai.chat.completions.create({
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: 'user', content: `${role}${prompt}` }],
       model: openaiModel,
       max_tokens: 50,
       temperature: 0.70,
@@ -296,8 +296,8 @@ async function getAIResponse (role, prefix, prompt) {
     if (response.endsWith('.')) {
       response = response.slice(0, -1) // Removes the last character if it is a dot because it doesn't feel very natural in a twitch chat
     }
-    console.log('[AI] Generated text : ' + response)
-    response = (prefix + ' ' + response).trim()
+    console.log(`[AI] Generated text: ${response}`)
+    response = (`${prefix} ${response}`).trim()
   } while (response.length > maxMessageSize && cpt < maxAiRetries)
   return response.substring(0, maxMessageSize)
 }
@@ -360,7 +360,7 @@ async function multiFact (identity) {
   if (!isMultifactActive) { return }
   singleFact(identity)
   const nextTime = randTime(time10Minutes)
-  console.log('Next fact in ' + millisToMinutesAndSeconds(nextTime))
+  console.log(`Next fact in ${millisToMinutesAndSeconds(nextTime)}`)
   setTimeout(() => multiFact(identity), nextTime)
 }
 
@@ -371,7 +371,7 @@ async function singleFact (identity) {
 }
 
 function farm (identity) {
-  console.log('Farming as ' + identity.username)
+  console.log(`Farming as ${identity.username}`)
   const stdActions = ['+ed', '+eg', '$fish trap reset', 'Okayeg gib eg', '?cookie', '¿taco pepeSenora', '%hw'].sort(() => Math.random() - 0.5)
   let timer = 0
   for (const action of stdActions) {
@@ -400,15 +400,15 @@ function farm (identity) {
 
 // Says a message to a channel
 function say (identity, message) {
-  if (identity.isAvoidDupe) { message = message + ' ' + duplicateSuffix }
+  if (identity.isAvoidDupe) { message = `${message} ${duplicateSuffix}` }
   const msg = message.substring(0, maxMessageSize)
   identity.isAvoidDupe = !identity.isAvoidDupe
 
   if (isDebugActive) {
-    console.log('DEBUG: Would have said as ' + identity.username + ' on #' + identity.channel + ': ' + msg)
+    console.log(`DEBUG: Would have said as ${identity.username} on #${identity.channel}: ${msg}`)
   } else {
     identity.client.say(identity.channel, msg)
-    console.log('Said as ' + identity.username + ' on #' + identity.channel + ': ' + msg)
+    console.log(`Said as '${identity.username}' on #${identity.channel}: ${msg}`)
   }
 }
 
@@ -416,7 +416,7 @@ function getIdentity (username) {
   const identity = identities.find(identity => identity.username === username)
   if (identity) return identity
   else {
-    console.log('ERROR: Identity ' + username + ' not found, returning ' + identities[0].username + ' instead')
+    console.log(`ERROR: Identity ${username} not found, returning ${identities[0].username} instead`)
     return identities[0]
   }
 }
@@ -430,7 +430,7 @@ function envVariablesCheck () {
   for (const envVariable of envVariables) {
     if (process.env?.[envVariable] === undefined) {
       isFine = false
-      console.log('ERROR: Environment variable ' + envVariable + ' is undefined')
+      console.log(`ERROR: Environment variable ${envVariable} is undefined`)
     }
   }
   if (!isFine) {
@@ -458,7 +458,7 @@ function randTime (time, delayFactor = 0) {
 function millisToMinutesAndSeconds (millis) {
   const minutes = Math.floor(millis / 60000)
   const seconds = ((millis - minutes * 60000) / 1000).toFixed(0)
-  return minutes + 'm' + seconds + 's'
+  return `${minutes}m ${seconds}s`
 }
 
 function initializeClients () {
@@ -481,7 +481,7 @@ function initializeApi () {
 
   app.post('/command', async (req, res) => {
     const { message } = req.body
-    console.log('Received command : ' + message)
+    console.log(`Received command: ${message}`)
     const output = await processCommand(message)
     res.status(200).json(output)
   })

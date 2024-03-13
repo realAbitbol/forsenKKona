@@ -43,44 +43,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
 $('#togSpam').on('change', async function (event) {
   if ($(this).prop('checked')) {
-    command('enable spam ' + $('#spamSelect').val())
+    command(`enable spam ${$('#spamSelect').val()}`)
     setTimeout(function () { $('#togSpam').bootstrapToggle('off') }, 300000)
   } else { command('disable spam') }
 })
 
 $('#togPyramid').on('change', async function (event) {
   if ($(this).prop('checked')) {
-    command('enable pyramid ' + $('#pyramidSelect').val())
+    command(`enable pyramid ${$('#pyramidSelect').val()}`)
     setTimeout(function () { $('#togPyramid').bootstrapToggle('off') }, 300000)
   } else { command('disable pyramid') }
 })
 
 $('#spamPresetsSelect').on('change', async function (event) {
-  const selectedOption = $('#spamPresetsSelect option[value]:selected')
-  if (selectedOption.text() !== '') {
-    $('#spam').val(selectedOption.val())
-    command('setspamcontent ' + selectedOption.val())
+  if ($(this).val() !== '') {
+    $('#spam').val($(this).val())
+    command(`setspamcontent ${$(this).val()}`)
     $(this).prop('selectedIndex', 0)
   }
 })
 
 $('#togMultifact').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable multifact ' + $('#factsAndFucksSelect').val())
+  if ($(this).prop('checked')) command(`enable multifact ${$('#factsAndFucksSelect').val()}`)
   else command('disable multifact')
 })
 
 $('#togChaintrivia').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable chaintrivia ' + $('#triviasSelect').val())
+  if ($(this).prop('checked')) command(`enable chaintrivia ${$('#triviasSelect').val()}`)
   else command('disable chaintrivia')
 })
 
 $('#togEshrug').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable eshrug ' + $('#eshrugsSelect').val())
+  if ($(this).prop('checked')) command(`enable eshrug ${$('#eshrugsSelect').val()}`)
   else command('disable eshrug')
 })
 
 $('#togXd').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable xd ' + $('#xdsSelect').val())
+  if ($(this).prop('checked')) command(`enable xd ${$('#xdsSelect').val()}`)
   else command('disable xd')
 })
 
@@ -90,12 +89,12 @@ $('#togStopTrivia').on('change', async function (event) {
 })
 
 $('#togEcho').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable echo ' + $('#echoeeSelect').val())
+  if ($(this).prop('checked')) command(`enable echo ${$('#echoeeSelect').val()}`)
   else command('disable echo')
 })
 
 $('#togAssistant').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable assistant ' + $('#assistantSelect').val())
+  if ($(this).prop('checked')) command(`enable assistant ${$('#assistantSelect').val()}`)
   else command('disable assistant')
 })
 
@@ -106,36 +105,36 @@ $('#togDebug').on('change', async function (event) {
 
 $('#aiForm').on('submit', async function (event) {
   event.preventDefault()
-  command('aiprompt ' + $('#assistantSelect').val() + ' ' + $('#prompt').val())
+  command(`aiprompt ${$('#assistantSelect').val()} ${$('#prompt').val()}`)
 })
 
 $('#messageForm').on('submit', async function (event) {
   event.preventDefault()
-  command('say ' + $('#identityMessage').val() + ' ' + $('#message').val())
+  command(`say ${$('#identityMessage').val()} ${$('#message').val()}`)
 })
 
 $('#farmForm').on('submit', async function (event) {
   event.preventDefault()
-  command('farm ' + $('#identityFarm').val())
+  command(`farm ${$('#identityFarm').val()}`)
 })
 
 $('#spamForm').on('submit', async function (event) {
   event.preventDefault()
-  command('setspamcontent ' + $('#spam').val())
+  command(`setspamcontent ${$('#spam').val()}`)
 })
 
 $('#pyraForm').on('submit', async function (event) {
   event.preventDefault()
-  command('setpyramidemote ' + $('#pyramidEmote').val())
-  command('setpyramidwidth ' + $('#pyramidWidth').val())
+  command(`setpyramidemote ${$('#pyramidEmote').val()}`)
+  command(`setpyramidwidth ${$('#pyramidWidth').val()}`)
 })
 
 $('#btnSingleFact').on('click', async function (event) {
-  command('singlefact ' + $('#factsAndFucksSelect').val())
+  command(`singlefact ${$('#factsAndFucksSelect').val()}`)
 })
 
 $('#btnSingleTrivia').on('click', async function (event) {
-  command('singletrivia ' + $('#triviasSelect').val())
+  command(`singletrivia ${$('#triviasSelect').val()}`)
 })
 
 $('#btnDisableAll').on('click', async function (event) {
@@ -144,19 +143,19 @@ $('#btnDisableAll').on('click', async function (event) {
 })
 
 $('#btnWeebs').on('click', async function (event) {
-  command('say ' + $('#factsAndFucksSelect').val() + ' pls carpet bomb all weebs Donald Trump forsenRNG')
+  command(`say ${$('#factsAndFucksSelect').val()} pls carpet bomb all weebs Donald Trump forsenRNG`)
 })
 
 $('#btnElis').on('click', async function (event) {
-  command('say ' + $('#factsAndFucksSelect').val() + ' pls waterboard all elis subs Donald Trump forsenRNG')
+  command(`say ${$('#factsAndFucksSelect').val()} pls waterboard all elis subs Donald Trump forsenRNG`)
 })
 
 $('#btnFurries').on('click', async function (event) {
-  command('say ' + $('#factsAndFucksSelect').val() + ' pls nuke all furries Donald Trump forsenRNG')
+  command(`say ${$('#factsAndFucksSelect').val()} pls nuke all furries Donald Trump forsenRNG`)
 })
 
 $('#btnIWould').on('click', async function (event) {
-  command('say ' + $('#factsAndFucksSelect').val() + ' ⠀⣿⠀⠀⢸⣇⠀⣿⣇⠀⣿⠀⣶⠛⠛⣷⡀⣿⠀⠀⣿⡇⢸⡇⠀⢸⡟⠛⢷⡄ ⠀⣿⠀⠀⠀⣿⢰⡇⣿⢰⡏⢸⡇⠀⠀⣿⡇⣿⠀⠀⣿⡇⢸⡇⠀⢸⡇⠀⢈⣿ forsenCoomer ⠀⣿⠀⠀⠀⢹⣿⠁⢸⣿⠁⠈⢿⣤⣴⠟⠀⠹⣧⣤⡿⠁⢸⣧⣤⢸⣧⣤⡾⠃')
+  command(`say ${$('#factsAndFucksSelect').val()} ⠀⣿⠀⠀⢸⣇⠀⣿⣇⠀⣿⠀⣶⠛⠛⣷⡀⣿⠀⠀⣿⡇⢸⡇⠀⢸⡟⠛⢷⡄ ⠀⣿⠀⠀⠀⣿⢰⡇⣿⢰⡏⢸⡇⠀⠀⣿⡇⣿⠀⠀⣿⡇⢸⡇⠀⢸⡇⠀⢈⣿ forsenCoomer ⠀⣿⠀⠀⠀⢹⣿⠁⢸⣿⠁⠈⢿⣤⣴⠟⠀⠹⣧⣤⡿⠁⢸⣧⣤⢸⣧⣤⡾⠃`)
 })
 
 $('#btnCoffee').on('click', async function (event) {
