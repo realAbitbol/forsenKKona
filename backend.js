@@ -323,16 +323,15 @@ function spam (identity) {
 function nextPyramidWidth () {
   if (currentPyramidPhase) {
     currentPyramidWidth++
-    if (currentPyramidWidth === pyramidWidth) { currentPyramidPhase = false }
-    return currentPyramidWidth
+    if (currentPyramidWidth === pyramidWidth) currentPyramidPhase = false
   } else {
     currentPyramidWidth--
     if (currentPyramidWidth === 0) {
       currentPyramidPhase = true
       currentPyramidWidth = 1
     }
-    return currentPyramidWidth
   }
+  return currentPyramidWidth
 }
 
 function pyramid (identity) {
