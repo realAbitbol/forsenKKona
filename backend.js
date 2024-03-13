@@ -539,6 +539,7 @@ function randColor (except = undefined) {
 function initializeClients () {
   let isFirst = true
   for (const identity of identities) {
+    identity.password = identity.password.replace(/oauth:/, '')
     identity.client = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identity.username, password: identity.password }, channels: [identity.channel] })
     identity.isAvoidDupe = false
     identity.isColorChangerCompatible = false
