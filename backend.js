@@ -106,7 +106,7 @@ function handleMessageTriviaStopper (context, msg) {
     if (isStopTriviaActive) {
       let cpt = 0
       for (const identity of shuffleArray(identities)) {
-        setTimeout(() => stopTrivia(identity), randTime(timeSeconds, cpt))
+        setTimeout(() => stopTrivia(identity), randTime(timeSeconds, cpt * 2))
         cpt++
       }
     }

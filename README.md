@@ -79,6 +79,7 @@ Remember to map a port (server is listening on 3000/tcp) and provide the require
 ## Ideas for future updates (might or might not be implemented)
 
 - [x] ~~username color changer after each message~~
+- [ ] Use Drop down buttons and input groups in the UI
 - [ ] Refactor into objects and modules
 - [ ] Use toad-scheduler (or a simpler alternative) instead of using timeouts
 - [ ] Implement perfect farming
