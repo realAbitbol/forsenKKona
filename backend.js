@@ -19,30 +19,30 @@ envVariablesCheck()
 
 // AI Setup
 const openaiOptions = {
-  apiKey: process.env.OPENAI_APIKEY,
-  baseURL: process.env.OPENAI_BASEURL
+  apiKey: String(process.env.OPENAI_APIKEY),
+  baseURL: String(process.env.OPENAI_BASEURL)
 }
-const openaiModel = process.env.OPENAI_MODEL
+const openaiModel = String(process.env.OPENAI_MODEL)
 const openai = new OpenAI(openaiOptions)
 const maxAiRetries = Number(process.env.MAX_AI_RETRIES)
 
 // TMI setup
-const identities = JSON.parse(process.env.IDENTITIES)
+const identities = JSON.parse(String(process.env.IDENTITIES))
 
 // HELIX setup (for Color changer)
-const helixClientId = process.env?.HELIX_CLIENT_ID
+const helixClientId = String(process.env?.HELIX_CLIENT_ID)
 
 // Custom topics and prompts
-const triviaTopics = JSON.parse(process.env.TRIVIA_TOPICS)
-const factPrompts = JSON.parse(process.env.FACT_PROMPTS)
-const spamPresets = JSON.parse(process.env.SPAM_PRESETS)
-const assistantRole = process.env.ASSISTANT_ROLE
-const chatterRole = process.env.CHATTER_ROLE
-const assistantTrigger = process.env.ASSISTANT_TRIGGER
+const triviaTopics = JSON.parse(String(process.env.TRIVIA_TOPICS))
+const factPrompts = JSON.parse(String(process.env.FACT_PROMPTS))
+const spamPresets = JSON.parse(String(process.env.SPAM_PRESETS))
+const assistantRole = String(process.env.ASSISTANT_ROLE)
+const chatterRole = String(process.env.CHATTER_ROLE)
+const assistantTrigger = String(process.env.ASSISTANT_TRIGGER)
 
 // Message settings
 const maxMessageSize = Number(process.env.MAX_MESSAGE_SIZE)
-const factPrefix = process.env.FACT_PREFIX
+const factPrefix = String(process.env.FACT_PREFIX)
 const duplicateSuffix = '󠀀'
 
 // Timings
@@ -64,7 +64,7 @@ let isAssistantActive = false
 let isColorChangerActive = false
 let isActionActive = false
 let isDebugActive = false
-let spamContent = process.env.DEFAULT_SPAM
+let spamContent = String(process.env.DEFAULT_SPAM)
 let pyramidEmote = 'forsenKKona'
 let pyramidWidth = 3
 
