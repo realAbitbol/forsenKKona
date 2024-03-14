@@ -3,7 +3,7 @@ async function refreshDisplay () {
   $('#togMultifact').bootstrapToggle(settings.isMultifactActive ? 'on' : 'off', true)
   $('#togSpam').bootstrapToggle(settings.isSpamActive ? 'on' : 'off', true)
   $('#togChaintrivia').bootstrapToggle(settings.isChainTriviaActive ? 'on' : 'off', true)
-  $('#togEshrug').bootstrapToggle(settings.isEshrugActive ? 'on' : 'off', true)
+  $('#togBotCancer').bootstrapToggle(settings.isBotCancerActive ? 'on' : 'off', true)
   $('#togXd').bootstrapToggle(settings.isXdActive ? 'on' : 'off', true)
   $('#togStopTrivia').bootstrapToggle(settings.isStopTriviaActive ? 'on' : 'off', true)
   $('#togEcho').bootstrapToggle(settings.isEchoActive ? 'on' : 'off', true)
@@ -16,7 +16,7 @@ async function refreshDisplay () {
   $('#togDebug').bootstrapToggle(settings.isDebugActive ? 'on' : 'off', true)
   $('#spam').val(settings.spamContent)
 
-  const selects = [$('#identityMessage'), $('#identityFarm'), $('#assistantSelect'), $('#factsAndFucksSelect'), $('#triviasSelect'), $('#eshrugsSelect'), $('#xdsSelect'), $('#spamSelect'), $('#pyramidSelect'), $('#echoeeSelect')]
+  const selects = [$('#identityMessage'), $('#identityFarm'), $('#assistantSelect'), $('#factsAndFucksSelect'), $('#triviasSelect'), $('#botCancerSelect'), $('#xdsSelect'), $('#spamSelect'), $('#pyramidSelect'), $('#echoeeSelect')]
   clearSelects(selects)
   fillIdentitySelects(selects, settings.usernames)
 
@@ -77,9 +77,9 @@ $('#togChaintrivia').on('change', async function (event) {
   else command('disable', 'chaintrivia')
 })
 
-$('#togEshrug').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable', 'eshrug', $('#eshrugsSelect').val())
-  else command('disable', 'eshrug')
+$('#togBotCancer').on('change', async function (event) {
+  if ($(this).prop('checked')) command('enable', 'botcancer', $('#botCancerSelect').val())
+  else command('disable', 'botcancer')
 })
 
 $('#togXd').on('change', async function (event) {

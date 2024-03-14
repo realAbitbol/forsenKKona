@@ -12,6 +12,9 @@ const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_M
 const colors = ['blue', 'blue_violet', 'cadet_blue', 'chocolate', 'coral', 'dodger_blue', 'firebrick', 'golden_rod', 'green', 'hot_pink', 'orange_red', 'red', 'sea_green', 'spring_green', 'yellow_green']
 let isColorChangerAvailable = false
 
+// Bot Cancer
+const botCancerArray = shuffleArray(['$$xd', '$fill eShrug', '!2o3a', '!??', '!forsen', '!forsenbajs', '!fancydance', '!brainpower', '!nam', '!picklerick', '!r8', '!rain', '!rules', '!standing', '¿ping', '!losers', '!losers2'])
+
 // Get the directory of the current module
 const currentDir = dirname(fileURLToPath(import.meta.url))
 
@@ -54,7 +57,7 @@ const time10Minutes = Number(process.env.TIME_10MINUTES)
 // Settings
 let isMultifactActive = false
 let isChainTriviaActive = false
-let isEshrugActive = false
+let isBotCancerActive = false
 let isSpamActive = false
 let isStopTriviaActive = false
 let isXdActive = false
@@ -74,6 +77,7 @@ let currentPyramidPhase = true
 let currentChainTriviaIdentity = identities[0]
 let currentAssistantIdentity = identities[0]
 let currentEchoeeIdentity = identities[0]
+let currentBotCancerIndex = 0
 
 // Called every time a new message is posted in the chat
 async function onMessageHandler (target, context, msg, self) {
@@ -175,8 +179,8 @@ async function processCommand (message) {
         case 'action':
           isActionActive = false
           break
-        case 'eshrug':
-          isEshrugActive = false
+        case 'botcancer':
+          isBotCancerActive = false
           break
         case 'xd':
           isXdActive = false
@@ -207,7 +211,7 @@ async function processCommand (message) {
           isChainTriviaActive = false
           isSpamActive = false
           isActionActive = false
-          isEshrugActive = false
+          isBotCancerActive = false
           isStopTriviaActive = false
           isXdActive = false
           isEchoActive = false
@@ -244,9 +248,9 @@ async function processCommand (message) {
           isPyramidActive = true
           pyramid(getIdentity(message.identity))
           break
-        case 'eshrug':
-          isEshrugActive = true
-          eShrug(getIdentity(message.identity))
+        case 'botcancer':
+          isBotCancerActive = true
+          botCancer(getIdentity(message.identity))
           break
         case 'xd':
           isXdActive = true
@@ -332,10 +336,12 @@ async function getAIResponse (role, prefix, prompt) {
   return response.substring(0, maxMessageSize)
 }
 
-function eShrug (identity) {
-  if (isEshrugActive) {
-    say(identity, '$fill eShrug', false)
-    setTimeout(() => eShrug(identity), randTime(timeMinutes))
+function botCancer (identity) {
+  if (isBotCancerActive) {
+    currentBotCancerIndex++
+    if (currentBotCancerIndex >= botCancerArray.length) currentBotCancerIndex = 0
+    say(identity, botCancerArray[currentBotCancerIndex], false)
+    setTimeout(() => botCancer(identity), randTime(timeSpam))
   }
 }
 
@@ -429,7 +435,7 @@ function farm (identity) {
 function say (identity, message, isAction) {
   isAction = isAction ?? isActionActive
   if (identity.isAvoidDupe) { message = `${message} ${duplicateSuffix}` }
-  const msg = message.substring(0, maxMessageSize)
+  const msg = subStringUTF8(message, 0, maxMessageSize)
   identity.isAvoidDupe = !identity.isAvoidDupe
 
   if (isDebugActive) {
@@ -480,7 +486,7 @@ function getIdentity (username) {
 }
 
 function getSettings () {
-  return { isMultifactActive, isChainTriviaActive, isEshrugActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, isActionActive, isDebugActive, spamContent, pyramidEmote, pyramidWidth, usernames: identities.map(identity => identity.username), spamPresets, chainTriviaIdentity: currentChainTriviaIdentity.username, assistantIdentity: currentAssistantIdentity.username, echoeeIdentity: currentEchoeeIdentity.username }
+  return { isMultifactActive, isChainTriviaActive, isBotCancerActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, isActionActive, isDebugActive, spamContent, pyramidEmote, pyramidWidth, usernames: identities.map(identity => identity.username), spamPresets, chainTriviaIdentity: currentChainTriviaIdentity.username, assistantIdentity: currentAssistantIdentity.username, echoeeIdentity: currentEchoeeIdentity.username }
 }
 
 function envVariablesCheck () {
@@ -534,6 +540,17 @@ function prettyPrintCommand (message) {
   if (message.arg) arr.push(`Arg: '${message.arg}'`)
 
   return arr.join(', ')
+}
+
+function subStringUTF8 (str, start, end = undefined) {
+  if (typeof str !== 'string') {
+    throw new TypeError('slice(str, start, end) must receive a string')
+  }
+  const strArr = [...str]
+  if (strArr[0] === '\uFEFF') {
+    strArr.shift()
+  }
+  return strArr.slice(start, end).join('')
 }
 
 function shuffleArray (array) {
