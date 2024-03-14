@@ -3,130 +3,90 @@
 
 <head>
   <title>ForsenKKona</title>
+  <link rel="shortcut icon" href="favicon.ico">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <link rel="shortcut icon" href="favicon.ico" />
-  <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css"
-    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/css/bootstrap5-toggle.min.css" rel="stylesheet">
   <link href="frontend.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
-  <img id="imgBanner" src="banner.webp" alt="banner" class="banner"/>
+  <img id="imgBanner" src="banner.webp" alt="banner" class="banner">
   <h3>⚙️ Commands</h3>
-  <button id="btnSingleFact" type="button" class="btn btn-success mt-2">Single Fact</button>
-  <button id="btnSingleTrivia" type="button" class="btn btn-warning mt-2">Single trivia</button>
-  <input id="togMultifact" type="checkbox" data-toggle="toggle" data-onstyle="primary" data-offstyle="outline-primary"
-    data-on="Multifact on" data-off="Multifact off" data-width="150px" data-height="38px">
-  <input id="togChaintrivia" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger"
-    data-on="Chaintrivia on" data-off="Chaintrivia off" data-width="150px" data-height="38px">
-  <input id="togEshrug" type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="eShrug on"
-    data-off="eShrug off" data-width="150px" data-height="38px">
-  <input id="togXd" type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="XD on"
-    data-off="XD off" data-width="150px" data-height="38px">
-  <input id="togAction" type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="outline-success" data-on="Action mode"
-    data-off="Say mode" data-width="150px" data-height="38px">
-  <input id="togSpam" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger" data-on="Spam on"
-    data-off="Spam off" data-width="150px" data-height="38px">
-  <input id="togPyramid" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger" data-on="Pyramid on"
-    data-off="Pyramid off" data-width="150px" data-height="38px">
-  <input id="togAssistant" type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="outline-info" data-on="Assistant on"
-    data-off="Assistant off" data-width="150px" data-height="38px">
-  <input id="togStopTrivia" type="checkbox" data-toggle="toggle" data-onstyle="success" data-offstyle="outline-success"
-    data-on="Stoptrivia on" data-off="Stoptrivia off" data-width="150px" data-height="38px">
-  <input id="togEcho" type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="outline-warning" data-on="Echo on"
-    data-off="Echo off" data-width="150px" data-height="38px">
-  <button id="btnDisableAll" type="button" class="btn btn-danger mt-2">Stop
-    everything</button>
-  <button id="btnWeebs" type="button" class="btn btn-primary mt-2">Fuck weebs</button>
-  <button id="btnElis" type="button" class="btn btn-primary mt-2">Fuck elis</button>
-  <button id="btnFurries" type="button" class="btn btn-primary mt-2">Fuck furries</button>
-  <button id="btnIWould" type="button" class="btn btn-primary mt-2">I would</button>
-  <input id="togColorChanger" type="checkbox" data-toggle="toggle" data-onstyle="secondary" data-offstyle="outline-secondary" data-on="Color changer on"
-    data-off="Color changer off" data-width="150px" data-height="38px">
-  <input id="togDebug" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="outline-danger" data-on="Debug on"
-    data-off="Debug off" data-width="150px" data-height="38px">
-  <button id="btnCoffee" type="button" class="btn btn-light mt-2">Support me ☕️</button>
+  <div class="mb-3">
+    <span class="input-group d-inline">
+      <button id="btnSingleFact" type="button" class="btn btn-primary">Fact 🇺🇸</button>
+      <input id="togMultifact" type="checkbox" data-toggle="toggle" data-onstyle="primary" data-offstyle="primary" data-onlabel="∞ on" data-offlabel="∞ off" data-height="38px">
+    </span>
+    <span class="input-group d-inline">
+      <button id="btnSingleTrivia" type="button" class="btn btn-info">Trivia ❓</button>
+      <input id="togChaintrivia" type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="info" data-onlabel="∞ on" data-offlabel="∞ off" data-height="38px">
+    </span>
+    <div class="dropdown d-inline">
+      <button id="dropdownFarm" class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Farm 🚜</button>
+      <ul id="dropdownFarmMenu" class="dropdown-menu" aria-labelledby="dropdownFarm">
+      </ul>
+    </div>
+    <button id="btnDisableAll" type="button" class="btn btn-danger">Stop everything 😱</button>
+    <button id="btnCoffee" type="button" class="btn btn-light">Support me ☕️</button>
+  </div>
+  <div class="mb-3">
+    <input id="togBotCancer" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-on="BotCancer 🤪" data-off="BotCancer 🤪" data-width="150px" data-height="38px">
+    <input id="togAssistant" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-on="Assistant 🧠" data-off="Assistant 🧠" data-width="150px" data-height="38px">
+    <input id="togTriviaStopper" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-on="Stoptrivia ✋" data-off="Stoptrivia ✋" data-width="150px" data-height="38px">
+    <input id="togEcho" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-on="Echo 👥" data-off="Echo 👥" data-width="150px" data-height="38px">
+    <input id="togColorChanger" type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="secondary" data-on="Multicolor 🎨" data-off="Multicolor 🎨" data-width="150px" data-height="38px"> 
+    <input id="togDebug" type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="secondary" data-on="Debug 🔇" data-off="Normal 🔈" data-width="150px" data-height="38px">
+  </div>
 
-  <h3>💬 Send a message</h3>
+  <h3>💬 Messages</h3>
 
   <form id="messageForm">
-    <label class="form-label" for="message">Message</label>
-    <input id="message" class="form-control" type="text" name="message" required>
-    <label class="form-label" for="identityMessage">Identity</label>
-    <select id="identityMessage" class="form-select" name="identityMessage">
-    </select>
-    <button type="submit" class="btn btn-primary">Say</button>
-  </form>
+    <div class="mb-3 w-75">
+      <div class="input-group mb-3">
+        <span class="input-group-text">👤</span>
+        <button id="dropdownMessageIdentity" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Who</button>
+        <ul id="dropdownMessageIdentityMenu" class="dropdown-menu">
+        </ul>
+        <input id="inputMessage" type="text" class="form-control" placeholder="Message" aria-label="Message" required>
+        <button id="dropdownMessagePresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Preset</button>
+        <ul id="dropdownMessagePresetsMenu" class="dropdown-menu">
+        </ul>
+        <input id="togMessageSpam" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-on="Spam on" data-off="Spam off">
+        <input id="btnMessageAction" type="submit" class="btn btn-primary" value="Say">
+        <button id="dropdownMessageAction" type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="visually-hidden">Toggle Dropdown</span>
+        </button>
+        <ul id="dropdownMessageActionMenu" class="dropdown-menu dropdown-menu-end">
+          <li><a id="itemMessageActionMenuSay" class="dropdown-item" href="#">Say</a></li>
+          <li><a id="itemMessageActionMenuAction" class="dropdown-item" href="#">Action</a></li>
+          <li><a id="itemMessageActionMenuAskAI" class="dropdown-item" href="#">Ask AI</a></li>
+        </ul>
+      </div>
+    </div>
+  </form> 
 
-  <h3>🚜 Farm points</h3>
-  <form id="farmForm">
-    <label class="form-label" for="identityFarm">Identity</label>
-    <select id="identityFarm" class="form-select" name="identityFarm">
-    </select>
-    <button type="submit" class="btn btn-primary">Farm</button>
-  </form>
-
-  <h3>🤖 Ask AI something</h3>
-  <form id="aiForm">
-    <label class="form-label" for="prompt">Prompt</label>
-    <input id="prompt" class="form-control" type="text" name="prompt" size="185" required>
-    <button type="submit" class="btn btn-primary">Ask</button>
-  </form>
-
-  <h3>🗑️ Set spam content</h3>
-  <form id="spamForm">
-    <label class="form-label" for="spam">Spam content</label>
-    <input id="spam" class="form-control" type="text" name="spam" size="185" required>
-    <button type="submit" class="btn btn-primary">Set</button>
-    <label class="form-label" for="spamPresetsSelect">Spam presets</label>
-    <select id="spamPresetsSelect" class="form-select" name="spamPresetsSelect">
-    </select>
-  </form>
-
-  <h3>🔺 Set Pyramid</h3>
-  <form id="pyraForm">
-    <label class="form-label" for="pyramidEmote">Emote</label>
-    <input id="pyramidEmote" class="form-control" type="text" name="pyramidEmote" required>
-    <label class="form-label" for="pyramidWidth">Width</label>
-    <input id="pyramidWidth" class="form-control" type="number" name="pyramidWidth" required>
-    <button type="submit" class="btn btn-primary">Set</button>
-  </form>
-
-  <h3>👷‍♂️ Assignments</h3>
-  <form id="assignmentsForm">
-    <label class="form-label" for="factsAndFucksSelect">Facts & fucks</label>
-    <select id="factsAndFucksSelect" class="form-select" name="factsAndFucksSelect">
-    </select>
-    <label class="form-label" for="triviasSelect">Trivias</label>
-    <select id="triviasSelect" class="form-select" name="triviasSelect">
-    </select>
-    <label class="form-label" for="eshrugsSelect">eShrugs</label>
-    <select id="eshrugsSelect" class="form-select" name="eshrugsSelect">
-    </select>
-    <label class="form-label" for="xdsSelect">XDs</label>
-    <select id="xdsSelect" class="form-select" name="xdsSelect">
-    </select>
-    <label class="form-label" for="spamSelect">Spam</label>
-    <select id="spamSelect" class="form-select" name="spamSelect">
-    </select>
-    <label class="form-label" for="pyramidSelect">Pyramids</label>
-    <select id="pyramidSelect" class="form-select" name="pyramidSelect">
-    </select>
-    <label class="form-label" for="assistantSelect">Assistant</label>
-    <select id="assistantSelect" class="form-select" name="assistantSelect">
-    </select>
-    <label class="form-label" for="echoeeSelect">Echoee</label>
-    <select id="echoeeSelect" class="form-select" name="echoeeSelect">
-    </select>
-  </form>
+  <h3>🛕 Pyramid</h3>
+    <div class="input-group d-inline-flex w-auto">
+      <span class="input-group-text">👤</span>
+      <button id="dropdownPyramidIdentity" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Who</button>
+      <ul id="dropdownPyramidIdentityMenu" class="dropdown-menu">
+      </ul>
+      <input id="inputPyramidEmote" type="text" class="form-control w-auto" placeholder="Pyramid emote" aria-label="Pyramid emote" required>
+      <button id="dropdownPyramidPresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Presets</button>
+      <ul id="dropdownPyramidPresetsMenu" class="dropdown-menu">
+      </ul>
+      <span class="input-group-text">Size</span>
+      <input id="inputPyramidSize" type="number" class="form-control" aria-label="Message" value="3" required>
+      <input id="togPyramid" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="on" data-offlabel="off" data-height="38px">
+    </div>
 
   <script src="frontend.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/js/bootstrap5-toggle.jquery.min.js"></script>
 </body>
 
 </html>

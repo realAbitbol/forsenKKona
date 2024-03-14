@@ -7,27 +7,6 @@ form {
     align-items: center;
 }
 
-label {
-    margin-right: 10px;
-}
-
-button {
-    margin-right: 10px;
-}
-
-input {
-    margin-right: 10px;
-}
-
-select {
-    margin-right: 10px;
-}
-
-.toggle {
-    margin-right: 10px;
-    margin-top: 0.25em;
-}
-
 .banner {
     width: 50%;
     height: 50%;
