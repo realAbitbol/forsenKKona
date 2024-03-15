@@ -461,21 +461,25 @@ async function changeColor (identity = undefined, color = undefined) {
     if (isDebugActive) {
       console.log(`DEBUG: Would have changed the color of ${id.username} to ${col}`)
     } else {
-      const response = await fetch(`https://api.twitch.tv/helix/chat/color?user_id=${id.userId}&color=${col}`, {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${id.password}`, 'Client-ID': helixClientId }
-      })
-      switch (response.status) {
-        case 204:
-          console.log(`Changed the color of ${id.username} to ${col}`)
-          break
-        case 400:
-          console.log(`WARNING: The user_id proided for the user ${id.username} is invalid. Color changer has been disabled for this user`)
-          id.isColorChangerCompatible = false
-          break
-        case 401:
-          console.log(`WARNING: The oauth token provided proided for the user ${id.username} doesn't include the user:manage:chat_color scope. Color changer has been disabled for this user`)
-          id.isColorChangerCompatible = false
+      try {
+        const response = await fetch(`https://api.twitch.tv/helix/chat/color?user_id=${id.userId}&color=${col}`, {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${id.password}`, 'Client-ID': helixClientId }
+        })
+        switch (response.status) {
+          case 204:
+            console.log(`Changed the color of ${id.username} to ${col}`)
+            break
+          case 400:
+            console.log(`WARNING: The user_id proided for the user ${id.username} is invalid. Color changer has been disabled for this user`)
+            id.isColorChangerCompatible = false
+            break
+          case 401:
+            console.log(`WARNING: The oauth token provided proided for the user ${id.username} doesn't include the user:manage:chat_color scope. Color changer has been disabled for this user`)
+            id.isColorChangerCompatible = false
+        }
+      } catch (error) {
+        console.log(`OpenAI API is unreachable: ${error}`)
       }
     }
   }
