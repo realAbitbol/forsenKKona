@@ -582,6 +582,7 @@ function initializeClients () {
     identity.client = new tmi.Client({ connection: { reconnect: true, secure: true }, identity: { username: identity.username, password: identity.password }, channels: [identity.channel] })
     identity.isAvoidDupe = false
     identity.isColorChangerCompatible = false
+    identity.client.connect()
 
     if (identity?.userId.length > 0) {
       if (isColorChangerAvailable) {
@@ -596,7 +597,6 @@ function initializeClients () {
       identity.client.on('message', onMessageHandler)
       isFirst = false
     }
-    identity.client.connect()
   }
 }
 
