@@ -378,14 +378,6 @@ function pyramid (identity) {
   }
 }
 
-function botsCancer (identity) {
-  const botCommands = ['$$xd', '$fill eShrug', '!2o3a', '!??', '!forsen', '!forsenbajs', '!fancydance', '!brainpower', '!nam', '!picklerick', '!r8', '!rain', '!rules', '!standing', '¿ping', '!losers', '!losers2']
-
-  for (const command of shuffleArray(botCommands)) {
-    setTimeout(() => say(identity, command, false), randTime(timeSpam)) // FIXME incorrect : should be called recursively
-  }
-}
-
 function stopTrivia (identity) {
   if (isStopTriviaActive) say(identity, '>trivia stop', false)
 }
