@@ -1,3 +1,6 @@
+let idTimeoutSpam
+let idTimeoutPyramid
+
 async function refreshDisplay () {
   const settings = await getSettings()
   $('#togMultifact').bootstrapToggle(settings.isMultifactActive ? 'on' : 'off', true)
@@ -36,23 +39,24 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 $('#togSpam').on('change', async function (event) {
+  clearTimeout(idTimeoutSpam)
   if ($(this).prop('checked')) {
     command('enable', 'spam', $('#spamSelect').val())
-    setTimeout(function () { $('#togSpam').bootstrapToggle('off') }, 300000)
+    idTimeoutSpam = setTimeout(function () { $('#togSpam').bootstrapToggle('off') }, 300000)
   } else { command('disable', 'spam') }
 })
 
 $('#togAction').on('change', async function (event) {
   if ($(this).prop('checked')) {
     command('enable', 'action')
-    setTimeout(function () { $('#togSpam').bootstrapToggle('off') }, 300000)
   } else { command('disable', 'action') }
 })
 
 $('#togPyramid').on('change', async function (event) {
+  clearTimeout(idTimeoutPyramid)
   if ($(this).prop('checked')) {
     command('enable', 'pyramid', $('#pyramidSelect').val())
-    setTimeout(function () { $('#togPyramid').bootstrapToggle('off') }, 300000)
+    idTimeoutPyramid = setTimeout(function () { $('#togPyramid').bootstrapToggle('off') }, 300000)
   } else { command('disable', 'pyramid') }
 })
 

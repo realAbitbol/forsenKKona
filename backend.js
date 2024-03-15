@@ -92,10 +92,7 @@ async function onMessageHandler (target, context, msg, self) {
 async function handleColorChanger (msg, context) {
   if (isColorChangerActive && isColorChangerAvailable) {
     const identity = identities.find((id) => id.username === context['display-name'])
-    if (identity?.isColorChangerCompatible) {
-      identity.currentColor = randColor(identity.currentColor)
-      await changeColor(identity, identity.currentColor)
-    }
+    if (identity?.isColorChangerCompatible) await changeColor(identity)
   }
 }
 
@@ -269,6 +266,7 @@ async function processCommand (message) {
           break
         case 'colorchanger':
           isColorChangerActive = true
+          changeColor()
           break
         case 'debug':
           isDebugActive = true
@@ -461,25 +459,36 @@ function resetColors () {
   }
 }
 
-async function changeColor (identity, color) {
-  if (isDebugActive) {
-    console.log(`DEBUG: Would have changed the color of ${identity.username} to ${color}`)
-  } else {
-    const response = await fetch(`https://api.twitch.tv/helix/chat/color?user_id=${identity.userId}&color=${color}`, {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${identity.password}`, 'Client-ID': helixClientId }
-    })
-    switch (response.status) {
-      case 204:
-        console.log(`Changed the color of ${identity.username} to ${color}`)
-        break
-      case 400:
-        console.log(`WARNING: The user_id proided for the user ${identity.username} is invalid. Color changer has been disabled for this user`)
-        identity.isColorChangerCompatible = false
-        break
-      case 401:
-        console.log(`WARNING: The oauth token provided proided for the user ${identity.username} doesn't include the user:manage:chat_color scope. Color changer has been disabled for this user`)
-        identity.isColorChangerCompatible = false
+async function changeColor (identity = undefined, color = undefined) {
+  let ids = []
+  if (identity === undefined) ids = identities
+  else ids.push(identity)
+
+  for (const id of ids) {
+    const col = color ?? randColor(id.currentColor)
+    if (isDebugActive) {
+      console.log(`DEBUG: Would have changed the color of ${id.username} to ${col}`)
+    } else {
+      try {
+        const response = await fetch(`https://api.twitch.tv/helix/chat/color?user_id=${id.userId}&color=${col}`, {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${id.password}`, 'Client-ID': helixClientId }
+        })
+        switch (response.status) {
+          case 204:
+            console.log(`Changed the color of ${id.username} to ${col}`)
+            break
+          case 400:
+            console.log(`WARNING: The user_id proided for the user ${id.username} is invalid. Color changer has been disabled for this user`)
+            id.isColorChangerCompatible = false
+            break
+          case 401:
+            console.log(`WARNING: The oauth token provided proided for the user ${id.username} doesn't include the user:manage:chat_color scope. Color changer has been disabled for this user`)
+            id.isColorChangerCompatible = false
+        }
+      } catch (error) {
+        console.log(`OpenAI API is unreachable: ${error}`)
+      }
     }
   }
 }
