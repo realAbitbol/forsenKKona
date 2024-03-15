@@ -107,7 +107,7 @@ function handleMessageTriviaStopper (context, msg) {
     if (isStopTriviaActive) {
       let cpt = 0
       for (const identity of shuffleArray(identities)) {
-        setTimeout(() => stopTrivia(identity), randTime(timeSeconds, cpt * 2))
+        setTimeout(() => stopTrivia(identity), randTime(timeSeconds, cpt))
         cpt++
       }
     }
@@ -118,7 +118,7 @@ function handleMessageRaidJoiner (context, msg) {
   if (context['display-name'] === 'DeepDankDungeonBot' && msg.includes('A Raid Event at Level')) {
     let cpt = 0
     for (const identity of shuffleArray(identities)) {
-      setTimeout(() => joinRaid(identity), randTime(timeSeconds, cpt * 2))
+      setTimeout(() => joinRaid(identity), randTime(timeSeconds, cpt))
       cpt++
     }
   }
@@ -432,16 +432,17 @@ function farm (identity) {
 // Says a message to a channel
 function say (identity, message, isAction) {
   isAction = isAction ?? isActionActive
+
+  message = subStringUTF8(message, 0, maxMessageSize)
   if (identity.isAvoidDupe) { message = `${message} ${duplicateSuffix}` }
-  const msg = subStringUTF8(message, 0, maxMessageSize)
   identity.isAvoidDupe = !identity.isAvoidDupe
 
   if (isDebugActive) {
-    console.log(`DEBUG: Would have said as ${identity.username} on #${identity.channel}: ${isAction ? '/me ' : ''}${msg}`)
+    console.log(`DEBUG: Would have said as ${identity.username} on #${identity.channel}: ${isAction ? '/me ' : ''}${message}`)
   } else {
-    if (!isAction) identity.client.say(identity.channel, msg)
-    else identity.client.action(identity.channel, msg)
-    console.log(`Said as ${identity.username} on #${identity.channel}: ${isAction ? '/me ' : ''}${msg}`)
+    if (!isAction) identity.client.say(identity.channel, message)
+    else identity.client.action(identity.channel, message)
+    console.log(`Said as ${identity.username} on #${identity.channel}: ${isAction ? '/me ' : ''}${message}`)
   }
 }
 
