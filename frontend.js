@@ -1,5 +1,6 @@
 let idTimeoutSpam
 let idTimeoutPyramid
+let idTimeoutBotCancer
 let settings
 
 async function refreshDisplay () {
@@ -46,7 +47,7 @@ $('#togMessageSpam').on('change', async function (event) {
     $('#inputMessage').prop('disabled', true)
     $('#dropdownMessagePresets').prop('disabled', true)
     $('#btnMessageAction').prop('disabled', true)
-    idTimeoutSpam = setTimeout(function () { $('#togSpam').bootstrapToggle('off') }, 300000)
+    idTimeoutSpam = setTimeout(() => $('#togMessageSpam').bootstrapToggle('off'), settings.maxSpamTime)
   } else {
     command('disable', 'spam')
     $('#inputMessage').prop('disabled', false)
@@ -71,7 +72,7 @@ $('#togPyramid').on('change', async function (event) {
   clearTimeout(idTimeoutPyramid)
   if ($(this).prop('checked')) {
     command('enable', 'pyramid', `${$('#inputPyramidEmote').val()} ${$('#inputPyramidSize').val()}`)
-    idTimeoutPyramid = setTimeout(function () { $('#togPyramid').bootstrapToggle('off') }, 300000)
+    idTimeoutPyramid = setTimeout(() => $('#togPyramid').bootstrapToggle('off'), settings.maxSpamTime)
   } else { command('disable', 'pyramid') }
 })
 
@@ -117,8 +118,11 @@ $('#togChaintrivia').on('change', async function (event) {
 })
 
 $('#togBotCancer').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable', 'botcancer')
-  else command('disable', 'botcancer')
+  clearTimeout(idTimeoutBotCancer)
+  if ($(this).prop('checked')) {
+    command('enable', 'botcancer')
+    idTimeoutBotCancer = setTimeout(() => $('#togBotCancer').bootstrapToggle('off'), settings.maxSpamTime)
+  } else command('disable', 'botcancer')
 })
 
 $('#togTriviaStopper').on('change', async function (event) {

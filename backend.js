@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
 // Environment variables
-const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_ROLE', 'CHATTER_ROLE', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'TIME_SPAM', 'TIME_SECONDS', 'TIME_MINUTES', 'TIME_10MINUTES', 'PLS_TARGETS', 'PLS_VERBS', 'PYRAMID_EMOTE_PRESETS']
+const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_ROLE', 'CHATTER_ROLE', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'TIME_SPAM', 'TIME_SECONDS', 'TIME_MINUTES', 'TIME_10MINUTES', 'PLS_TARGETS', 'PLS_VERBS', 'PYRAMID_EMOTE_PRESETS', 'MAX_SPAM_TIME']
 
 // Twitch colors
 const colors = ['blue', 'blue_violet', 'cadet_blue', 'chocolate', 'coral', 'dodger_blue', 'firebrick', 'golden_rod', 'green', 'hot_pink', 'orange_red', 'red', 'sea_green', 'spring_green', 'yellow_green']
@@ -57,6 +57,7 @@ const timeSeconds = Number(process.env.TIME_SECONDS)
 // eslint-disable-next-line no-unused-vars
 const timeMinutes = Number(process.env.TIME_MINUTES)
 const time10Minutes = Number(process.env.TIME_10MINUTES)
+const maxSpamTime = Number(process.env.MAX_SPAM_TIME)
 
 // Settings
 let isMultifactActive = false
@@ -496,7 +497,7 @@ function getIdentity (username) {
 }
 
 function getSettings () {
-  return { isMultifactActive, isChainTriviaActive, isBotCancerActive, isSpamActive, isStopTriviaActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, sayMode, isDebugActive, pyramidEmote, pyramidWidth, pyramidEmotePresets, usernames: identities.map(identity => identity.username), spamPresets, currentIdentity: currentIdentity.username }
+  return { isMultifactActive, isChainTriviaActive, isBotCancerActive, isSpamActive, isStopTriviaActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, sayMode, isDebugActive, pyramidEmote, pyramidWidth, pyramidEmotePresets, maxSpamTime, usernames: identities.map(identity => identity.username), spamPresets, currentIdentity: currentIdentity.username }
 }
 
 function envVariablesCheck () {
