@@ -14,7 +14,12 @@
 <body>
   <img id="imgBanner" src="banner.webp" alt="banner" class="banner">
   <h3>⚙️ Commands</h3>
-  <div class="mb-3">
+    <div class="input-group d-inline">
+      <span class="input-group-text d-inline">👤</span>
+      <select class="form-select form-select-sm w-auto d-inline">
+        <option>Who</option>
+      </select>
+    </div>
     <span class="input-group d-inline">
       <button id="btnSingleFact" type="button" class="btn btn-primary">Fact 🇺🇸</button>
       <input id="togMultifact" type="checkbox" data-toggle="toggle" data-onstyle="primary" data-offstyle="primary" data-onlabel="∞ on" data-offlabel="∞ off" data-height="38px">
@@ -45,10 +50,6 @@
   <form id="messageForm">
     <div class="mb-3 w-75">
       <div class="input-group mb-3">
-        <span class="input-group-text">👤</span>
-        <button id="dropdownMessageIdentity" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Who</button>
-        <ul id="dropdownMessageIdentityMenu" class="dropdown-menu">
-        </ul>
         <input id="inputMessage" type="text" class="form-control" placeholder="Message" aria-label="Message" required>
         <button id="dropdownMessagePresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Preset</button>
         <ul id="dropdownMessagePresetsMenu" class="dropdown-menu">
@@ -58,7 +59,7 @@
         <button id="dropdownMessageAction" type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
           <span class="visually-hidden">Toggle Dropdown</span>
         </button>
-        <ul id="dropdownMessageActionMenu" class="dropdown-menu dropdown-menu-end">
+        <ul id="dropdownMessageActionMenu" class="dropdown-menu dropdown-menu-end text-end">
           <li><a id="itemMessageActionMenuSay" class="dropdown-item" href="#">Say</a></li>
           <li><a id="itemMessageActionMenuAction" class="dropdown-item" href="#">Action</a></li>
           <li><a id="itemMessageActionMenuAskAI" class="dropdown-item" href="#">Ask AI</a></li>
@@ -69,10 +70,6 @@
 
   <h3>🛕 Pyramid</h3>
     <div class="input-group d-inline-flex w-auto">
-      <span class="input-group-text">👤</span>
-      <button id="dropdownPyramidIdentity" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Who</button>
-      <ul id="dropdownPyramidIdentityMenu" class="dropdown-menu">
-      </ul>
       <input id="inputPyramidEmote" type="text" class="form-control w-auto" placeholder="Pyramid emote" aria-label="Pyramid emote" required>
       <button id="dropdownPyramidPresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Presets</button>
       <ul id="dropdownPyramidPresetsMenu" class="dropdown-menu">
