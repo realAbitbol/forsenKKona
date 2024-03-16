@@ -80,13 +80,12 @@ Remember to map a port (server is listening on 3000/tcp) and provide the require
 
 - [x] ~~username color changer after each message~~
 - [x] ~~UI 2.0~~
+- [ ] Implement message history using localstorage. Navigate it with up and down.
 - [ ] Refactor into objects and modules
-- [ ] Cancel all scheduled messages
-- [ ] Use toad-scheduler (or a simpler alternative) instead of using timeouts
+- [x] ~~Cancel all scheduled farming messages~~
 - [ ] Implement perfect farming
 - [ ] Implement even more perfect farming by reading the bot replies
 - [ ] Implement dynamically configurable facts and spam presets
-- [ ] Succeed in having a good bootstrap UI or replace it with another CSS library (Flycast ?)
 
 ## That's all folks
 
