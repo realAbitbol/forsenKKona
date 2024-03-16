@@ -15,3 +15,7 @@ form {
 .banner:hover {
     cursor: pointer;
 }
+
+#btnClearMessage:hover {
+    cursor: pointer;
+}
