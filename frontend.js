@@ -76,20 +76,20 @@ $('#togPyramid').on('change', async function (event) {
 })
 
 $('#dropdownMessagePresets').on('hide.bs.dropdown', ({ clickEvent }) => {
-  if (clickEvent?.target) {
+  if (clickEvent?.target && clickEvent.target.closest('ul')?.id === 'dropdownMessagePresetsMenu') {
     $('#inputMessage').val(getSpamText($(clickEvent.target).text()))
     $('#inputMessage').trigger('input')
   }
 })
 
 $('#dropdownFarm').on('hide.bs.dropdown', ({ clickEvent }) => {
-  if (clickEvent?.target) {
+  if (clickEvent?.target && clickEvent.target.closest('ul')?.id === 'dropdownFarmMenu') {
     command('farm', undefined, $(clickEvent.target).text())
   }
 })
 
 $('#dropdownMessageAction').on('hide.bs.dropdown', ({ clickEvent }) => {
-  if (clickEvent?.target) {
+  if (clickEvent?.target && clickEvent.target.closest('ul')?.id === 'dropdownMessageActionMenu') {
     settings.sayMode = findSayMode($(clickEvent.target).text())
     setBtnMessageMode(settings.sayMode)
     command('saymode', undefined, settings.sayMode)
@@ -97,7 +97,7 @@ $('#dropdownMessageAction').on('hide.bs.dropdown', ({ clickEvent }) => {
 })
 
 $('#dropdownPyramidPresets').on('hide.bs.dropdown', ({ clickEvent }) => {
-  if (clickEvent?.target) {
+  if (clickEvent?.target && clickEvent.target.closest('ul')?.id === 'dropdownPyramidPresetsMenu') {
     $('#inputPyramidEmote').val($(clickEvent.target).text())
   }
 })
