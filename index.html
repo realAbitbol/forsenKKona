@@ -13,13 +13,8 @@
 
 <body>
   <img id="imgBanner" src="banner.webp" alt="banner" class="banner">
+
   <h3>⚙️ Commands</h3>
-    <div class="input-group d-inline">
-      <span class="input-group-text d-inline">👤</span>
-      <select class="form-select form-select-sm w-auto d-inline">
-        <option>Who</option>
-      </select>
-    </div>
     <span class="input-group d-inline">
       <button id="btnSingleFact" type="button" class="btn btn-primary">Fact 🇺🇸</button>
       <input id="togMultifact" type="checkbox" data-toggle="toggle" data-onstyle="primary" data-offstyle="primary" data-onlabel="∞ on" data-offlabel="∞ off" data-height="38px">
@@ -34,36 +29,42 @@
       </ul>
     </div>
     <button id="btnDisableAll" type="button" class="btn btn-danger">Stop everything 😱</button>
+    <button id="btnPlsDonaldTrump" type="button" class="btn btn-primary">Pls Donald Trump 🙏</button>
     <button id="btnCoffee" type="button" class="btn btn-light">Support me ☕️</button>
   </div>
   <div class="mb-3">
+    <div class="input-group d-inline">
+      <span class="input-group-text d-inline">👤</span>
+      <select id="selectIdentity" class="form-select w-auto d-inline">
+        <option>forsenKKona</option>
+      </select>
+    </div>
     <input id="togBotCancer" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-on="BotCancer 🤪" data-off="BotCancer 🤪" data-width="150px" data-height="38px">
     <input id="togAssistant" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-on="Assistant 🧠" data-off="Assistant 🧠" data-width="150px" data-height="38px">
     <input id="togTriviaStopper" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-on="Stoptrivia ✋" data-off="Stoptrivia ✋" data-width="150px" data-height="38px">
     <input id="togEcho" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-on="Echo 👥" data-off="Echo 👥" data-width="150px" data-height="38px">
     <input id="togColorChanger" type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="secondary" data-on="Multicolor 🎨" data-off="Multicolor 🎨" data-width="150px" data-height="38px"> 
-    <input id="togDebug" type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="secondary" data-on="Debug 🔇" data-off="Normal 🔈" data-width="150px" data-height="38px">
+    <input id="togDebug" type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="secondary" data-on="Debug 🔇" data-off="Normal 🔈" data-width="150px" data-height="38px">
   </div>
 
   <h3>💬 Messages</h3>
-
   <form id="messageForm">
-    <div class="mb-3 w-75">
+    <div class="mb-3 d-inline w-75">
       <div class="input-group mb-3">
-        <input id="inputMessage" type="text" class="form-control border-end-0" placeholder="Message" aria-label="Message" autocomplete="off" autocapitalize="off" name="message" spellcheck="false" autofocus required>
+        <input id="inputMessage" type="text" class="form-control border-end-0 d-inline-flex" placeholder="Message" aria-label="Message" autocomplete="off" autocapitalize="off" name="message" spellcheck="false" autofocus required>
         <span id="btnClearMessage" class="input-group-text bg-body border-start-0">⛌</span>
-        <button id="dropdownMessagePresets" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Preset</button>
+        <button id="dropdownMessagePresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Presets</button>
         <ul id="dropdownMessagePresetsMenu" class="dropdown-menu">
         </ul>
-        <input id="togMessageSpam" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-on="Spam on" data-off="Spam off">
+        <input id="togMessageSpam" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="primary" data-on="Spam on" data-off="Spam off">
         <input id="btnMessageAction" type="submit" class="btn btn-primary" value="Say 💬">
         <button id="dropdownMessageAction" type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
           <span class="visually-hidden">Toggle Dropdown</span>
         </button>
         <ul id="dropdownMessageActionMenu" class="dropdown-menu dropdown-menu-end text-end">
-          <li><a id="itemMessageActionMenuSay" class="dropdown-item" href="#">Say 💬</a></li>
-          <li><a id="itemMessageActionMenuAction" class="dropdown-item" href="#">Action 💭</a></li>
-          <li><a id="itemMessageActionMenuAskAI" class="dropdown-item" href="#">Ask AI 🤖</a></li>
+          <li><a class="dropdown-item" value="say" href="#">Say 💬</a></li>
+          <li><a class="dropdown-item" value="action" href="#">Action 💭</a></li>
+          <li><a class="dropdown-item" value="ai" href="#">Ask AI 🤖</a></li>
         </ul>
       </div>
     </div>

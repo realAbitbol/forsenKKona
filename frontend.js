@@ -1,8 +1,9 @@
 let idTimeoutSpam
 let idTimeoutPyramid
+let settings
 
 async function refreshDisplay () {
-  const settings = await getSettings()
+  settings = await getSettings()
   $('#togMultifact').bootstrapToggle(settings.isMultifactActive ? 'on' : 'off', true)
   $('#togMessageSpam').bootstrapToggle(settings.isSpamActive ? 'on' : 'off', true)
   $('#togChaintrivia').bootstrapToggle(settings.isChainTriviaActive ? 'on' : 'off', true)
@@ -14,92 +15,118 @@ async function refreshDisplay () {
   $('#togColorChanger').bootstrapToggle(settings.isColorChangerActive ? 'on' : 'off', true)
   if (!settings.isColorChangerAvailable) $('#togColorChanger').bootstrapToggle('disable')
   $('#togDebug').bootstrapToggle(settings.isDebugActive ? 'on' : 'off', true)
-  $('#spam').val(settings.spamContent)
 
-  const selects = [$('#identityMessage'), $('#identityFarm'), $('#assistantSelect'), $('#factsAndFucksSelect'), $('#triviasSelect'), $('#botCancerSelect'), $('#xdsSelect'), $('#spamSelect'), $('#pyramidSelect'), $('#echoeeSelect')]
-  clearSelects(selects)
-  fillIdentitySelects(selects, settings.usernames)
+  fillSelect($('#selectIdentity'), settings.usernames)
+  $('#selectIdentity').val(settings.currentIdentity)
 
-  $('#triviasSelect').val(settings.chainTriviaIdentity)
-  $('#assistantSelect').val(settings.assistantIdentity)
-  $('#echoeeSelect').val(settings.echoeeIdentity)
+  $('#inputPyramidEmote').val(settings.pyramidEmote)
+  $('#inputPyramidSize').val(settings.pyramidWidth)
 
-  $('#pyramidEmote').val(settings.pyramidEmote)
-  $('#pyramidWidth').val(settings.pyramidWidth)
+  fillDropdown($('#dropdownFarmMenu'), settings.usernames)
+  fillDropdown($('#dropdownMessagePresetsMenu'), settings.spamPresets.map((el) => el.id))
+  fillDropdown($('#dropdownPyramidPresetsMenu'), settings.pyramidEmotePresets)
 
   $('#spamPresetsSelect').find('option').remove().end()
   $('#spamPresetsSelect').append($('<option>', { text: 'Choose...' }).prop('selected', true))
   for (const spam of settings.spamPresets) {
     $('#spamPresetsSelect').append($('<option>', { value: spam.preset, text: spam.id }))
   }
+  $('#inputMessage').trigger('input')
+  setBtnMessageMode(settings.sayMode)
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   refreshDisplay()
 })
 
-$('#togSpam').on('change', async function (event) {
+$('#togMessageSpam').on('change', async function (event) {
   clearTimeout(idTimeoutSpam)
   if ($(this).prop('checked')) {
-    command('enable', 'spam', $('#spamSelect').val())
+    command('enable', 'spam', $('#inputMessage').val())
+    $('#inputMessage').prop('disabled', true)
+    $('#dropdownMessagePresets').prop('disabled', true)
+    $('#btnMessageAction').prop('disabled', true)
     idTimeoutSpam = setTimeout(function () { $('#togSpam').bootstrapToggle('off') }, 300000)
-  } else { command('disable', 'spam') }
+  } else {
+    command('disable', 'spam')
+    $('#inputMessage').prop('disabled', false)
+    $('#dropdownMessagePresets').prop('disabled', false)
+    $('#btnMessageAction').prop('disabled', false)
+  }
 })
 
-$('#togAction').on('change', async function (event) {
-  if ($(this).prop('checked')) {
-    command('enable', 'action')
-  } else { command('disable', 'action') }
+$('#inputMessage').on('input', async function (event) {
+  if ($(this).val().trim().length === 0) {
+    $('#btnMessageAction').prop('disabled', true)
+    $('#togMessageSpam').prop('disabled', true)
+    $('#togMessageSpam').bootstrapToggle('disable')
+  } else {
+    $('#btnMessageAction').prop('disabled', false)
+    $('#togMessageSpam').prop('disabled', false)
+    $('#togMessageSpam').bootstrapToggle('enable')
+  }
 })
 
 $('#togPyramid').on('change', async function (event) {
   clearTimeout(idTimeoutPyramid)
   if ($(this).prop('checked')) {
-    command('enable', 'pyramid', $('#pyramidSelect').val())
+    command('enable', 'pyramid', `${$('#inputPyramidEmote').val()} ${$('#inputPyramidSize').val()}`)
     idTimeoutPyramid = setTimeout(function () { $('#togPyramid').bootstrapToggle('off') }, 300000)
   } else { command('disable', 'pyramid') }
 })
 
-$('#spamPresetsSelect').on('change', async function (event) {
-  if ($(this).val() !== '') {
-    $('#spam').val($(this).val())
-    command('setspamcontent', undefined, undefined, $(this).val())
-    $(this).prop('selectedIndex', 0)
+$('#dropdownMessagePresets').on('hide.bs.dropdown', ({ clickEvent }) => {
+  if (clickEvent?.target) {
+    $('#inputMessage').val(getSpamText($(clickEvent.target).text()))
+    $('#inputMessage').trigger('input')
   }
 })
 
+$('#dropdownFarm').on('hide.bs.dropdown', ({ clickEvent }) => {
+  if (clickEvent?.target) {
+    command('farm', undefined, $(clickEvent.target).text())
+  }
+})
+
+$('#dropdownMessageAction').on('hide.bs.dropdown', ({ clickEvent }) => {
+  if (clickEvent?.target) {
+    settings.sayMode = findSayMode($(clickEvent.target).text())
+    setBtnMessageMode(settings.sayMode)
+    command('saymode', undefined, settings.sayMode)
+  }
+})
+
+$('#selectIdentity').on('change', async function (event) {
+  command('idchange', undefined, $(this).val())
+})
+
 $('#togMultifact').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable', 'multifact', $('#factsAndFucksSelect').val())
+  if ($(this).prop('checked')) command('enable', 'multifact')
   else command('disable', 'multifact')
 })
 
 $('#togChaintrivia').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable', 'chaintrivia', $('#triviasSelect').val())
+  if ($(this).prop('checked')) command('enable', 'chaintrivia')
   else command('disable', 'chaintrivia')
 })
 
 $('#togBotCancer').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable', 'botcancer', $('#botCancerSelect').val())
+  if ($(this).prop('checked')) command('enable', 'botcancer')
   else command('disable', 'botcancer')
 })
 
-$('#togXd').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable', 'xd', $('#xdsSelect').val())
-  else command('disable', 'xd')
-})
-
-$('#togStopTrivia').on('change', async function (event) {
+$('#togTriviaStopper').on('change', async function (event) {
   if ($(this).prop('checked')) command('enable', 'stoptrivia')
   else command('disable', 'stoptrivia')
 })
 
 $('#togEcho').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable', 'echo', $('#echoeeSelect').val())
+  if ($(this).prop('checked')) command('enable', 'echo')
   else command('disable', 'echo')
 })
 
 $('#togAssistant').on('change', async function (event) {
-  if ($(this).prop('checked')) command('enable', 'assistant', $('#assistantSelect').val())
+  if ($(this).prop('checked')) command('enable', 'assistant')
   else command('disable', 'assistant')
 })
 
@@ -113,38 +140,17 @@ $('#togDebug').on('change', async function (event) {
   else command('disable', 'debug')
 })
 
-$('#aiForm').on('submit', async function (event) {
-  event.preventDefault()
-  command('aiprompt', undefined, $('#assistantSelect').val(), $('#prompt').val())
-})
-
 $('#messageForm').on('submit', async function (event) {
   event.preventDefault()
-  command('say', undefined, $('#identityMessage').val(), $('#message').val())
-})
-
-$('#farmForm').on('submit', async function (event) {
-  event.preventDefault()
-  command('farm', undefined, $('#identityFarm').val())
-})
-
-$('#spamForm').on('submit', async function (event) {
-  event.preventDefault()
-  command('setspamcontent', undefined, undefined, $('#spam').val())
-})
-
-$('#pyraForm').on('submit', async function (event) {
-  event.preventDefault()
-  command('setpyramidemote', undefined, undefined, $('#pyramidEmote').val())
-  command('setpyramidwidth', undefined, undefined, $('#pyramidWidth').val())
+  command('say', undefined, $('#inputMessage').val())
 })
 
 $('#btnSingleFact').on('click', async function (event) {
-  command('singlefact', undefined, $('#factsAndFucksSelect').val())
+  command('singlefact')
 })
 
 $('#btnSingleTrivia').on('click', async function (event) {
-  command('singletrivia', undefined, $('#triviasSelect').val())
+  command('singletrivia')
 })
 
 $('#btnDisableAll').on('click', async function (event) {
@@ -152,53 +158,75 @@ $('#btnDisableAll').on('click', async function (event) {
   refreshDisplay()
 })
 
-$('#btnWeebs').on('click', async function (event) {
-  command('say', undefined, $('#factsAndFucksSelect').val(), 'pls carpet bomb all weebs Donald Trump forsenRNG')
-})
-
-$('#btnElis').on('click', async function (event) {
-  command('say', undefined, $('#factsAndFucksSelect').val(), 'pls waterboard all elis subs Donald Trump forsenRNG')
-})
-
-$('#btnFurries').on('click', async function (event) {
-  command('say', undefined, $('#factsAndFucksSelect').val(), 'pls nuke all furries Donald Trump forsenRNG')
-})
-
-$('#btnIWould').on('click', async function (event) {
-  command('say', undefined, $('#factsAndFucksSelect').val(), '⠀⣿⠀⠀⢸⣇⠀⣿⣇⠀⣿⠀⣶⠛⠛⣷⡀⣿⠀⠀⣿⡇⢸⡇⠀⢸⡟⠛⢷⡄ ⠀⣿⠀⠀⠀⣿⢰⡇⣿⢰⡏⢸⡇⠀⠀⣿⡇⣿⠀⠀⣿⡇⢸⡇⠀⢸⡇⠀⢈⣿ forsenCoomer ⠀⣿⠀⠀⠀⢹⣿⠁⢸⣿⠁⠈⢿⣤⣴⠟⠀⠹⣧⣤⡿⠁⢸⣧⣤⢸⣧⣤⡾⠃')
+$('#btnClearMessage').on('click', async function (event) {
+  if (!$('#inputMessage').prop('disabled')) {
+    $('#inputMessage').val('')
+    $('#inputMessage').trigger('input')
+  }
 })
 
 $('#btnCoffee').on('click', async function (event) {
   window.open('https://www.buymeacoffee.com/abitbol', '_blank').focus()
 })
 
+$('#btnPlsDonaldTrump').on('click', async function (event) {
+  command('plsdonaldtrump')
+})
+
 $('#imgBanner').on('click', async function (event) {
   window.open('https://www.twitch.tv/forsen', '_blank').focus()
 })
 
-$('#triviasSelect').on('change', async function (event) {
-  if ($('#togChaintrivia').prop('checked')) $('#togChaintrivia').bootstrapToggle('on')
-})
-
-$('#assistantSelect').on('change', async function (event) {
-  if ($('#togAssistant').prop('checked')) $('#togAssistant').bootstrapToggle('on')
-})
-
-$('#echoeeSelect').on('change', async function (event) {
-  if ($('#togEcho').prop('checked')) $('#togEcho').bootstrapToggle('on')
-})
-
-function clearSelects (selects) {
-  for (const select of selects) {
-    select.find('option').remove().end()
+function fillSelect (select, elems) {
+  select.find('option').remove().end()
+  for (const elem of elems) {
+    if (typeof elem === 'string') select.append(new Option(elem, elem))
+    else select.append(new Option(elem.text, elem.value))
   }
 }
 
-function fillIdentitySelects (selects, usernames) {
-  for (const username of usernames) {
-    for (const select of selects) {
-      select.append($('<option>', { value: username, text: username }))
-    }
+function fillDropdown (dropdown, elems) {
+  dropdown.empty()
+  for (const elem of elems) {
+    dropdown.append(`<li><a class="dropdown-item" href="#">${elem}</a></li>`)
+  }
+}
+
+function setBtnMessageMode (sayMode) {
+  switch (sayMode) {
+    case 'ai':
+      $('#btnMessageAction').val('Ask AI 🤖')
+      $('#inputMessage').removeClass('border-warning')
+      $('#inputMessage').addClass('border-info')
+      $('#btnClearMessage').removeClass('border-warning')
+      $('#btnClearMessage').addClass('border-info')
+      break
+    case 'action':
+      $('#btnMessageAction').val('Action 💭')
+      $('#inputMessage').removeClass('border-info')
+      $('#inputMessage').addClass('border-warning')
+      $('#btnClearMessage').removeClass('border-info')
+      $('#btnClearMessage').addClass('border-warning')
+      break
+    case 'say':
+    default:
+      $('#btnMessageAction').val('Say 💬')
+      $('#inputMessage').removeClass('border-warning')
+      $('#inputMessage').removeClass('border-info')
+      $('#btnClearMessage').removeClass('border-warning')
+      $('#btnClearMessage').removeClass('border-info')
+  }
+}
+
+function findSayMode (buttonText) {
+  switch (buttonText) {
+    case 'Ask AI 🤖':
+      return 'ai'
+    case 'Action 💭':
+      return 'action'
+    case 'Say 💬':
+    default:
+      return 'say'
   }
 }
 
@@ -206,11 +234,15 @@ async function getSettings () {
   return await command('getsettings')
 }
 
-async function command (command, target, identity, arg) {
+function getSpamText (id) {
+  return settings.spamPresets.find((el) => el.id === id).preset
+}
+
+async function command (command, target, arg) {
   const response = await fetch('/command', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ command, target, identity, arg })
+    body: JSON.stringify({ command, target, arg })
   })
   const jsonData = await response.json()
   return jsonData

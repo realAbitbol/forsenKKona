@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
 // Environment variables
-const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_ROLE', 'CHATTER_ROLE', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'DEFAULT_SPAM', 'TIME_SPAM', 'TIME_SECONDS', 'TIME_MINUTES', 'TIME_10MINUTES']
+const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_ROLE', 'CHATTER_ROLE', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'TIME_SPAM', 'TIME_SECONDS', 'TIME_MINUTES', 'TIME_10MINUTES', 'PLS_TARGETS', 'PLS_VERBS', 'PYRAMID_EMOTE_PRESETS']
 
 // Twitch colors
 const colors = ['blue', 'blue_violet', 'cadet_blue', 'chocolate', 'coral', 'dodger_blue', 'firebrick', 'golden_rod', 'green', 'hot_pink', 'orange_red', 'red', 'sea_green', 'spring_green', 'yellow_green']
@@ -39,9 +39,12 @@ const helixClientId = String(process.env?.HELIX_CLIENT_ID)
 const triviaTopics = JSON.parse(String(process.env.TRIVIA_TOPICS))
 const factPrompts = JSON.parse(String(process.env.FACT_PROMPTS))
 const spamPresets = JSON.parse(String(process.env.SPAM_PRESETS))
+const pyramidEmotePresets = JSON.parse(String(process.env.PYRAMID_EMOTE_PRESETS))
 const assistantRole = String(process.env.ASSISTANT_ROLE)
 const chatterRole = String(process.env.CHATTER_ROLE)
 const assistantTrigger = String(process.env.ASSISTANT_TRIGGER)
+const plsTargets = JSON.parse(String(process.env.PLS_TARGETS))
+const plsVerbs = JSON.parse(String(process.env.PLS_VERBS))
 
 // Message settings
 const maxMessageSize = Number(process.env.MAX_MESSAGE_SIZE)
@@ -51,6 +54,7 @@ const duplicateSuffix = '󠀀'
 // Timings
 const timeSpam = Number(process.env.TIME_SPAM)
 const timeSeconds = Number(process.env.TIME_SECONDS)
+// eslint-disable-next-line no-unused-vars
 const timeMinutes = Number(process.env.TIME_MINUTES)
 const time10Minutes = Number(process.env.TIME_10MINUTES)
 
@@ -60,23 +64,20 @@ let isChainTriviaActive = false
 let isBotCancerActive = false
 let isSpamActive = false
 let isStopTriviaActive = false
-let isXdActive = false
 let isEchoActive = false
 let isPyramidActive = false
 let isAssistantActive = false
 let isColorChangerActive = false
-let isActionActive = false
+let sayMode = 'say'
 let isDebugActive = false
-let spamContent = String(process.env.DEFAULT_SPAM)
+let spamContent = ''
 let pyramidEmote = 'forsenKKona'
 let pyramidWidth = 3
 
 // Work variables
 let currentPyramidWidth = 0
 let currentPyramidPhase = true
-let currentChainTriviaIdentity = identities[0]
-let currentAssistantIdentity = identities[0]
-let currentEchoeeIdentity = identities[0]
+let currentIdentity = identities[0]
 let currentBotCancerIndex = 0
 
 // Called every time a new message is posted in the chat
@@ -98,7 +99,7 @@ async function handleColorChanger (msg, context) {
 
 function handleMessageTriviaChainer (context, msg) {
   if (context['display-name'] === 'FeelsStrongBot' && msg === 'trivia ended nam') {
-    if (isChainTriviaActive) { setTimeout(() => doTrivia(currentChainTriviaIdentity), randTime(timeSpam)) }
+    if (isChainTriviaActive) { setTimeout(() => doTrivia(), randTime(timeSpam)) }
   }
 }
 
@@ -125,10 +126,10 @@ function handleMessageRaidJoiner (context, msg) {
 }
 
 function handleMessageEchoer (context, msg) {
-  if (isEchoActive && context['display-name'] === currentEchoeeIdentity.username) {
+  if (isEchoActive && context['display-name'] === currentIdentity.username) {
     let cpt = 0
     msg = msg.replace(/󠀀/g, '').trim()
-    for (const identity of shuffleArray(identities.filter((id) => id.username !== currentEchoeeIdentity.username))) {
+    for (const identity of shuffleArray(identities.filter((id) => id.username !== currentIdentity.username))) {
       setTimeout(() => say(identity, msg), randTime(timeSeconds, cpt))
       cpt++
       console.log(`Echoing ${msg} as ${identity.username}`)
@@ -137,30 +138,26 @@ function handleMessageEchoer (context, msg) {
 }
 
 async function handleMessageAssistant (msg, context) {
-  if (msg.startsWith(assistantTrigger + ' ') && isAssistantActive && context['display-name'] !== currentAssistantIdentity.username) {
+  if (msg.startsWith(assistantTrigger + ' ') && isAssistantActive && context['display-name'] !== currentIdentity.username) {
     console.log(`${context['display-name']} talked to me: ${msg}`)
     const response = await getAIResponse(assistantRole, `@${context['display-name']}`, msg.slice(assistantTrigger.length + 1))
     console.log(`I replied: ${response}`)
-    say(currentAssistantIdentity, response)
+    say(currentIdentity, response)
   }
 }
 
 async function processCommand (message) {
+  message.args = message?.arg?.split(' ')
   switch (message.command) {
     case 'say':
-      say(getIdentity(message.identity), message.arg)
+      say(currentIdentity, message.arg)
       break
-    case 'setpyramidemote':
-      pyramidEmote = message.arg
-      console.log(`Set pyramid emote to: ${pyramidEmote}`)
+    case 'saymode':
+      sayMode = message.arg
       break
-    case 'setpyramidwidth':
-      pyramidWidth = Number(message.arg)
-      console.log(`Set pyramid width to: ${pyramidWidth}`)
-      break
-    case 'setspamcontent':
-      spamContent = message.arg
-      console.log(`Set spam content to: ${spamContent}`)
+    case 'idchange':
+      currentIdentity = getIdentity(message.arg)
+      console.log(`Changed the current identity to ${currentIdentity.username}`)
       break
     case 'disable':
       switch (message.target) {
@@ -169,18 +166,14 @@ async function processCommand (message) {
           break
         case 'chaintrivia':
           isChainTriviaActive = false
+          doTrivia()
           break
         case 'spam':
           isSpamActive = false
-          break
-        case 'action':
-          isActionActive = false
+          spamContent = ''
           break
         case 'botcancer':
           isBotCancerActive = false
-          break
-        case 'xd':
-          isXdActive = false
           break
         case 'stoptrivia':
           isStopTriviaActive = false
@@ -207,10 +200,9 @@ async function processCommand (message) {
           isMultifactActive = false
           isChainTriviaActive = false
           isSpamActive = false
-          isActionActive = false
+          sayMode = 'say'
           isBotCancerActive = false
           isStopTriviaActive = false
-          isXdActive = false
           isEchoActive = false
           isPyramidActive = false
           isAssistantActive = false
@@ -228,40 +220,33 @@ async function processCommand (message) {
       switch (message.target) {
         case 'multifact':
           isMultifactActive = true
-          multiFact(getIdentity(message.identity))
+          multiFact()
           break
         case 'chaintrivia':
-          currentChainTriviaIdentity = getIdentity(message.identity)
           isChainTriviaActive = true
           break
         case 'spam':
           isSpamActive = true
-          spam(getIdentity(message.identity))
-          break
-        case 'action':
-          isActionActive = true
+          spamContent = message.arg
+          spam()
           break
         case 'pyramid':
           isPyramidActive = true
-          pyramid(getIdentity(message.identity))
+          pyramidEmote = message.args[0]
+          pyramidWidth = Number(message.args[1])
+          pyramid()
           break
         case 'botcancer':
           isBotCancerActive = true
-          botCancer(getIdentity(message.identity))
-          break
-        case 'xd':
-          isXdActive = true
-          xd(getIdentity(message.identity))
+          botCancer()
           break
         case 'stoptrivia':
           isStopTriviaActive = true
           break
         case 'echo':
-          currentEchoeeIdentity = getIdentity(message.identity)
           isEchoActive = true
           break
         case 'assistant':
-          currentAssistantIdentity = getIdentity(message.identity)
           isAssistantActive = true
           break
         case 'colorchanger':
@@ -278,21 +263,20 @@ async function processCommand (message) {
       console.log(`Enabled ${message.target}`)
       break
     case 'singlefact':
-      singleFact(getIdentity(message.identity))
+      singleFact()
+      break
+    case 'plsdonaldtrump':
+      plsDonaldTrump()
       break
     case 'singletrivia':
-      doTrivia(getIdentity(message.identity))
+      doTrivia()
       break
     case 'aiprompt': {
-      const prompt = message.arg
-      console.log(`Got AI prompt: ${prompt}`)
-      const response = await getAIResponse(assistantRole, '', prompt)
-      say(getIdentity(message.identity), response)
-      console.log(`Answered AI prompt as ${message.identity}: ${response}`)
+      say(currentIdentity, message.arg, 'ai')
       break
     }
     case 'farm':
-      farm(getIdentity(message.identity))
+      farm(getIdentity(message.arg))
       break
     case 'getsettings':
       return getSettings()
@@ -304,9 +288,9 @@ async function processCommand (message) {
 }
 
 // Starts a trivia
-function doTrivia (identity) {
-  const topic = triviaTopics[Math.floor(Math.random() * triviaTopics.length)]
-  say(identity, `>trivia ai ${topic}`)
+function doTrivia () {
+  const topic = randomElement(triviaTopics)
+  say(currentIdentity, `>trivia ai ${topic}`)
   console.log('Started a trivia')
 }
 
@@ -334,26 +318,19 @@ async function getAIResponse (role, prefix, prompt) {
   return response.substring(0, maxMessageSize)
 }
 
-function botCancer (identity) {
+function botCancer () {
   if (isBotCancerActive) {
     currentBotCancerIndex++
     if (currentBotCancerIndex >= botCancerArray.length) currentBotCancerIndex = 0
-    say(identity, botCancerArray[currentBotCancerIndex], false)
-    setTimeout(() => botCancer(identity), randTime(timeSpam))
+    say(currentIdentity, botCancerArray[currentBotCancerIndex], 'say')
+    setTimeout(() => botCancer(), randTime(timeSpam))
   }
 }
 
-function xd (identity) {
-  if (isXdActive) {
-    say(identity, '$$xd', false)
-    setTimeout(() => xd(identity), randTime(timeMinutes))
-  }
-}
-
-function spam (identity) {
-  if (isSpamActive) {
-    say(identity, spamContent)
-    setTimeout(() => spam(identity), randTime(timeSpam))
+function spam () {
+  if (isSpamActive && spamContent.length > 0) {
+    say(currentIdentity, spamContent)
+    setTimeout(() => spam(), randTime(timeSpam))
   }
 }
 
@@ -371,33 +348,37 @@ function nextPyramidWidth () {
   return currentPyramidWidth
 }
 
-function pyramid (identity) {
+function pyramid () {
   if (isPyramidActive) {
-    say(identity, new Array(nextPyramidWidth()).fill(pyramidEmote).join(' '))
-    setTimeout(() => pyramid(identity), randTime(timeSpam))
+    say(currentIdentity, new Array(nextPyramidWidth()).fill(pyramidEmote).join(' '))
+    setTimeout(() => pyramid(), randTime(timeSpam))
   }
 }
 
 function stopTrivia (identity) {
-  if (isStopTriviaActive) say(identity, '>trivia stop', false)
+  if (isStopTriviaActive) say(identity, '>trivia stop', 'say')
 }
 
 function joinRaid (identity) {
-  say(identity, '+join', false)
+  say(identity, '+join', 'say')
 }
 
 // Says a random fact periodically (can lie)
-async function multiFact (identity) {
+async function multiFact () {
   if (!isMultifactActive) { return }
-  singleFact(identity)
+  singleFact()
   const nextTime = randTime(time10Minutes)
   console.log(`Next fact in ${millisToMinutesAndSeconds(nextTime)}`)
-  setTimeout(() => multiFact(identity), nextTime)
+  setTimeout(() => multiFact(), nextTime)
 }
 
 // Says a single random fact (can lie)
-async function singleFact (identity) {
-  say(identity, await getAIResponse(chatterRole, factPrefix, getFactPrompt()))
+async function singleFact () {
+  say(currentIdentity, await getAIResponse(chatterRole, factPrefix, getFactPrompt()))
+}
+
+function plsDonaldTrump () {
+  say(currentIdentity, `pls ${randomElement(plsVerbs)} all ${randomElement(plsTargets)} Donald Trump forsenRNG`)
 }
 
 function farm (identity) {
@@ -408,41 +389,46 @@ function farm (identity) {
 
   let timer = 0
   for (const action of shuffleArray(stdActions)) {
-    setTimeout(() => say(identity, action, false), timer)
+    setTimeout(() => say(identity, action, 'say'), timer)
     timer += randTime(timeSeconds)
   }
 
   for (const action of shuffleArray(potatoActions)) {
-    setTimeout(() => say(identity, action, false), timer)
+    setTimeout(() => say(identity, action, 'say'), timer)
     timer += randTime(10000) + 30000
   }
-  setTimeout(() => say(identity, '#cdr', false), timer)
+  setTimeout(() => say(identity, '#cdr', 'say'), timer)
   timer += randTime(10000) + 30000
-  setTimeout(() => say(identity, '?cdr', false), timer)
+  setTimeout(() => say(identity, '?cdr', 'say'), timer)
   timer += randTime(timeSpam)
   for (const action of shuffleArray(potatoActions)) {
-    setTimeout(() => say(identity, action, false), timer)
+    setTimeout(() => say(identity, action, 'say'), timer)
     timer += randTime(10000) + 30000
   }
-  setTimeout(() => say(identity, '?cookie', false), timer)
+  setTimeout(() => say(identity, '?cookie', 'say'), timer)
   timer += randTime(timeSeconds)
-  setTimeout(() => say(identity, '$remind me in 60 minutes 🚜', false), timer)
+  setTimeout(() => say(identity, '$remind me in 60 minutes 🚜', 'say'), timer)
 }
 
 // Says a message to a channel
-function say (identity, message, isAction) {
-  isAction = isAction ?? isActionActive
+async function say (identity, message, mode = undefined) {
+  mode = mode ?? sayMode
+  if (mode === 'ai') {
+    console.log(`Got AI prompt: ${message}`)
+    message = subStringUTF8(await getAIResponse(assistantRole, '', message), 0, maxMessageSize)
+    console.log(`Answered AI prompt as ${identity.username}: ${message}`)
+  }
 
   message = subStringUTF8(message, 0, maxMessageSize)
   if (identity.isAvoidDupe) { message = `${message} ${duplicateSuffix}` }
   identity.isAvoidDupe = !identity.isAvoidDupe
 
   if (isDebugActive) {
-    console.log(`DEBUG: Would have said as ${identity.username} on #${identity.channel}: ${isAction ? '/me ' : ''}${message}`)
+    console.log(`DEBUG: Would have said as ${identity.username} on #${identity.channel}: ${mode === 'action' ? '/me ' : ''}${message}`)
   } else {
-    if (!isAction) identity.client.say(identity.channel, message)
+    if (mode !== 'action') identity.client.say(identity.channel, message)
     else identity.client.action(identity.channel, message)
-    console.log(`Said as ${identity.username} on #${identity.channel}: ${isAction ? '/me ' : ''}${message}`)
+    console.log(`Said as ${identity.username} on #${identity.channel}: ${mode === 'action' ? '/me ' : ''}${message}`)
   }
 }
 
@@ -496,7 +482,7 @@ function getIdentity (username) {
 }
 
 function getSettings () {
-  return { isMultifactActive, isChainTriviaActive, isBotCancerActive, isSpamActive, isStopTriviaActive, isXdActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, isActionActive, isDebugActive, spamContent, pyramidEmote, pyramidWidth, usernames: identities.map(identity => identity.username), spamPresets, chainTriviaIdentity: currentChainTriviaIdentity.username, assistantIdentity: currentAssistantIdentity.username, echoeeIdentity: currentEchoeeIdentity.username }
+  return { isMultifactActive, isChainTriviaActive, isBotCancerActive, isSpamActive, isStopTriviaActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, sayMode, isDebugActive, pyramidEmote, pyramidWidth, pyramidEmotePresets, usernames: identities.map(identity => identity.username), spamPresets, currentIdentity: currentIdentity.username }
 }
 
 function envVariablesCheck () {
@@ -554,7 +540,7 @@ function prettyPrintCommand (message) {
 
 function subStringUTF8 (str, start, end = undefined) {
   if (typeof str !== 'string') {
-    throw new TypeError('slice(str, start, end) must receive a string')
+    throw new TypeError('subStringUTF8(str, start, end) must receive a string')
   }
   const strArr = [...str]
   if (strArr[0] === '\uFEFF') {
@@ -567,12 +553,16 @@ function shuffleArray (array) {
   return array.map(value => ({ value, sort: Math.random() })).sort((a, b) => a.sort - b.sort).map(({ value }) => value)
 }
 
+function randomElement (array) {
+  return array[Math.floor(Math.random() * array.length)]
+}
+
 function smartJoin (str1, str2, spacer) {
   return str1?.length > 0 ? `${str1}${spacer}${str2}` : str2
 }
 
 function randColor (except = undefined) {
-  return shuffleArray(colors.filter((item) => item !== except)).pop()
+  return randomElement(colors.filter((item) => item !== except))
 }
 
 function initializeClients () {
