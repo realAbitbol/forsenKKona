@@ -50,19 +50,20 @@
   <form id="messageForm">
     <div class="mb-3 w-75">
       <div class="input-group mb-3">
-        <input id="inputMessage" type="text" class="form-control" placeholder="Message" aria-label="Message" autocomplete="off" autocapitalize="off" name="message" spellcheck="false" autofocus required>
-        <button id="dropdownMessagePresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Preset</button>
+        <input id="inputMessage" type="text" class="form-control border-end-0" placeholder="Message" aria-label="Message" autocomplete="off" autocapitalize="off" name="message" spellcheck="false" autofocus required>
+        <span id="btnClearMessage" class="input-group-text bg-body border-start-0">⛌</span>
+        <button id="dropdownMessagePresets" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Preset</button>
         <ul id="dropdownMessagePresetsMenu" class="dropdown-menu">
         </ul>
         <input id="togMessageSpam" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-on="Spam on" data-off="Spam off">
-        <input id="btnMessageAction" type="submit" class="btn btn-primary" value="Say">
+        <input id="btnMessageAction" type="submit" class="btn btn-primary" value="Say 💬">
         <button id="dropdownMessageAction" type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
           <span class="visually-hidden">Toggle Dropdown</span>
         </button>
         <ul id="dropdownMessageActionMenu" class="dropdown-menu dropdown-menu-end text-end">
-          <li><a id="itemMessageActionMenuSay" class="dropdown-item" href="#">Say</a></li>
-          <li><a id="itemMessageActionMenuAction" class="dropdown-item" href="#">Action</a></li>
-          <li><a id="itemMessageActionMenuAskAI" class="dropdown-item" href="#">Ask AI</a></li>
+          <li><a id="itemMessageActionMenuSay" class="dropdown-item" href="#">Say 💬</a></li>
+          <li><a id="itemMessageActionMenuAction" class="dropdown-item" href="#">Action 💭</a></li>
+          <li><a id="itemMessageActionMenuAskAI" class="dropdown-item" href="#">Ask AI 🤖</a></li>
         </ul>
       </div>
     </div>
