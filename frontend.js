@@ -202,6 +202,10 @@ function setBtnMessageMode (sayMode) {
   switch (sayMode) {
     case 'ai':
       $('#btnMessageAction').val('Ask AI 🤖')
+      $('#btnMessageAction').removeClass('btn-warning btn-info btn-primary')
+      $('#btnMessageAction').addClass('btn-info')
+      $('#dropdownMessageAction').removeClass('btn-warning btn-info btn-primary')
+      $('#dropdownMessageAction').addClass('btn-info')
       $('#inputMessage').removeClass('border-warning')
       $('#inputMessage').addClass('border-info')
       $('#btnClearMessage').removeClass('border-warning')
@@ -209,6 +213,10 @@ function setBtnMessageMode (sayMode) {
       break
     case 'action':
       $('#btnMessageAction').val('Action 💭')
+      $('#btnMessageAction').removeClass('btn-warning btn-info btn-primary')
+      $('#btnMessageAction').addClass('btn-warning')
+      $('#dropdownMessageAction').removeClass('btn-warning btn-info btn-primary')
+      $('#dropdownMessageAction').addClass('btn-warning')
       $('#inputMessage').removeClass('border-info')
       $('#inputMessage').addClass('border-warning')
       $('#btnClearMessage').removeClass('border-info')
@@ -217,6 +225,10 @@ function setBtnMessageMode (sayMode) {
     case 'say':
     default:
       $('#btnMessageAction').val('Say 💬')
+      $('#btnMessageAction').removeClass('btn-warning btn-info btn-primary')
+      $('#btnMessageAction').addClass('btn-primary')
+      $('#dropdownMessageAction').removeClass('btn-warning btn-info btn-primary')
+      $('#dropdownMessageAction').addClass('btn-primary')
       $('#inputMessage').removeClass('border-warning')
       $('#inputMessage').removeClass('border-info')
       $('#btnClearMessage').removeClass('border-warning')
