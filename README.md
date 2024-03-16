@@ -4,11 +4,13 @@
 
 ## Functions
 
-- Tells random facts to demonstrate the superiority of the USA (or anything you want), either one at a time or periodically
+- Tells random facts to demonstrate the superiority of the USA (or anything you want) and popular conspiracy theories, either one at a time or periodically
 - Trolls the trivia
-- Can throw walls of ![eShrug](https://cdn.frankerfacez.com/emoticon/107715/1) periodically
-- Can spam the $$xd alias (find it on [Supibot's website](https://supinic.com/bot/user/alias/find))
 - Configurable spam mode
+- Botcancer mode
+- ColorChanger™️
+- Autofarmer
+- Pyramid mode
 - Emote pyramid mode
 - Assistant mode (kinda like Siri but in chat)
 - Can automatically stop trivias
@@ -16,6 +18,7 @@
 - Destroy weebs
 - Obliterate elis subs
 - Pulverize furries
+- Atomize juicers
 - Has a WebUI (yeah I suck at bootstrap, feel free to PR)
 
 ## UI
