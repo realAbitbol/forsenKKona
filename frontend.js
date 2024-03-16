@@ -68,12 +68,23 @@ $('#inputMessage').on('input', async function (event) {
   }
 })
 
+$('#inputPyramidEmote').on('input', checkPyramid)
+$('#inputPyramidSize').on('input', checkPyramid)
+
 $('#togPyramid').on('change', async function (event) {
   clearTimeout(idTimeoutPyramid)
   if ($(this).prop('checked')) {
     command('enable', 'pyramid', `${$('#inputPyramidEmote').val()} ${$('#inputPyramidSize').val()}`)
     idTimeoutPyramid = setTimeout(() => $('#togPyramid').bootstrapToggle('off'), settings.maxSpamTime)
-  } else { command('disable', 'pyramid') }
+    $('#inputPyramidEmote').prop('disabled', true)
+    $('#inputPyramidSize').prop('disabled', true)
+    $('#dropdownPyramidPresets').prop('disabled', true)
+  } else {
+    command('disable', 'pyramid')
+    $('#inputPyramidEmote').prop('disabled', false)
+    $('#inputPyramidSize').prop('disabled', false)
+    $('#dropdownPyramidPresets').prop('disabled', false)
+  }
 })
 
 $('#dropdownMessagePresets').on('hide.bs.dropdown', ({ clickEvent }) => {
@@ -238,6 +249,10 @@ function setBtnMessageMode (sayMode) {
       $('#btnClearMessage').removeClass('border-warning')
       $('#btnClearMessage').removeClass('border-info')
   }
+}
+
+function checkPyramid () {
+  $('#togPyramid').bootstrapToggle($('#inputPyramidEmote').val().length > 0 && /\d+/.test($('#inputPyramidSize').val()) ? 'enable' : 'disable')
 }
 
 function findSayMode (buttonText) {
