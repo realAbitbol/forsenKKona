@@ -11,7 +11,6 @@
 - Botcancer mode
 - ColorChanger™️
 - Autofarmer
-- Pyramid mode
 - Emote pyramid mode
 - Assistant mode (kinda like Siri but in chat)
 - Can automatically stop trivias
