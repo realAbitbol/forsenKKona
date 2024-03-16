@@ -10,7 +10,6 @@ const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_M
 
 // Twitch colors
 const colors = ['blue', 'blue_violet', 'cadet_blue', 'chocolate', 'coral', 'dodger_blue', 'firebrick', 'golden_rod', 'green', 'hot_pink', 'orange_red', 'red', 'sea_green', 'spring_green', 'yellow_green']
-let isColorChangerAvailable = false
 
 // Bot Cancer
 const botCancerArray = shuffleArray(['$$xd', '$fill eShrug', '!2o3a', '!??', '!forsen', '!forsenbajs', '!fancydance', '!brainpower', '!nam', '!picklerick', '!r8', '!rain', '!rules', '!standing', '¿ping', '!losers', '!losers2'])
@@ -73,6 +72,7 @@ let isDebugActive = false
 let spamContent = ''
 let pyramidEmote = 'forsenKKona'
 let pyramidWidth = 3
+let isColorChangerAvailable = false
 
 // Work variables
 let currentPyramidWidth = 0
