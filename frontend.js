@@ -74,7 +74,7 @@ $('#inputPyramidSize').on('input', checkPyramid)
 $('#togPyramid').on('change', async function (event) {
   clearTimeout(idTimeoutPyramid)
   if ($(this).prop('checked')) {
-    command('enable', 'pyramid', `${$('#inputPyramidEmote').val()} ${$('#inputPyramidSize').val()}`)
+    command('enable', 'pyramid', `${$('#inputPyramidEmote').val().trim()} ${$('#inputPyramidSize').val()}`)
     idTimeoutPyramid = setTimeout(() => $('#togPyramid').bootstrapToggle('off'), settings.maxSpamTime)
     $('#inputPyramidEmote').prop('disabled', true)
     $('#inputPyramidSize').prop('disabled', true)
@@ -163,7 +163,7 @@ $('#togDebug').on('change', async function (event) {
 
 $('#messageForm').on('submit', async function (event) {
   event.preventDefault()
-  command('say', undefined, $('#inputMessage').val())
+  command('say', undefined, $('#inputMessage').val().trim())
 })
 
 $('#btnSingleFact').on('click', async function (event) {
@@ -252,7 +252,7 @@ function setBtnMessageMode (sayMode) {
 }
 
 function checkPyramid () {
-  $('#togPyramid').bootstrapToggle($('#inputPyramidEmote').val().length > 0 && /\d+/.test($('#inputPyramidSize').val()) ? 'enable' : 'disable')
+  $('#togPyramid').bootstrapToggle($('#inputPyramidEmote').val().trim().length > 0 && /\d+/.test($('#inputPyramidSize').val()) ? 'enable' : 'disable')
 }
 
 function findSayMode (buttonText) {
