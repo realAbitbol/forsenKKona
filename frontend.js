@@ -96,6 +96,12 @@ $('#dropdownMessageAction').on('hide.bs.dropdown', ({ clickEvent }) => {
   }
 })
 
+$('#dropdownPyramidPresets').on('hide.bs.dropdown', ({ clickEvent }) => {
+  if (clickEvent?.target) {
+    $('#inputPyramidEmote').val($(clickEvent.target).text())
+  }
+})
+
 $('#selectIdentity').on('change', async function (event) {
   command('idchange', undefined, $(this).val())
 })
