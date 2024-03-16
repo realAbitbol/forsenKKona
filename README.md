@@ -7,6 +7,7 @@
 - Tells random facts to demonstrate the superiority of the USA (or anything you want) and popular conspiracy theories, either one at a time or periodically
 - Trolls the trivia
 - Configurable spam mode
+- Can use either normal messages or actions (/me)
 - Botcancer mode
 - ColorChanger™️
 - Autofarmer
