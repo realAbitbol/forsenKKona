@@ -5,3 +5,6 @@ Dockerfile
 ui.webp
 .vscode
 .github
+.gitignore
+.git
+.eslintrc.json
