@@ -79,6 +79,7 @@ let currentPyramidWidth = 0
 let currentPyramidPhase = true
 let currentIdentity = identities[0]
 let currentBotCancerIndex = 0
+let farmTimeouts = []
 
 // Called every time a new message is posted in the chat
 async function onMessageHandler (target, context, msg, self) {
@@ -209,6 +210,7 @@ async function processCommand (message) {
           isColorChangerActive = false
           currentPyramidWidth = 0
           currentPyramidPhase = true
+          clearFarmTimeouts()
           break
         default:
           console.log(`ERROR: invalid disable target '${message.target}'`)
@@ -350,7 +352,7 @@ function nextPyramidWidth () {
 
 function pyramid () {
   if (isPyramidActive) {
-    say(currentIdentity, new Array(nextPyramidWidth()).fill(pyramidEmote).join(' '))
+    say(currentIdentity, new Array(nextPyramidWidth()).fill(pyramidEmote).join(' '), 'say')
     setTimeout(() => pyramid(), randTime(timeSpam))
   }
 }
@@ -385,29 +387,41 @@ function farm (identity) {
   const stdActions = ['+ed', '+eg', '$fish trap reset', 'Okayeg gib eg', '?cookie', '¿taco pepeSenora', '%hw']
   const potatoActions = ['#p', '#steal', '#trample']
 
+  clearFarmTimeouts(identity.username)
+
   console.log(`Farming as ${identity.username}`)
 
   let timer = 0
   for (const action of shuffleArray(stdActions)) {
-    setTimeout(() => say(identity, action, 'say'), timer)
+    farmTimeouts.push({ username: identity.username, timeoutId: setTimeout(() => say(identity, action, 'say'), timer) })
     timer += randTime(timeSeconds)
   }
 
   for (const action of shuffleArray(potatoActions)) {
-    setTimeout(() => say(identity, action, 'say'), timer)
+    farmTimeouts.push({ username: identity.username, timeoutId: setTimeout(() => say(identity, action, 'say'), timer) })
     timer += randTime(10000) + 30000
   }
-  setTimeout(() => say(identity, '#cdr', 'say'), timer)
+  farmTimeouts.push({ username: identity.username, timeoutId: setTimeout(() => say(identity, '#cdr', 'say'), timer) })
   timer += randTime(10000) + 30000
-  setTimeout(() => say(identity, '?cdr', 'say'), timer)
+  farmTimeouts.push({ username: identity.username, timeoutId: setTimeout(() => say(identity, '?cdr', 'say'), timer) })
   timer += randTime(timeSpam)
   for (const action of shuffleArray(potatoActions)) {
-    setTimeout(() => say(identity, action, 'say'), timer)
+    farmTimeouts.push({ username: identity.username, timeoutId: setTimeout(() => say(identity, action, 'say'), timer) })
     timer += randTime(10000) + 30000
   }
-  setTimeout(() => say(identity, '?cookie', 'say'), timer)
+  farmTimeouts.push({ username: identity.username, timeoutId: setTimeout(() => say(identity, '?cookie', 'say'), timer) })
   timer += randTime(timeSeconds)
-  setTimeout(() => say(identity, '$remind me in 60 minutes 🚜', 'say'), timer)
+  farmTimeouts.push({ username: identity.username, timeoutId: setTimeout(() => say(identity, '$remind me in 60 minutes 🚜', 'say'), timer) })
+}
+
+function clearFarmTimeouts (username = undefined) {
+  if (username !== undefined) {
+    for (const timeout of farmTimeouts.filter((el) => el.username === username)) clearTimeout(timeout.timeoutId)
+    farmTimeouts = farmTimeouts.filter((el) => el.username !== username)
+  } else {
+    for (const timeout of farmTimeouts) clearTimeout(timeout.timeoutId)
+    farmTimeouts = []
+  }
 }
 
 // Says a message to a channel
