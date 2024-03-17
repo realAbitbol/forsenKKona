@@ -60,7 +60,7 @@
   <form id="messageForm">
     <div class="mb-3 d-inline w-75">
       <div class="input-group mb-3">
-        <input id="inputMessage" type="text" class="form-control border-end-0 d-inline-flex" placeholder="Message" aria-label="Message" autocomplete="off" autocapitalize="off" name="message" spellcheck="false" autofocus required>
+        <input id="inputMessage" type="text" class="form-control border-end-0 d-inline-flex" placeholder="Message" aria-label="Message" autocomplete="off" autocapitalize="off" name="message" spellcheck="false" autofocus maxlength="500" required>
         <span id="btnClearMessage" class="input-group-text bg-body border-start-0 text-white-50">⛌</span>
         <span id="spanMessageSize" class="input-group-text bg-body">0</span>
         <button id="dropdownMessagePresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Presets</button>
@@ -82,12 +82,12 @@
 
   <h3>🛕 Pyramid</h3>
     <div class="input-group d-inline-flex w-auto">
-      <input id="inputPyramidEmote" type="text" class="form-control w-auto" placeholder="Pyramid emote" aria-label="Pyramid emote" autocomplete="off" autocapitalize="off" name="message" spellcheck="false" required>
+      <input id="inputPyramidEmote" type="text" class="form-control w-auto" placeholder="Pyramid emote" aria-label="Pyramid emote" autocomplete="off" autocapitalize="off" name="message" spellcheck="false" maxlength="100" required>
       <button id="dropdownPyramidPresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-style="square">Presets</button>
       <ul id="dropdownPyramidPresetsMenu" class="dropdown-menu">
       </ul>
       <span class="input-group-text">Size</span>
-      <input id="inputPyramidSize" type="number" class="form-control" aria-label="Message" value="3" required>
+      <input id="inputPyramidSize" type="number" class="form-control" aria-label="Message" value="3" maxlength="2" required>
       <input id="togPyramid" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="on" data-offlabel="off" data-height="38px" data-style="square">
     </div>
 
