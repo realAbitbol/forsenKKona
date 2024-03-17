@@ -83,7 +83,8 @@ Remember to map a port (server is listening on 3000/tcp) and provide the require
 
 - [x] ~~username color changer after each message~~
 - [x] ~~UI 2.0~~
-- [ ] Implement message history using localstorage. Navigate it with up and down.
+- [x] ~~Implement message history using localstorage. Navigate it with up and down.~~
+- [ ] Special syntax for messages to alternate between multiple messages eg. AAAA||BBBB||CCCC
 - [ ] Refactor into objects and modules
 - [x] ~~Cancel all scheduled farming messages~~
 - [ ] Implement perfect farming
