@@ -89,7 +89,7 @@ Remember to map a port (server is listening on 3000/tcp) and provide the require
 - [x] ~~Cancel all scheduled farming messages~~
 - [ ] Implement perfect farming
 - [ ] Implement even more perfect farming by reading the bot replies
-- [ ] Implement dynamically configurable facts and spam presets
+- [ ] Implement dynamically configurable (from UI) facts and spam presets
 
 ## That's all folks
 
