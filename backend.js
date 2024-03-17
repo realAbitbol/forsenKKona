@@ -74,6 +74,7 @@ let isDebugActive = false
 let spamContent = ''
 let pyramidEmote = 'forsenKKona'
 let pyramidWidth = 3
+let spamSpeed = 1
 
 // Work variables
 let currentPyramidWidth = 0
@@ -160,6 +161,10 @@ async function processCommand (message) {
     case 'idchange':
       currentIdentity = getIdentity(message.arg)
       console.log(`Changed the current identity to ${currentIdentity.username}`)
+      break
+    case 'spamspeed':
+      spamSpeed = Number(message.arg)
+      console.log(`Changed the spam interval multiplicator to ${spamSpeed}`)
       break
     case 'disable':
       switch (message.target) {
@@ -333,7 +338,7 @@ function botCancer () {
 function spam () {
   if (isSpamActive && spamContent.length > 0) {
     say(currentIdentity, spamContent)
-    setTimeout(() => spam(), randTime(timeSpam))
+    setTimeout(() => spam(), randTime(timeSpam * spamSpeed))
   }
 }
 
@@ -497,7 +502,7 @@ function getIdentity (username) {
 }
 
 function getSettings () {
-  return { isMultifactActive, isChainTriviaActive, isBotCancerActive, isSpamActive, isStopTriviaActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, sayMode, isDebugActive, pyramidEmote, pyramidWidth, pyramidEmotePresets, maxSpamTime, usernames: identities.map(identity => identity.username), spamPresets, currentIdentity: currentIdentity.username }
+  return { isMultifactActive, isChainTriviaActive, isBotCancerActive, isSpamActive, isStopTriviaActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, sayMode, isDebugActive, pyramidEmote, pyramidWidth, pyramidEmotePresets, maxSpamTime, spamSpeed, usernames: identities.map(identity => identity.username), spamPresets, currentIdentity: currentIdentity.username }
 }
 
 function envVariablesCheck () {
@@ -534,7 +539,7 @@ function getFactPrompt () {
 
 // Returns a random time between time and 3*time milliseconds
 function randTime (time, delayFactor = 0) {
-  return time * (1 + 2 * delayFactor) + Math.floor(Math.random() * (time + 1)) * 2
+  return (time * (1 + 2 * delayFactor) + Math.floor(Math.random() * (time + 1))) * 2
 }
 
 function millisToMinutesAndSeconds (millis) {

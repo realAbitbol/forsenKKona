@@ -30,6 +30,10 @@ $(() => {
     }
   })
 
+  $('#selectSpamSpeed').on('change', (event) => {
+    command('spamspeed', undefined, $(event.currentTarget).val())
+  })
+
   $('#inputMessage').on('input', () => {
     if ($('#inputMessage').val().trim().length === 0) {
       $('#btnMessageAction').prop('disabled', true)
@@ -210,6 +214,7 @@ async function refreshDisplay () {
 
   $('#inputPyramidEmote').val(settings.pyramidEmote)
   $('#inputPyramidSize').val(settings.pyramidWidth)
+  $('#selectSpamSpeed').val(settings.spamSpeed)
 
   fillDropdown($('#dropdownFarmMenu'), settings.usernames)
   fillDropdown($('#dropdownMessagePresetsMenu'), settings.spamPresets.map((el) => el.id))
@@ -353,7 +358,7 @@ class RingBuffer {
     this.#size = 0
   }
 
-  push (el) { // FIXME: remove older duplicates of el when inserting
+  push (el) { // TODO: remove older duplicates of el when inserting
     this.#array[this.#nextPointer] = el
     this.#nextPointer = (this.#nextPointer + 1) % this.#maxSize
     if (this.#size < this.#maxSize) this.#size++
