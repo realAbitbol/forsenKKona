@@ -17,14 +17,14 @@
   <h3>⚙️ Commands</h3>
     <span class="input-group d-inline">
       <button id="btnSingleFact" type="button" class="btn btn-primary">Fact 🇺🇸</button>
-      <input id="togMultifact" type="checkbox" data-toggle="toggle" data-onstyle="primary" data-offstyle="primary" data-onlabel="∞ on" data-offlabel="∞ off" data-height="38px">
+      <input id="togMultifact" type="checkbox" data-toggle="toggle" data-onstyle="primary" data-offstyle="primary" data-onlabel="∞ on" data-offlabel="∞ off" data-height="38px" data-style="square">
     </span>
     <span class="input-group d-inline">
       <button id="btnSingleTrivia" type="button" class="btn btn-info">Trivia ❓</button>
-      <input id="togChaintrivia" type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="info" data-onlabel="∞ on" data-offlabel="∞ off" data-height="38px">
+      <input id="togChaintrivia" type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="info" data-onlabel="∞ on" data-offlabel="∞ off" data-height="38px" data-style="square">
     </span>
     <div class="dropdown d-inline">
-      <button id="dropdownFarm" class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Farm 🚜</button>
+      <button id="dropdownFarm" class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-style="square">Farm 🚜</button>
       <ul id="dropdownFarmMenu" class="dropdown-menu" aria-labelledby="dropdownFarm">
       </ul>
     </div>
@@ -48,12 +48,12 @@
           <option value="50">🐌</option>
       </select>
     </div>
-    <input id="togBotCancer" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="Bot cancer 🤪" data-offlabel="No cancer 🤐" data-width="150px" data-height="38px">
-    <input id="togAssistant" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="Assistant 🧠" data-offlabel="Assistant 🚫" data-width="150px" data-height="38px">
-    <input id="togTriviaStopper" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="Stop trivia ✋" data-offlabel="Allow trivia 👌" data-width="150px" data-height="38px">
-    <input id="togEcho" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="Echo 👥" data-offlabel="Mono 👤" data-width="150px" data-height="38px">
-    <input id="togColorChanger" type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="secondary" data-onlabel="Multicolor 🎨" data-offlabel="Monocolor 🖋️" data-width="150px" data-height="38px"> 
-    <input id="togDebug" type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="secondary" data-onlabel="Debug 🔇" data-offlabel="Normal 🔈" data-width="150px" data-height="38px">
+    <input id="togBotCancer" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="Bot cancer 🤪" data-offlabel="No cancer 🤐" data-width="150px" data-height="38px" data-style="square">
+    <input id="togAssistant" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="Assistant 🧠" data-offlabel="Assistant 🚫" data-width="150px" data-height="38px" data-style="square">
+    <input id="togTriviaStopper" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="Stop trivia ✋" data-offlabel="Allow trivia 👌" data-width="150px" data-height="38px" data-style="square">
+    <input id="togEcho" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="Echo 👥" data-offlabel="Mono 👤" data-width="150px" data-height="38px" data-style="square">
+    <input id="togColorChanger" type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="secondary" data-onlabel="Multicolor 🎨" data-offlabel="Monocolor 🖋️" data-width="150px" data-height="38px" data-style="square"> 
+    <input id="togDebug" type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="secondary" data-onlabel="Debug 🔇" data-offlabel="Normal 🔈" data-width="150px" data-height="38px" data-style="square">
   </div>
 
   <h3>💬 Messages</h3>
@@ -66,7 +66,7 @@
         <button id="dropdownMessagePresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Presets</button>
         <ul id="dropdownMessagePresetsMenu" class="dropdown-menu">
         </ul>
-        <input id="togMessageSpam" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="primary" data-onlabel="Spam on" data-offlabel="Spam off">
+        <input id="togMessageSpam" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="primary" data-onlabel="Spam on" data-offlabel="Spam off" data-style="square">
         <input id="btnMessageAction" type="submit" class="btn btn-primary" value="Say 💬">
         <button id="dropdownMessageAction" type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
           <span class="visually-hidden">Toggle Dropdown</span>
@@ -83,12 +83,12 @@
   <h3>🛕 Pyramid</h3>
     <div class="input-group d-inline-flex w-auto">
       <input id="inputPyramidEmote" type="text" class="form-control w-auto" placeholder="Pyramid emote" aria-label="Pyramid emote" autocomplete="off" autocapitalize="off" name="message" spellcheck="false" required>
-      <button id="dropdownPyramidPresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Presets</button>
+      <button id="dropdownPyramidPresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-style="square">Presets</button>
       <ul id="dropdownPyramidPresetsMenu" class="dropdown-menu">
       </ul>
       <span class="input-group-text">Size</span>
       <input id="inputPyramidSize" type="number" class="form-control" aria-label="Message" value="3" required>
-      <input id="togPyramid" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="on" data-offlabel="off" data-height="38px">
+      <input id="togPyramid" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="on" data-offlabel="off" data-height="38px" data-style="square">
     </div>
 
   <script src="frontend.js"></script>

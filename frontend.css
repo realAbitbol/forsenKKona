@@ -19,3 +19,7 @@ form {
 #btnClearMessage:hover {
     cursor: pointer;
 }
+
+.toggle.square .toggle-handle {
+    border-radius: 0px;
+}
