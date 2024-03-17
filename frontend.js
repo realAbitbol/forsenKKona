@@ -35,6 +35,9 @@ $(() => {
       $('#btnMessageAction').prop('disabled', true)
       $('#togMessageSpam').prop('disabled', true)
       $('#togMessageSpam').bootstrapToggle('disable')
+    } else if ($('#inputMessage').val().startsWith('clearhistory')) {
+      $('#inputMessage').val('')
+      ringBufferMessages = new RingBuffer(ringBufferMessagesSize)
     } else {
       $('#btnMessageAction').prop('disabled', false)
       $('#togMessageSpam').prop('disabled', false)

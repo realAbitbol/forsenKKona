@@ -534,7 +534,7 @@ function getFactPrompt () {
 
 // Returns a random time between time and 3*time milliseconds
 function randTime (time, delayFactor = 0) {
-  return time * (1 + delayFactor) + Math.floor(Math.random() * (time + 1)) * 2
+  return time * (1 + 2 * delayFactor) + Math.floor(Math.random() * (time + 1)) * 2
 }
 
 function millisToMinutesAndSeconds (millis) {
