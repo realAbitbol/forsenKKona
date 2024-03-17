@@ -16,18 +16,13 @@ $(() => {
     clearTimeout(idTimeoutSpam)
     if ($(event.currentTarget).prop('checked')) {
       command('enable', 'spam', $('#inputMessage').val())
-      $('#inputMessage').prop('disabled', true)
-      $('#dropdownMessagePresets').prop('disabled', true)
-      $('#btnMessageAction').prop('disabled', true)
       idTimeoutSpam = setTimeout(() => $('#togMessageSpam').bootstrapToggle('off'), settings.maxSpamTime)
       ringBufferMessages.push($('#inputMessage').val().trim())
       currentBufferIndex = -1
     } else {
       command('disable', 'spam')
-      $('#inputMessage').prop('disabled', false)
-      $('#dropdownMessagePresets').prop('disabled', false)
-      $('#btnMessageAction').prop('disabled', false)
     }
+    setMessageDisableState()
   })
 
   $('#selectSpamSpeed').on('change', (event) => {
@@ -35,26 +30,33 @@ $(() => {
   })
 
   $('#inputMessage').on('input', () => {
-    if ($('#inputMessage').val().trim().length === 0) {
+    const text = $('#inputMessage').val().trim()
+    const size = utf8StringSize(text)
+    if (text.length === 0) {
       $('#btnMessageAction').prop('disabled', true)
       $('#togMessageSpam').prop('disabled', true)
       $('#togMessageSpam').bootstrapToggle('disable')
-    } else if ($('#inputMessage').val().startsWith('clearhistory')) {
+      $('#spanMessageSize').text(0)
+    } else if (text.startsWith('clearhistory')) {
       $('#inputMessage').val('')
       ringBufferMessages = new RingBuffer(ringBufferMessagesSize)
+      $('#spanMessageSize').text(0)
     } else {
       $('#btnMessageAction').prop('disabled', false)
       $('#togMessageSpam').prop('disabled', false)
       $('#togMessageSpam').bootstrapToggle('enable')
+      $('#spanMessageSize').text(size)
+      if (size > 200) $('#spanMessageSize').addClass('text-warning')
+      else $('#spanMessageSize').removeClass('text-warning')
     }
   })
 
   $('#inputMessage').on('keyup', (event) => {
     event.preventDefault()
     if (event.key === 'ArrowUp') {
-      currentBufferIndex = betterModulo(currentBufferIndex - 1, ringBufferMessages.length())
+      currentBufferIndex = betterModulo(currentBufferIndex - 1, ringBufferMessages.length)
     } else if (event.key === 'ArrowDown') {
-      currentBufferIndex = betterModulo(currentBufferIndex + 1, ringBufferMessages.length())
+      currentBufferIndex = betterModulo(currentBufferIndex + 1, ringBufferMessages.length)
     } else return
 
     $('#inputMessage').val(ringBufferMessages.get(currentBufferIndex) ?? '')
@@ -68,15 +70,10 @@ $(() => {
     if ($(event.currentTarget).prop('checked')) {
       command('enable', 'pyramid', `${$('#inputPyramidEmote').val().trim()} ${$('#inputPyramidSize').val()}`)
       idTimeoutPyramid = setTimeout(() => $('#togPyramid').bootstrapToggle('off'), settings.maxSpamTime)
-      $('#inputPyramidEmote').prop('disabled', true)
-      $('#inputPyramidSize').prop('disabled', true)
-      $('#dropdownPyramidPresets').prop('disabled', true)
     } else {
       command('disable', 'pyramid')
-      $('#inputPyramidEmote').prop('disabled', false)
-      $('#inputPyramidSize').prop('disabled', false)
-      $('#dropdownPyramidPresets').prop('disabled', false)
     }
+    setPyramidDisableState()
   })
 
   $('#dropdownMessagePresets').on('hide.bs.dropdown', ({ clickEvent }) => {
@@ -227,6 +224,8 @@ async function refreshDisplay () {
   }
   $('#inputMessage').trigger('input')
   setBtnMessageMode(settings.sayMode)
+  setPyramidDisableState()
+  setMessageDisableState()
 }
 
 function fillSelect (select, elems) {
@@ -292,6 +291,20 @@ function checkPyramid () {
   $('#togPyramid').bootstrapToggle($('#inputPyramidEmote').val().trim().length > 0 && /\d+/.test($('#inputPyramidSize').val()) ? 'enable' : 'disable')
 }
 
+function setMessageDisableState () {
+  const state = $('#togMessageSpam').prop('checked')
+  $('#inputMessage').prop('disabled', state)
+  $('#dropdownMessagePresets').prop('disabled', state)
+  $('#btnMessageAction').prop('disabled', state)
+}
+
+function setPyramidDisableState () {
+  const state = $('#togPyramid').prop('checked')
+  $('#inputPyramidEmote').prop('disabled', state)
+  $('#inputPyramidSize').prop('disabled', state)
+  $('#dropdownPyramidPresets').prop('disabled', state)
+}
+
 function findSayMode (buttonText) {
   switch (buttonText) {
     case 'Ask AI 🤖':
@@ -327,6 +340,7 @@ function saveToLocalStorage () {
   localStorage.setItem('idTimeoutSpam', JSON.stringify(idTimeoutSpam))
   localStorage.setItem('idTimeoutPyramid', JSON.stringify(idTimeoutPyramid))
   localStorage.setItem('idTimeoutBotCancer', JSON.stringify(idTimeoutBotCancer))
+  localStorage.setItem('currentMessage', JSON.stringify($('#inputMessage').val()))
 }
 
 function loadFromLocalStorage () {
@@ -339,10 +353,16 @@ function loadFromLocalStorage () {
   idTimeoutSpam = Number(localStorage.getItem('idTimeoutSpam'))
   idTimeoutPyramid = Number(localStorage.getItem('idTimeoutPyramid'))
   idTimeoutBotCancer = Number(localStorage.getItem('idTimeoutBotCancer'))
+  if (localStorage.getItem('currentMessage')) $('#inputMessage').val(JSON.parse(localStorage.getItem('currentMessage')))
+  else $('#inputMessage').val('')
 }
 
 function betterModulo (a, b) {
   return ((a % b) + b) % b
+}
+
+function utf8StringSize (str) {
+  return [...str].length
 }
 
 class RingBuffer {
@@ -368,7 +388,7 @@ class RingBuffer {
     return this.#array[betterModulo(this.#nextPointer - 1 - index, this.#size)]
   }
 
-  length () {
+  get length () {
     return this.#size
   }
 
