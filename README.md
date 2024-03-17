@@ -1,4 +1,4 @@
-# forsenKKona an AI powered overly patriotic Twitch bot
+# forsenKKona an AI powered overly patriotic Twitch client with automation
 
 ![banner](banner.webp)
 
