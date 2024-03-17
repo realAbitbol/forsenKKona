@@ -7,6 +7,14 @@ form {
     align-items: center;
 }
 
+select:hover {
+    border-color: white;
+}
+
+input:hover {
+    border-color: white;
+}
+
 .banner {
     width: 1024px;
     height: 274px;
