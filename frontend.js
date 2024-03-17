@@ -54,9 +54,9 @@ $(() => {
   $('#inputMessage').on('keyup', (event) => {
     event.preventDefault()
     if (event.key === 'ArrowUp') {
-      currentBufferIndex = betterModulo(currentBufferIndex - 1, ringBufferMessages.length)
-    } else if (event.key === 'ArrowDown') {
       currentBufferIndex = betterModulo(currentBufferIndex + 1, ringBufferMessages.length)
+    } else if (event.key === 'ArrowDown') {
+      currentBufferIndex = betterModulo(currentBufferIndex - 1, ringBufferMessages.length)
     } else return
 
     $('#inputMessage').val(ringBufferMessages.get(currentBufferIndex) ?? '')
@@ -367,36 +367,32 @@ function utf8StringSize (str) {
 
 class RingBuffer {
   #array
-  #nextPointer
   #maxSize
-  #size
 
   constructor (maxSize) {
     this.#maxSize = maxSize
-    this.#array = new Array(maxSize)
-    this.#nextPointer = 0
-    this.#size = 0
+    this.#array = []
   }
 
-  push (el) { // TODO: remove older duplicates of el when inserting
-    this.#array[this.#nextPointer] = el
-    this.#nextPointer = (this.#nextPointer + 1) % this.#maxSize
-    if (this.#size < this.#maxSize) this.#size++
+  push (el) {
+    this.#array = this.#array.filter((e) => e !== el) // Remove duplicates
+    if (this.#array.length === this.#maxSize) this.#array.shift()
+    this.#array.push(el)
   }
 
   get (index) {
-    return this.#array[betterModulo(this.#nextPointer - 1 - index, this.#size)]
+    return this.#array[betterModulo(this.#array.length - 1 - index, this.#array.length)]
   }
 
   get length () {
-    return this.#size
+    return this.#array.length
   }
 
   fromJson (jsonData) {
-    ({ array: this.#array = [], nextPointer: this.#nextPointer = 0, maxSize: this.#maxSize = 0, size: this.#size = 0 } = JSON.parse(jsonData))
+    ({ array: this.#array = [], maxSize: this.#maxSize = 0 } = JSON.parse(jsonData))
   }
 
   toJson () {
-    return JSON.stringify({ array: this.#array, nextPointer: this.#nextPointer, maxSize: this.#maxSize, size: this.#size })
+    return JSON.stringify({ array: this.#array, maxSize: this.#maxSize })
   }
 }
