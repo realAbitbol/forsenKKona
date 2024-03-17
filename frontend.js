@@ -53,11 +53,9 @@ $(() => {
 
   $('#inputMessage').on('keyup', (event) => {
     event.preventDefault()
-    if (event.key === 'ArrowUp') {
-      currentBufferIndex = betterModulo(currentBufferIndex + 1, ringBufferMessages.length)
-    } else if (event.key === 'ArrowDown') {
-      currentBufferIndex = betterModulo(currentBufferIndex - 1, ringBufferMessages.length)
-    } else return
+    if (event.key === 'ArrowUp') currentBufferIndex++
+    else if (event.key === 'ArrowDown') currentBufferIndex--
+    else return
 
     $('#inputMessage').val(ringBufferMessages.get(currentBufferIndex) ?? '')
   })
@@ -357,10 +355,6 @@ function loadFromLocalStorage () {
   else $('#inputMessage').val('')
 }
 
-function betterModulo (a, b) {
-  return ((a % b) + b) % b
-}
-
 function utf8StringSize (str) {
   return [...str].length
 }
@@ -381,7 +375,7 @@ class RingBuffer {
   }
 
   get (index) {
-    return this.#array[betterModulo(this.#array.length - 1 - index, this.#array.length)]
+    return this.#array[((this.#array.length - 1 - index) % this.#array.length + this.#array.length) % this.#array.length]
   }
 
   get length () {
