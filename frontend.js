@@ -32,6 +32,10 @@ $(() => {
   $('#inputMessage').on('input', () => {
     const text = $('#inputMessage').val().trim()
     const size = utf8StringSize(text)
+
+    if (size > 200) $('#spanMessageSize').addClass('text-warning')
+    else $('#spanMessageSize').removeClass('text-warning')
+
     if (text.length === 0) {
       $('#btnMessageAction').prop('disabled', true)
       $('#togMessageSpam').prop('disabled', true)
@@ -46,8 +50,6 @@ $(() => {
       $('#togMessageSpam').prop('disabled', false)
       $('#togMessageSpam').bootstrapToggle('enable')
       $('#spanMessageSize').text(size)
-      if (size > 200) $('#spanMessageSize').addClass('text-warning')
-      else $('#spanMessageSize').removeClass('text-warning')
     }
   })
 
