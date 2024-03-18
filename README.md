@@ -84,12 +84,12 @@ Remember to map a port (server is listening on 3000/tcp) and provide the require
 - [x] ~~username color changer after each message~~
 - [x] ~~UI 2.0~~
 - [x] ~~Implement message history using localstorage. Navigate it with up and down.~~
+- [ ] Implement dynamically configurable (from UI) facts and spam presets (would require a docker volume bind for persistence)
 - [ ] Special syntax for messages to alternate between multiple messages eg. AAAA||BBBB||CCCC
 - [ ] Refactor into objects and modules
 - [x] ~~Cancel all scheduled farming messages~~
 - [ ] Implement perfect farming
 - [ ] Implement even more perfect farming by reading the bot replies
-- [ ] Implement dynamically configurable (from UI) facts and spam presets
 - [x] ~~Implement a nice logging system with UI settings~~
 
 ## That's all folks
