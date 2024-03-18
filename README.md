@@ -90,6 +90,7 @@ Remember to map a port (server is listening on 3000/tcp) and provide the require
 - [ ] Implement perfect farming
 - [ ] Implement even more perfect farming by reading the bot replies
 - [ ] Implement dynamically configurable (from UI) facts and spam presets
+- [x] ~~Implement a nice logging system with UI settings~~
 
 ## That's all folks
 
