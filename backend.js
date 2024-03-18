@@ -4,6 +4,9 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import { Logger } from './modules/logger.js'
+
+Logger.MIN_LOG_LEVEL = 'INFO'
 
 // Environment variables
 const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_ROLE', 'CHATTER_ROLE', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'TIME_SPAM', 'TIME_SECONDS', 'TIME_MINUTES', 'TIME_10MINUTES', 'PLS_TARGETS', 'PLS_VERBS', 'PYRAMID_EMOTE_PRESETS', 'MAX_SPAM_TIME']
@@ -135,16 +138,16 @@ function handleMessageEchoer (context, msg) {
     for (const identity of shuffleArray(identities.filter((id) => id.username !== currentIdentity.username))) {
       setTimeout(() => say(identity, msg), randTime(timeSeconds, cpt))
       cpt++
-      console.log(`Echoing ${msg} as ${identity.username}`)
+      Logger.log('INFO', `Echoing ${msg} as ${identity.username}`)
     }
   }
 }
 
 async function handleMessageAssistant (msg, context) {
   if (msg.startsWith(assistantTrigger + ' ') && isAssistantActive && context['display-name'] !== currentIdentity.username) {
-    console.log(`${context['display-name']} talked to me: ${msg}`)
+    Logger.log('INFO', `${context['display-name']} talked to me: ${msg}`)
     const response = await getAIResponse(assistantRole, `@${context['display-name']}`, msg.slice(assistantTrigger.length + 1))
-    console.log(`I replied: ${response}`)
+    Logger.log('INFO', `I replied: ${response}`)
     say(currentIdentity, response)
   }
 }
@@ -160,11 +163,11 @@ async function processCommand (message) {
       break
     case 'idchange':
       currentIdentity = getIdentity(message.arg)
-      console.log(`Changed the current identity to ${currentIdentity.username}`)
+      Logger.log('INFO', `Changed the current identity to ${currentIdentity.username}`)
       break
     case 'spamspeed':
       spamSpeed = Number(message.arg)
-      console.log(`Changed the spam interval multiplicator to ${spamSpeed}`)
+      Logger.log('INFO', `Changed the spam interval multiplicator to ${spamSpeed}`)
       break
     case 'disable':
       switch (message.target) {
@@ -219,10 +222,10 @@ async function processCommand (message) {
           clearFarmTimeouts()
           break
         default:
-          console.log(`ERROR: invalid disable target '${message.target}'`)
+          Logger.log('ERROR', `invalid disable target '${message.target}'`)
           return { status: 'KO' }
       }
-      console.log(`Disabled ${message.target}`)
+      Logger.log('INFO', `Disabled ${message.target}`)
       break
     case 'enable':
       switch (message.target) {
@@ -265,10 +268,10 @@ async function processCommand (message) {
           isDebugActive = true
           break
         default:
-          console.log(`ERROR: invalid enable target '${message.target}'`)
+          Logger.log('ERROR', `invalid enable target '${message.target}'`)
           return { status: 'KO' }
       }
-      console.log(`Enabled ${message.target}`)
+      Logger.log('INFO', `Enabled ${message.target}`)
       break
     case 'singlefact':
       singleFact()
@@ -289,7 +292,7 @@ async function processCommand (message) {
     case 'getsettings':
       return getSettings()
     default:
-      console.log(`ERROR : unsupported command '${message}'`)
+      Logger.log('ERROR', `unsupported command '${message}'`)
       return { status: 'KO' }
   }
   return { status: 'OK' }
@@ -299,12 +302,12 @@ async function processCommand (message) {
 function doTrivia () {
   const topic = randomElement(triviaTopics)
   say(currentIdentity, `>trivia ai ${topic}`)
-  console.log('Started a trivia')
+  Logger.log('INFO', 'Started a trivia')
 }
 
 // Gat a response from the AI using the given prompt
 async function getAIResponse (role, prefix, prompt) {
-  console.log(`[AI] Got prompt: ${smartJoin(role, prompt, ' ')}`)
+  Logger.log('INFO', `[AI] Got prompt: ${smartJoin(role, prompt, ' ')}`)
   let response = ''
   let cpt = 0
   do {
@@ -320,7 +323,7 @@ async function getAIResponse (role, prefix, prompt) {
       stream: false
     })
     response = chatCompletion.choices[0].message.content.replace(/\r?\n/gm, ' ').replace(/(^")|("$)/g, '').replace(/\.$/, '').replace(/^forsenKKona, /, '')
-    console.log(`[AI] Generated text: ${response}`)
+    Logger.log('INFO', `[AI] Generated text: ${response}`)
     response = smartJoin(prefix, response, ' ')
   } while (response.length > maxMessageSize && cpt < maxAiRetries)
   return response.substring(0, maxMessageSize)
@@ -376,7 +379,7 @@ async function multiFact () {
   if (!isMultifactActive) { return }
   singleFact()
   const nextTime = randTime(time10Minutes)
-  console.log(`Next fact in ${millisToMinutesAndSeconds(nextTime)}`)
+  Logger.log('DEBUG', `Next fact in ${millisToMinutesAndSeconds(nextTime)}`)
   setTimeout(() => multiFact(), nextTime)
 }
 
@@ -395,7 +398,7 @@ function farm (identity) {
 
   clearFarmTimeouts(identity.username)
 
-  console.log(`Farming as ${identity.username}`)
+  Logger.log('INFO', `Farming as ${identity.username}`)
 
   let timer = 0
   for (const action of shuffleArray(stdActions)) {
@@ -434,9 +437,9 @@ function clearFarmTimeouts (username = undefined) {
 async function say (identity, message, mode = undefined) {
   mode = mode ?? sayMode
   if (mode === 'ai') {
-    console.log(`Got AI prompt: ${message}`)
+    Logger.log('INFO', `Got AI prompt: ${message}`)
     message = subStringUTF8(await getAIResponse(assistantRole, '', message), 0, maxMessageSize)
-    console.log(`Answered AI prompt as ${identity.username}: ${message}`)
+    Logger.log('INFO', `Answered AI prompt as ${identity.username}: ${message}`)
   }
 
   message = subStringUTF8(message, 0, maxMessageSize)
@@ -444,11 +447,11 @@ async function say (identity, message, mode = undefined) {
   identity.isAvoidDupe = !identity.isAvoidDupe
 
   if (isDebugActive) {
-    console.log(`DEBUG: Would have said as ${identity.username} on #${identity.channel}: ${mode === 'action' ? '/me ' : ''}${message}`)
+    Logger.log('INFO', `DEBUG_MODE: Would have said as ${identity.username} on #${identity.channel}: ${mode === 'action' ? '/me ' : ''}${message}`)
   } else {
     if (mode !== 'action') identity.client.say(identity.channel, message)
     else identity.client.action(identity.channel, message)
-    console.log(`Said as ${identity.username} on #${identity.channel}: ${mode === 'action' ? '/me ' : ''}${message}`)
+    Logger.log('INFO', `Said as ${identity.username} on #${identity.channel}: ${mode === 'action' ? '/me ' : ''}${message}`)
   }
 }
 
@@ -466,7 +469,7 @@ async function changeColor (identity = undefined, color = undefined) {
   for (const id of ids) {
     const col = color ?? randColor(id.currentColor)
     if (isDebugActive) {
-      console.log(`DEBUG: Would have changed the color of ${id.username} to ${col}`)
+      Logger.log('INFO', `DEBUG_MODE: Would have changed the color of ${id.username} to ${col}`)
     } else {
       try {
         const response = await fetch(`https://api.twitch.tv/helix/chat/color?user_id=${id.userId}&color=${col}`, {
@@ -475,18 +478,18 @@ async function changeColor (identity = undefined, color = undefined) {
         })
         switch (response.status) {
           case 204:
-            console.log(`Changed the color of ${id.username} to ${col}`)
+            Logger.log('INFO', `Changed the color of ${id.username} to ${col}`)
             break
           case 400:
-            console.log(`WARNING: The user_id proided for the user ${id.username} is invalid. Color changer has been disabled for this user`)
+            Logger.log('WARNING', `The user_id proided for the user ${id.username} is invalid. Color changer has been disabled for this user`)
             id.isColorChangerCompatible = false
             break
           case 401:
-            console.log(`WARNING: The oauth token provided proided for the user ${id.username} doesn't include the user:manage:chat_color scope. Color changer has been disabled for this user`)
+            Logger.log('WARNING', `The oauth token provided proided for the user ${id.username} doesn't include the user:manage:chat_color scope. Color changer has been disabled for this user`)
             id.isColorChangerCompatible = false
         }
       } catch (error) {
-        console.log(`OpenAI API is unreachable: ${error}`)
+        Logger.log('WARNING', `OpenAI API is unreachable: ${error}`)
       }
     }
   }
@@ -496,7 +499,7 @@ function getIdentity (username) {
   const identity = identities.find(identity => identity.username === username)
   if (identity) return identity
   else {
-    console.log(`ERROR: Identity ${username} not found, returning ${identities[0].username} instead`)
+    Logger.log('ERROR', `Identity ${username} not found, returning ${identities[0].username} instead`)
     return identities[0]
   }
 }
@@ -510,18 +513,18 @@ function envVariablesCheck () {
   for (const envVariable of envVariables) {
     if (process.env?.[envVariable] === undefined) {
       isFine = false
-      console.log(`ERROR: Environment variable ${envVariable} is undefined`)
+      Logger.log('ERROR', `Environment variable ${envVariable} is undefined`)
     }
   }
 
   if (process.env?.HELIX_CLIENT_ID?.length > 0) isColorChangerAvailable = true
   else {
-    console.log("WARNING: The CLIENT_ID environment variable hasn't been provided. Color changer will be unavailable")
+    Logger.log('WARNING', "The CLIENT_ID environment variable hasn't been provided. Color changer will be unavailable")
     isColorChangerAvailable = false
   }
 
   if (!isFine) {
-    console.log('ERROR: Some of the necessary environment variables are undefined. Program will exit.')
+    Logger.log('ERROR', 'Some of the necessary environment variables are undefined. Program will exit.')
     process.exit(1)
   }
 }
@@ -533,7 +536,7 @@ function getFactPrompt () {
     rand = rand - prompt.weight
     if (rand <= 0) return prompt.prompt
   }
-  console.log('ERROR: there is a bug in the prompt selecting algorithm')
+  Logger.log('ERROR', 'there is a bug in the prompt selecting algorithm')
   return ''
 }
 
@@ -601,7 +604,7 @@ function initializeClients () {
         identity.isColorChangerCompatible = true
         changeColor(identity, identity.currentColor)
       }
-    } else console.log(`WARNING: a userId hasn't been provided for ${identity.username}, color changer will be unavailable for this user`)
+    } else Logger.log('WARNING', `a userId hasn't been provided for ${identity.username}, color changer will be unavailable for this user`)
 
     if (isFirst) {
       identity.client.on('message', onMessageHandler)
@@ -618,7 +621,7 @@ function initializeBackend () {
 
   app.post('/command', async (req, res) => {
     const message = req.body
-    console.log(`Received message: ${prettyPrintCommand(message)}`)
+    Logger.log('DEBUG', `Received message: ${prettyPrintCommand(message)}`)
     const output = await processCommand(message)
     res.status(200).json(output)
   })
@@ -646,13 +649,13 @@ function initializeBackend () {
   app.listen(port, () => {
     console.log('# forsenKKona an AI powered overly patriotic bot 🇺🇸 🦅\n')
     console.log(`REST API server is up and running on port ${port}`)
-    console.log('WebUI is available at http://localhost:3000')
+    console.log('WebUI is available at http://localhost:3000\n')
   })
 }
 
 async function main () {
   if (identities.length === 0) {
-    console.log('ERROR: You must provide at least one identity. Program will exit')
+    Logger.log('ERROR', 'You must provide at least one identity. Program will exit')
     process.exit(1)
   }
   initializeClients()
