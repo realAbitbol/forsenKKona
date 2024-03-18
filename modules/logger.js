@@ -1,5 +1,5 @@
 export class Logger {
-  static MIN_LOG_LEVEL = 'WARNING'
+  static MIN_LOG_LEVEL = 'INFO'
   static SHOW_TIMESTAMPS = true
 
   static #color_reset = '\x1b[0m'

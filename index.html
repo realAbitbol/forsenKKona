@@ -54,6 +54,7 @@
     <input id="togEcho" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="Echo 👥" data-offlabel="Mono 👤" data-width="150px" data-height="38px" data-style="square">
     <input id="togColorChanger" type="checkbox" data-toggle="toggle" data-onstyle="info" data-offstyle="secondary" data-onlabel="Multicolor 🎨" data-offlabel="Monocolor 🖋️" data-width="150px" data-height="38px" data-style="square"> 
     <input id="togDebug" type="checkbox" data-toggle="toggle" data-onstyle="warning" data-offstyle="secondary" data-onlabel="Debug 🔇" data-offlabel="Normal 🔈" data-width="150px" data-height="38px" data-style="square">
+    <button id="btnSettings" type="button" class="btn btn-light" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSettings" aria-controls="offcanvasSettings">⚙️</button>
   </div>
 
   <h3>💬 Messages</h3>
@@ -81,15 +82,41 @@
   </form> 
 
   <h3>🛕 Pyramid</h3>
-    <div class="input-group d-inline-flex w-auto">
-      <input id="inputPyramidEmote" type="text" class="form-control w-auto" placeholder="Pyramid emote" aria-label="Pyramid emote" autocomplete="off" autocapitalize="off" name="message" spellcheck="false" maxlength="100" required>
-      <button id="dropdownPyramidPresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-style="square">Presets</button>
-      <ul id="dropdownPyramidPresetsMenu" class="dropdown-menu">
-      </ul>
-      <span class="input-group-text">Size</span>
-      <input id="inputPyramidSize" type="number" class="form-control" aria-label="Message" value="3" maxlength="2" required>
-      <input id="togPyramid" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="on" data-offlabel="off" data-height="38px" data-style="square">
+  <div class="input-group d-inline-flex w-auto">
+    <input id="inputPyramidEmote" type="text" class="form-control w-auto" placeholder="Pyramid emote" aria-label="Pyramid emote" autocomplete="off" autocapitalize="off" name="message" spellcheck="false" maxlength="100" required>
+    <button id="dropdownPyramidPresets" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-style="square">Presets</button>
+    <ul id="dropdownPyramidPresetsMenu" class="dropdown-menu">
+    </ul>
+    <span class="input-group-text">Size</span>
+    <input id="inputPyramidSize" type="number" class="form-control" aria-label="Message" value="3" maxlength="2" required>
+    <input id="togPyramid" type="checkbox" data-toggle="toggle" data-onstyle="danger" data-offstyle="secondary" data-onlabel="on" data-offlabel="off" data-height="38px" data-style="square">
+  </div>
+  
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSettings" aria-labelledby="offcanvasSettingsLabel" data-bs-backdrop="true">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasSettingsLabel">Settings</h5>
+      <button id="btnOffcanvasClose" type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
+    <div class="offcanvas-body">
+      <h6>Console settings</h6>
+      <div class="mb-3 row">
+        <label for="selectLogLevel" class="col-sm-2 col-form-label">Level</label>
+        <div class="col-sm-10">
+          <select id="selectLogLevel" class="form-select">
+            <option value="ERROR">ERROR</option>
+            <option value="WARNING">WARNING</option>
+            <option value="INFO" selected>INFO</option>
+            <option value="DEBUG">DEBUG</option>
+        </div>
+      </div>
+      <div class="mb-3 row d-flex">
+        <div class="form-check form-switch">
+          <input id="checkboxLogTimestamps" class="form-check-input" type="checkbox" role="switch">
+          <label class="form-check-label" for="checkboxLogTimestamps">Show timestamps</label>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="frontend.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

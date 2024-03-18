@@ -6,7 +6,8 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { Logger } from './modules/logger.js'
 
-Logger.MIN_LOG_LEVEL = 'INFO'
+Logger.MIN_LOG_LEVEL = process.env.LOG_LEVEL ?? 'INFO'
+Logger.SHOW_TIMESTAMPS = process.env.LOG_SHOW_TIMESTAMPS === 'true'
 
 // Environment variables
 const envVariables = ['IDENTITIES', 'OPENAI_APIKEY', 'OPENAI_BASEURL', 'OPENAI_MODEL', 'TRIVIA_TOPICS', 'FACT_PROMPTS', 'SPAM_PRESETS', 'MAX_AI_RETRIES', 'ASSISTANT_TRIGGER', 'ASSISTANT_ROLE', 'CHATTER_ROLE', 'MAX_MESSAGE_SIZE', 'FACT_PREFIX', 'TIME_SPAM', 'TIME_SECONDS', 'TIME_MINUTES', 'TIME_10MINUTES', 'PLS_TARGETS', 'PLS_VERBS', 'PYRAMID_EMOTE_PRESETS', 'MAX_SPAM_TIME']
@@ -160,6 +161,12 @@ async function processCommand (message) {
       break
     case 'saymode':
       sayMode = message.arg
+      Logger.log('INFO', `Switched message mode to ${sayMode}`)
+      break
+    case 'logsettings':
+      Logger.MIN_LOG_LEVEL = message.target
+      Logger.SHOW_TIMESTAMPS = message.arg === 'true'
+      Logger.log('WARNING', `Changed the log settings to MIN_LOG_LEVEL=${Logger.MIN_LOG_LEVEL} and SHOW_TIMESTAMPS=${Logger.SHOW_TIMESTAMPS}`)
       break
     case 'idchange':
       currentIdentity = getIdentity(message.arg)
@@ -176,7 +183,6 @@ async function processCommand (message) {
           break
         case 'chaintrivia':
           isChainTriviaActive = false
-          doTrivia()
           break
         case 'spam':
           isSpamActive = false
@@ -235,6 +241,7 @@ async function processCommand (message) {
           break
         case 'chaintrivia':
           isChainTriviaActive = true
+          doTrivia()
           break
         case 'spam':
           isSpamActive = true
@@ -505,7 +512,7 @@ function getIdentity (username) {
 }
 
 function getSettings () {
-  return { isMultifactActive, isChainTriviaActive, isBotCancerActive, isSpamActive, isStopTriviaActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, sayMode, isDebugActive, pyramidEmote, pyramidWidth, pyramidEmotePresets, maxSpamTime, spamSpeed, usernames: identities.map(identity => identity.username), spamPresets, currentIdentity: currentIdentity.username }
+  return { isMultifactActive, isChainTriviaActive, isBotCancerActive, isSpamActive, isStopTriviaActive, isEchoActive, isPyramidActive, isAssistantActive, isColorChangerActive, isColorChangerAvailable, sayMode, isDebugActive, pyramidEmote, pyramidWidth, pyramidEmotePresets, maxSpamTime, spamSpeed, usernames: identities.map(identity => identity.username), spamPresets, currentIdentity: currentIdentity.username, logLevel: Logger.MIN_LOG_LEVEL, logShowTimestamps: Logger.SHOW_TIMESTAMPS }
 }
 
 function envVariablesCheck () {

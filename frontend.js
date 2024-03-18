@@ -187,6 +187,14 @@ $(() => {
     command('plsdonaldtrump')
   })
 
+  $('#selectLogLevel').on('change', () => {
+    changeLogSettings()
+  })
+
+  $('#checkboxLogTimestamps').on('change', () => {
+    changeLogSettings()
+  })
+
   $('#imgBanner').on('click', () => {
     window.open('https://www.twitch.tv/forsen', '_blank').focus()
   })
@@ -223,9 +231,15 @@ async function refreshDisplay () {
     $('#spamPresetsSelect').append($('<option>', { value: spam.preset, text: spam.id }))
   }
   $('#inputMessage').trigger('input')
+  $('#selectLogLevel').val(settings.logLevel)
+  $('#checkboxLogTimestamps').prop('checked', settings.logShowTimestamps)
   setBtnMessageMode(settings.sayMode)
   setPyramidDisableState()
   setMessageDisableState()
+}
+
+function changeLogSettings () {
+  command('logsettings', $('#selectLogLevel').val(), String($('#checkboxLogTimestamps').prop('checked')))
 }
 
 function fillSelect (select, elems) {
