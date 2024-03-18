@@ -16,6 +16,7 @@
 - Can automatically stop trivias
 - Use multiple accounts to echo your messages
 - Destroy weebs
+- Queries to the cool >personality bot
 - Obliterate elis subs
 - Pulverize furries
 - Atomize juicers
