@@ -5,6 +5,7 @@ let idTimeoutBotCancer
 let settings
 let ringBufferMessages
 let currentBufferIndex = -1
+const personalityTopics = ['top', 'hobbies', 'likes', 'dislikes', 'dream', 'nightmare', 'emotes', 'secret', 'crush', 'spirit', 'emote', 'pol', 'Gayge', 'future', 'joke', 'song', 'darkmemory', 'darksecret', 'memory', 'trouble', 'score', 'data', 'task', 'impostor', 'turnon', 'resolution', 'verse', 'darkfuture', 'fashionadvice', 'job', 'regret', 'analyze', 'figure']
 
 $(() => {
   loadFromLocalStorage()
@@ -86,6 +87,12 @@ $(() => {
   $('#dropdownFarm').on('hide.bs.dropdown', ({ clickEvent }) => {
     if (clickEvent?.target && clickEvent.target.closest('ul')?.id === 'dropdownFarmMenu') {
       command('farm', undefined, $(clickEvent.target).text())
+    }
+  })
+
+  $('#dropdownPersonality').on('hide.bs.dropdown', ({ clickEvent }) => {
+    if (clickEvent?.target && clickEvent.target.closest('ul')?.id === 'dropdownPersonalityMenu') {
+      command('say', undefined, '>personality ' + $(clickEvent.target).text())
     }
   })
 
@@ -224,6 +231,7 @@ async function refreshDisplay () {
   fillDropdown($('#dropdownFarmMenu'), settings.usernames)
   fillDropdown($('#dropdownMessagePresetsMenu'), settings.spamPresets.map((el) => el.id))
   fillDropdown($('#dropdownPyramidPresetsMenu'), settings.pyramidEmotePresets)
+  fillDropdown($('#dropdownPersonalityMenu'), personalityTopics)
 
   $('#spamPresetsSelect').find('option').remove().end()
   $('#spamPresetsSelect').append($('<option>', { text: 'Choose...' }).prop('selected', true))

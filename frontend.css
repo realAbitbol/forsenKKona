@@ -31,3 +31,8 @@ input:hover {
 .toggle.square .toggle-handle {
     border-radius: 0px;
 }
+
+.dropdown-menu {
+    max-height: 50vh;
+    overflow: scroll;
+}
