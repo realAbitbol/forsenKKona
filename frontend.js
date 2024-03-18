@@ -279,6 +279,8 @@ function setBtnMessageMode (sayMode) {
       $('#btnClearMessage').addClass('border-info')
       $('#dropdownMessagePresets').removeClass('border-warning')
       $('#dropdownMessagePresets').addClass('border-info')
+      $('#spanMessageSize').removeClass('border-warning')
+      $('#spanMessageSize').addClass('border-info')
       break
     case 'action':
       $('#btnMessageAction').val('Action 💭')
@@ -292,6 +294,8 @@ function setBtnMessageMode (sayMode) {
       $('#btnClearMessage').addClass('border-warning')
       $('#dropdownMessagePresets').removeClass('border-info')
       $('#dropdownMessagePresets').addClass('border-warning')
+      $('#spanMessageSize').removeClass('border-info')
+      $('#spanMessageSize').addClass('border-warning')
       break
     case 'say':
     default:
@@ -306,6 +310,8 @@ function setBtnMessageMode (sayMode) {
       $('#btnClearMessage').removeClass('border-info')
       $('#dropdownMessagePresets').removeClass('border-warning')
       $('#dropdownMessagePresets').removeClass('border-info')
+      $('#spanMessageSize').removeClass('border-warning')
+      $('#spanMessageSize').removeClass('border-info')
   }
 }
 
