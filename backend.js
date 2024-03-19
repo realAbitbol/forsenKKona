@@ -105,7 +105,7 @@ async function handleColorChanger (msg, context) {
 }
 
 function handleMessageTriviaChainer (context, msg) {
-  if (context['display-name'] === 'FeelsStrongBot' && msg === 'trivia ended nam') {
+  if (context['display-name'] === 'FeelsStrongBot' && (msg === 'trivia ended nam' || msg.includes('Aware Silent, I stand, devoid of questions.'))) {
     if (isChainTriviaActive) { setTimeout(() => doTrivia(), randTime(timeSpam)) }
   }
 }
@@ -241,7 +241,6 @@ async function processCommand (message) {
           break
         case 'chaintrivia':
           isChainTriviaActive = true
-          doTrivia()
           break
         case 'spam':
           isSpamActive = true
