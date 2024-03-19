@@ -11,7 +11,7 @@ select:hover:not(:disabled) {
     border-color: white;
 }
 
-input:hover:not(:disabled) {
+input:hover:not(:disabled):not([type="submit"]) {
     border-color: white;
 }
 
