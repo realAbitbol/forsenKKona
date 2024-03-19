@@ -7,11 +7,11 @@ form {
     align-items: center;
 }
 
-select:hover {
+select:hover:not(:disabled) {
     border-color: white;
 }
 
-input:hover {
+input:hover:not(:disabled) {
     border-color: white;
 }
 

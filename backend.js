@@ -116,7 +116,7 @@ function handleMessageTriviaStopper (context, msg) {
       let cpt = 0
       for (const identity of shuffleArray(identities)) {
         setTimeout(() => stopTrivia(identity), randTime(timeSeconds, cpt))
-        cpt++
+        cpt += 2
       }
     }
   }
@@ -127,7 +127,7 @@ function handleMessageRaidJoiner (context, msg) {
     let cpt = 0
     for (const identity of shuffleArray(identities)) {
       setTimeout(() => joinRaid(identity), randTime(timeSeconds, cpt))
-      cpt++
+      cpt += 2
     }
   }
 }
