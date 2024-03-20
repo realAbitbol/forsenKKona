@@ -1,6 +1,6 @@
 # forsenKKona an AI powered overly patriotic Twitch client with automation
 
-![banner](banner.webp)
+![banner](frontend/banner.webp)
 
 ## Functions
 

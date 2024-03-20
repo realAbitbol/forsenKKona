@@ -633,23 +633,23 @@ function initializeBackend () {
   })
 
   app.get('/', (req, res) => {
-    res.sendFile(join(currentDir, 'index.html'))
+    res.sendFile(join(currentDir, 'frontend/index.html'))
   })
 
   app.get('/frontend.js', (req, res) => {
-    res.sendFile(join(currentDir, 'frontend.js'))
+    res.sendFile(join(currentDir, 'frontend/frontend.js'))
   })
 
   app.get('/frontend.css', (req, res) => {
-    res.sendFile(join(currentDir, 'frontend.css'))
+    res.sendFile(join(currentDir, 'frontend/frontend.css'))
   })
 
   app.get('/banner.webp', (req, res) => {
-    res.sendFile(join(currentDir, 'banner.webp'))
+    res.sendFile(join(currentDir, 'frontend/banner.webp'))
   })
 
   app.get('/favicon.ico', (req, res) => {
-    res.sendFile(join(currentDir, 'favicon.ico'))
+    res.sendFile(join(currentDir, 'frontend/favicon.ico'))
   })
 
   app.listen(port, () => {
