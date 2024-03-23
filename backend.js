@@ -538,7 +538,8 @@ function envVariablesCheck () {
 function getFactPrompt () {
   const sumOfWeights = factPrompts.reduce((accumulator, currentPrompt) => { return accumulator + currentPrompt.weight }, 0)
   let rand = Math.floor(Math.random() * sumOfWeights + 1)
-  for (const prompt of shuffleArray(factPrompts)) {
+  Logger.log('DEBUG', `Rolled a ${rand} for prompt selection`)
+  for (const prompt of factPrompts) {
     rand = rand - prompt.weight
     if (rand <= 0) return prompt.prompt
   }
