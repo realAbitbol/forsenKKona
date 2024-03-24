@@ -111,8 +111,9 @@ function handleMessageTriviaChainer (context, msg) {
 }
 
 function handleMessageTriviaStopper (context, msg) {
-  if (context['display-name'] === 'FeelsStrongBot' && msg.includes('4/9 Category:')) {
+  if (context['display-name'] === 'FeelsStrongBot' && msg.startsWith('4/')) {
     if (isStopTriviaActive) {
+      Logger.log('INFO', 'Detected the 4th question of a trivia, stoping.')
       let cpt = 0
       for (const identity of shuffleArray(identities)) {
         setTimeout(() => stopTrivia(identity), randTime(timeSeconds, cpt))
@@ -124,6 +125,7 @@ function handleMessageTriviaStopper (context, msg) {
 
 function handleMessageRaidJoiner (context, msg) {
   if (context['display-name'] === 'DeepDankDungeonBot' && msg.includes('A Raid Event at Level')) {
+    Logger.log('INFO', 'Detected a raid, joining.')
     let cpt = 0
     for (const identity of shuffleArray(identities)) {
       setTimeout(() => joinRaid(identity), randTime(timeSeconds, cpt))
