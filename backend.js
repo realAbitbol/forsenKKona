@@ -111,7 +111,7 @@ function handleMessageTriviaChainer (context, msg) {
 }
 
 function handleMessageTriviaStopper (context, msg) {
-  if (context['display-name'] === 'FeelsStrongBot' && msg.includes("Trivia's about to pop off")) {
+  if (context['display-name'] === 'FeelsStrongBot' && msg.includes('4/9 Category:')) {
     if (isStopTriviaActive) {
       let cpt = 0
       for (const identity of shuffleArray(identities)) {

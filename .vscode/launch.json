@@ -13,7 +13,8 @@
             ],
             "runtimeExecutable": "npm",
             "runtimeArgs": [
-                "start"
+                "run",
+                "dev"
             ],
             "envFile": "${workspaceFolder}/.env"
         }
