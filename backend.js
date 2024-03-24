@@ -111,7 +111,7 @@ function handleMessageTriviaChainer (context, msg) {
 }
 
 function handleMessageTriviaStopper (context, msg) {
-  if (context['display-name'] === 'FeelsStrongBot' && msg.startsWith('4/')) {
+  if (context['display-name'] === 'FeelsStrongBot' && msg.match(/4\/.+Category:/)) {
     if (isStopTriviaActive) {
       Logger.log('INFO', 'Detected the 4th question of a trivia, stoping.')
       let cpt = 0
