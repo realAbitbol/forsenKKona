@@ -353,7 +353,7 @@ function getSpamText (id) {
   return settings.spamPresets.find((el) => el.id === id).preset
 }
 
-async function command (command, target, arg) {
+async function command (command, target, arg) { // TODO: implement error handling
   const response = await fetch('/command', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
