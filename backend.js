@@ -111,9 +111,9 @@ function handleMessageTriviaChainer (context, msg) {
 }
 
 function handleMessageTriviaStopper (context, msg) {
-  if (context['display-name'] === 'FeelsStrongBot' && msg.match(/4\/.+Category:/)) {
+  if (context['display-name'] === 'FeelsStrongBot' && msg.match(/3\/.+Category:/)) {
     if (isStopTriviaActive) {
-      Logger.log('INFO', 'Detected the 4th question of a trivia, stoping.')
+      Logger.log('INFO', 'Detected the 3rd question of a trivia, stoping.')
       let cpt = 0
       for (const identity of shuffleArray(identities)) {
         setTimeout(() => stopTrivia(identity), randTime(timeSeconds, cpt))
@@ -451,7 +451,9 @@ async function say (identity, message, mode = undefined) {
   }
 
   message = subStringUTF8(message, 0, maxMessageSize)
-  if (identity.isAvoidDupe) { message = `${message} ${duplicateSuffix}` }
+  if (identity.isAvoidDupe && !'>+#¿'.includes(message.at(0))) {
+    message = `${message} ${duplicateSuffix}`
+  }
   identity.isAvoidDupe = !identity.isAvoidDupe
 
   if (isDebugActive) {
